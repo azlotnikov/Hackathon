@@ -116,7 +116,7 @@ class AuthorizedUser
    public static function DeleteAccount($login)
    {
       global $_user;
-      $_user->DeleteByEmail($login);
+      $_user->DeleteByLogin($login);
       self::Unauthorized();
    }
 
