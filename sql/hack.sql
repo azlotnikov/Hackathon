@@ -7,6 +7,12 @@ GRANT ALL
 ON `hack`.*
 TO `marik`@localhost IDENTIFIED BY 'marik107';
 
+CREATE TABLE IF NOT EXISTS `images` (
+   `id`         INT(11)    NOT NULL AUTO_INCREMENT,
+   `is_resized` TINYINT(4) NOT NULL DEFAULT 0,
+   PRIMARY KEY (`id`)
+);
+
 CREATE TABLE IF NOT EXISTS `users` (
    `id`            INT(11)      NOT NULL AUTO_INCREMENT,
    `login`         VARCHAR(70)  NOT NULL,
