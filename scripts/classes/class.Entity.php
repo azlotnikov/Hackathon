@@ -31,6 +31,14 @@ class Entity
       $this->idField = new Field(static::ID_FLD, IntType(), false);
    }
 
+   public function SetFields($params)
+   {
+      foreach ($params as $name => $value) {
+         $this->SetFieldByName($name, $value);
+      }
+      return $this;
+   }
+
    public function GetAssocValidatedField()
    {
       $result = Array();
