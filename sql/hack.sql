@@ -28,7 +28,17 @@ CREATE TABLE IF NOT EXISTS `users` (
    `last_update`   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    `profile_views` INT DEFAULT 0,
    PRIMARY KEY (`id`),
+   FOREIGN KEY (`photo_id`) REFERENCES `images` (`id`) ON DELETE SET NULL,
    UNIQUE KEY(`login`)
+);
+
+CREATE TABLE IF NOT EXISTS `sessions` (
+   `id`      INT(11)     NOT NULL AUTO_INCREMENT,
+   `user_id` INT         NOT NULL,
+   `sid`     VARCHAR(40) NOT NULL,
+   PRIMARY KEY(`id`),
+   UNIQUE KEY(`sid`),
+   FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 );
 
 DELIMITER //
@@ -55,6 +65,13 @@ DROP TRIGGER IF EXISTS `insert_users`//
 CREATE TRIGGER `insert_users` BEFORE INSERT ON `users`
 FOR EACH ROW BEGIN
    SET new.password = create_encrypted_pass(new.password, new.salt);
+END//
+
+DROP PROCEDURE IF EXISTS `add_user_session` //
+CREATE PROCEDURE `add_user_session`(IN user_id INT, IN sid VARCHAR(40))
+BEGIN
+   DELETE FROM `sessions` WHERE `user_id` = user_id;
+   INSERT INTO `sessions`(`user_id`, `sid`) VALUES(user_id, sid);
 END//
 
 DELIMITER ;
