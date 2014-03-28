@@ -8,16 +8,21 @@ ON `hack`.*
 TO `marik`@localhost IDENTIFIED BY 'marik107';
 
 CREATE TABLE IF NOT EXISTS `users` (
-   `id`              INT(11)      NOT NULL AUTO_INCREMENT,
-   `name`            VARCHAR(70)  NOT NULL,
-   `surname`         VARCHAR(70),
-   `phone`           VARCHAR(30),
-   `description`     TEXT,
-   `password`        VARCHAR(80)  NOT NULL,
-   `salt`            VARCHAR(8)   NOT NULL,
-   `last_update`     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-   `photo_id`        INT DEFAULT NULL,
-   PRIMARY KEY (`id`)
+   `id`            INT(11)      NOT NULL AUTO_INCREMENT,
+   `login`         VARCHAR(70)  NOT NULL,
+   `nickname`      VARCHAR(70)  NOT NULL,
+   `name`          VARCHAR(70)  NOT NULL,
+   `surname`       VARCHAR(70),
+   `phone`         VARCHAR(30),
+   `description`   TEXT,
+   `password`      VARCHAR(80)  NOT NULL,
+   `salt`          VARCHAR(8)   NOT NULL,
+   `photo_id`      INT DEFAULT  NULL,
+   `register_date` DATETIME     NOT NULL,
+   `last_update`   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   `profile_views` INT DEFAULT 0,
+   PRIMARY KEY (`id`),
+   UNIQUE KEY(`login`)
 );
 
 DELIMITER //
@@ -34,6 +39,9 @@ CREATE TRIGGER `update_users` BEFORE UPDATE ON `users`
 FOR EACH ROW BEGIN
    IF old.password <> new.password THEN
       SET new.password = create_encrypted_pass(new.password, new.salt);
+   END IF;
+   IF old.profile_views = new.profile_views THEN
+      SET new.last_update = CURRENT_TIMESTAMP;
    END IF;
 END//
 
