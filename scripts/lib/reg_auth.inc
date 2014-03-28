@@ -36,7 +36,7 @@ class Registration
       $userInfo = $_user->SetSamplingScheme(User::REGISTRATION_CHECK_SCHEME)->GetByLogin($fields[User::LOGIN_FLD]);
       $_user->SetFields($fields);
       if (!empty($userInfo)) {
-         $fields[;
+         $fields;
          $_user->SetFields(
             array_merge(
                $fields,
