@@ -3,4 +3,4 @@
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/lib/reg_auth.inc';
 
-AuthorizedUser::unauthorized();
+AuthorizedUser::Unauthorized();
