@@ -17,17 +17,10 @@ class Handler
       $this->entity = $entity;
    }
 
-   public function SetFields($params)
-   {
-      foreach ($params as $name => $value) {
-         $this->entity->SetFieldByName($name, $value);
-      }
-   }
-
    public function Update($params)
    {
       try {
-         $this->SetFields($params);
+         $this->entity->SetFields($params);
          $this->entity->Update();
       } catch (DBException $e) {
          throw new Exception('Возникли проблемы при обновлении записи.');
@@ -37,7 +30,7 @@ class Handler
    public function Insert($params, $getLastInsertId = true)
    {
       try {
-         $this->SetFields($params);
+         $this->entity->SetFields($params);
          return $getLastInsertId ? $this->entity->Insert(true) : $this->entity->Insert(false);
       } catch (DBException $e) {
          throw new Exception('Возникли проблемы при добавлении записи.');
