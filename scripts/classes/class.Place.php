@@ -2,14 +2,15 @@
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Entity.php';
 
-class Room extends Entity
+class Place extends Entity
 {
    const NUMBER_FLD      = 'number';
    const FLOOR_FLD       = 'floor_id';
    const LAST_UPDATE_FLD = 'last_update';
    const POLYGON_FLD     = 'polygon';
+   const TYPE_FLD        = 'place_type';
 
-   const TABLE = 'rooms';
+   const TABLE = 'places';
 
    public function __construct()
    {
@@ -37,7 +38,23 @@ class Room extends Entity
             static::POLYGON_FLD,
             StrType(500),
             true
+         ),
+         new Field(
+            static::TYPE_FLD,
+            IntType(),
+            true,
+            'Тип'
          )
       );
+   }
+
+   public function ModifySample(&$sample)
+   {
+      if (empty($sample)) return;
+      foreach ($sample as &$set) {
+         //
+
+      }
+      undef($set);
    }
 }
