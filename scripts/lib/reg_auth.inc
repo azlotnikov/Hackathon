@@ -1,6 +1,7 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/lib/cookie.inc';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.UserForgottenPass.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Session.php';
+// require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.UserForgottenPass.php';
 
 //------------class Authentification------------
 
@@ -68,47 +69,47 @@ class Registration
 
 class AuthorizedUser
 {
-   public static function Login($email, $pass)
+   public static function Login($login, $pass)
    {
       global $_user, $db;
       $_user->CheckSearch();
       $_user->search->AddClause(
          CCond(
-            CF(User::TABLE, $_user->GetFieldByName(User::VERIFICATION_FLD)),
-            CVP(1),
-            'AND'
+            CF(User::TABLE, $_user->GetFieldByName(User::LOGIN_FLD)),
+            CVP($login),
+            cAND
          )
       );
-      $user = $_user->SetSamplingScheme(User::LOGIN_SCHEME)->GetByEmail($email);
+      $user = $_user->SetSamplingScheme(User::LOGIN_SCHEME)->GetByLogin($login);
       if (empty($user)) {
          throw new Exception(ERROR_LOGIN);
       }
-      $result = $db->Query('SELECT create_encrypted_pass(?, ?) as db_pass', Array($pass, $user[$_user->ToPrfxNm(User::SALT_FLD)]));
-      $encryptpass = $result[0]['db_pass'];
+      $encryptpass = $db->Query('SELECT create_encrypted_pass(?, ?) as db_pass', [$pass, $user[$_user->ToPrfxNm(User::SALT_FLD)]])[0]['db_pass'];
       if ($encryptpass == $user[$_user->ToPrfxNm(User::PASS_FLD)]) {
-         self::Authorize($email, $encryptpass, true);
+         self::Authorize($user[$_user->ToPrfxNm(User::ID_FLD)], true);
       } else {
          throw new Exception(ERROR_LOGIN);
       }
    }
 
-   public static function Authorize($email, $pass, $isCookie = false)
+   public static function Authorize($user_id, $isCookie = false)
    {
-      $_SESSION['email'] = $email;
+      global $_session;
+      $_session->SetFieldByName(Session::USER_FLD, $user_id);
+      $_SESSION['sid'] = $sid = $_session->Authorize($user_id);
       if ($isCookie) {
-         $cookie = new Cookie($email, $pass);
-         $cookie->Set();
+         (new AuthCookie($sid))->Set();
       }
    }
 
    public static function Unauthorized()
    {
-      $_SESSION['email'] = null;
+      global $_session;
+      $_SESSION['sid'] = null;
       try {
-         $cookie = new Cookie();
-         $cookie->Remove();
+         (new AuthCookie())->Remove();
       } catch (CookieException $e) {}
-      unset($_SESSION['email']);
+      unset($_SESSION['sid']);
       /////////////////////////////////////////////////////////////////////////////////////////////////
       //session_destroy();
    }
