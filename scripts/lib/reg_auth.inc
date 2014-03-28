@@ -30,39 +30,26 @@ class Authentification
 
 class Registration
 {
-   public static function Register($email, $name, $surname, $password, $isPhoto, $isVideo)
+   public static function Register($fields)
    {
       global $_user;
-      $userInfo = $_user->SetSamplingScheme(User::REGISTRATION_CHECK_SCHEME)->GetByEmail($email);
-      $_user->SetFieldByName(User::SALT_FLD, Encryption::GenerateRandomString())
-            ->SetFieldByName(User::PASS_FLD, $password)
-            ->SetFieldByName(User::NAME_FLD, $name)
-            ->SetFieldByName(User::SURNAME_FLD, $surname)
-            ->SetFieldByName(User::EMAIL_FLD, $email)
-            ->SetFieldByName(User::IS_PHOTO_FLD, $isPhoto)
-            ->SetFieldByName(User::IS_VIDEO_FLD, $isVideo);
+      $userInfo = $_user->SetSamplingScheme(User::REGISTRATION_CHECK_SCHEME)->GetByLogin($fields[User::LOGIN_FLD]);
+      $_user->SetFields($fields);
       if (!empty($userInfo)) {
-         //check if the user tried to register before time expires but confirmation e-mail
-         $time = new DateTime($userInfo[$_user->ToPrfxNm(User::REGISTER_DATE_FLD)]);
-         if ($userInfo[$_user->ToPrfxNm(User::VERIFICATION_FLD)]) {
-            throw new Exception(ERROR_MAIL_ALREADY_REGISTERED);
-         } else {
-            $time->add(new DateInterval(CONFIRMATION_TERM));
-            $curDate = new DateTime();
-            if ($curDate > $time) {
-               $_user->SetFieldByName(User::REGISTER_DATE_FLD, date(GENERAL_DATE_FORMAT))
-                     ->SetFieldByName(User::ID_FLD, $userInfo[$_user->ToPrfxNm(User::ID_FLD)])
-                     ->Update();
-            } else {
-               throw new Exception(ERROR_MAIL_CONFIRM);
-            }
-         }
+         $fields[;
+         $_user->SetFields(
+            array_merge(
+               $fields,
+               [
+                  User::SALT_FLD          => Encryption::GenerateRandomString(),
+                  User::REGISTER_DATE_FLD => date(GENERAL_DATE_FORMAT)
+               ]
+            )
+         )->Insert();
       } else {
-         $_user->SetFieldByName(User::REGISTER_DATE_FLD, date(GENERAL_DATE_FORMAT))
-               ->Insert();
+         throw new Exception(ERROR_LOGIN_ALREADY_REGISTERED);
       }
    }
-
 }
 
 //------------class AuthorizedUser------------
@@ -114,41 +101,22 @@ class AuthorizedUser
       //session_destroy();
    }
 
-   public static function ChangeEmail($oldEmail, $newEmail, $pass)
+   // public static function ChangePassword($login, $oldPass, $newPass)
+   // {
+   //    try {
+   //       self::Login($email, $oldPass);
+   //    } catch (Exception $e) {
+   //       throw new Exception(ERROR_PASS);
+   //    }
+   //    global $_user;
+   //    $_user->SetFieldByName(User::PASS_FLD, $newPass)->UpdateByEmail($email);
+   //    self::Authorize($email, $newPass, true);
+   // }
+
+   public static function DeleteAccount($login)
    {
       global $_user;
-      $_user->SetFieldByName(User::EMAIL_FLD, $newEmail)->UpdateByEmail($oldEmail);
-      self::Authorize($newEmail, $pass, true);
-   }
-
-   public static function ChangePassword($email, $oldPass, $newPass)
-   {
-      try {
-         self::login($email, $oldPass);
-      } catch (Exception $e) {
-         throw new Exception(ERROR_PASS);
-      }
-      global $_user;
-      $_user->SetFieldByName(User::PASS_FLD, $newPass)->UpdateByEmail($email);
-      self::Authorize($email, $newPass, true);
-   }
-
-   public static function ForgottenPassword($email)
-   {
-      global $_user, $_userFPass;
-      $userInfo = $_user->SetSamplingScheme(User::REGISTRATION_CHECK_SCHEME)->GetByEmail($email);
-      if (empty($userInfo) || !$userInfo[$_user->ToPrfxNm(User::VERIFICATION_FLD)]) {
-         throw new Exception(INCORRECT_MAIL);
-      }
-      $new_pass = Encryption::generateRandomString(10);
-      $_userFPass->Insert($userInfo[$_user->ToPrfxNm(User::ID_FLD)], $new_pass, Encryption::GenerateRandomString());
-      return $new_pass;
-   }
-
-   public static function DeleteAccount($email)
-   {
-      global $_user;
-      $_user->DeleteByEmail($email);
+      $_user->DeleteByEmail($login);
       self::Unauthorized();
    }
 
