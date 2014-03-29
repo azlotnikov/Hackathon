@@ -31,14 +31,14 @@ class DBConnect
    public function Query($query, $params = Array())
    {
       if (!$this->isConnected) return Array();
-      echo "<br>";
-      echo "<br>";
-      echo $query;
-      echo "<br>";
-      print_r($params);
-      echo "<br>";
-      echo "<br>";
-      echo "<br>";
+//      echo "<br>";
+//      echo "<br>";
+//      echo $query;
+//      echo "<br>";
+//      print_r($params);
+//      echo "<br>";
+//      echo "<br>";
+//      echo "<br>";
       $st = $this->link->prepare($query);
       if (empty($st) || !$st->execute($params)) {
          // echo "<br>";

@@ -1,22 +1,22 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/handlers/handler.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Event.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/lib/reg_auth.inc';
 
-$post = GetPOST();
-$modeTypes = ['dlt' => 0, 'upd' => 1, 'ins' => 2];
+$post           = GetPOST();
+$modeTypes      = ['dlt' => 0, 'upd' => 1, 'ins' => 2];
 $post['action'] = !empty($post['action']) ? $post['action'] : null;
 try {
    switch ($post['action']) {
       case 'getInitInfo':
          require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Place.php';
-         require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/lib/reg_auth.inc';
          $ajaxResult['data'] = [
             'events' =>
                $_event->SetSamplingScheme(Event::INIT_SCHEME)->GetAll(),
             'places' =>
-               true//Authentification::CheckCredentials()
-               ? $_place->SetFieldByName(Place::FLOOR_FLD, $post['floor'])->SetSamplingScheme(Place::INIT_SCHEME)->GetAll()
-               : []
+               Authentification::CheckCredentials()
+                  ? $_place->SetFieldByName(Place::FLOOR_FLD, $post['floor'])->SetSamplingScheme(Place::INIT_SCHEME)->GetAll()
+                  : []
          ];
          break;
 
@@ -35,7 +35,7 @@ try {
          throw new Exception('pizdec');
    }
 } catch (Exception $e) {
-   $ajaxResult['result'] = false;
+   $ajaxResult['result']  = false;
    $ajaxResult['message'] = $e->getMessage();
 }
 

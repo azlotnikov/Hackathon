@@ -4,7 +4,7 @@ function addEvent(place_id, header, description, event_type) {
         url: '/scripts/handlers/handler.Map.php',
         data: {
             action: "processEvent",
-            md: 'upd',
+            md: 'ins',
             data: {
                 header: header,
                 description: description,
