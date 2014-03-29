@@ -7,9 +7,14 @@ try {
       case 'getInitInfo':
          require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Place.php';
          require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Event.php';
+         require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/lib/reg_auth.inc';
          $ajaxResult['data'] = [
-            'events' => $_event->SetSamplingScheme(Event::INIT_SCHEME)->GetAll(),
-            'places' => $_place->SetSamplingScheme(INIT_SCHEME)->GetAll()
+            'events' =>
+               $_event->SetSamplingScheme(Event::INIT_SCHEME)->GetAll(),
+            'places' =>
+               Authentification::CheckCredentials()
+               ? $_place->SetFieldByName(Place::FLOOR_FLD, $post['floor'])->SetSamplingScheme(Place::INIT_SCHEME)->GetAll()
+               : []
          ];
          break;
    }
