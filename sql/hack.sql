@@ -134,7 +134,7 @@ CREATE FUNCTION `process_event`(
 RETURNS TINYINT(1)
 BEGIN
    DECLARE uuser_id INT;
-   DECLARE result TINYINT(1);
+   DECLARE result INT;
    SELECT `user_id` INTO uuser_id FROM `sessions` WHERE `sid` = sid;
    SET uuser_id = IFNULL(uuser_id, 0);
    IF uuser_id > 0  THEN

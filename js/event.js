@@ -1,4 +1,5 @@
 function addEvent(place_id, header, description, event_type) {
+    var last_id = null;
     $.ajax({
         type: 'POST',
         url: '/scripts/handlers/handler.Map.php',
@@ -16,7 +17,7 @@ function addEvent(place_id, header, description, event_type) {
         success: function (data) {
             if (data.hasOwnProperty('result')) {
                 if (data.result) {
-
+                    last_id = data.last_id;
                 } else {
                     alert(data.message);
                 }
@@ -27,6 +28,7 @@ function addEvent(place_id, header, description, event_type) {
         async: false,
         dataType: 'json'
     });
+    return last_id;
 }
 
 function editEvent(eid, header, description, event_type) {

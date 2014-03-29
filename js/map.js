@@ -53,7 +53,6 @@ Map.prototype.init = function () {
 
     this.initPlaces();
     this.renderEvents(eventsTypesConsts['service']);
-    this.drawEventsNumbers();
 };
 
 Map.prototype.getInitInfo = function () {
@@ -132,7 +131,6 @@ Map.prototype.renderEvents = function (eventsType) {
         var place_id = events[e].events_place_id;
         if (this.places[place_id].circles > 0) {
             this.places[place_id].circles++;
-//            console.log(this.places[place_id].circles);
             continue;
         }
         var points = this.places[place_id].places_polygon.split(',');
@@ -154,11 +152,10 @@ Map.prototype.renderEvents = function (eventsType) {
         });
 
         this.eventsLayer.add(circle);
-
-
     }
 
     this.eventsLayer.draw();
+    this.drawEventsNumbers();
 };
 
 Map.prototype.initPlaces = function () {
@@ -217,8 +214,17 @@ $(function () {
     });
 
     $('#event_add').click(function () {
-        addEvent($('#event_place_id').val(), $('#event_header').val(), $('#event_description').val(), $('#event_type').find('option:selected').val());
-        location.reload();
+        var event_type = $('#event_type').find('option:selected').val();
+        var place_id = $('#event_place_id').val();
+        var event_id = addEvent(place_id, $('#event_header').val(), $('#event_description').val(), event_type);
+        console.log(event_id);
+        console.log(map.events[event_type]);
+        map.events[event_type].push({
+            events_id: event_id,
+            events_place_id: parseInt(place_id)
+        });
+        console.log(map.events[event_type]);
+        map.renderEvents(event_type);
     });
 
 });

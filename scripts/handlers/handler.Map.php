@@ -28,7 +28,8 @@ try {
             if (!isset($modeTypes[$md]) || !($last_id = $_event->ProcessEvent($modeTypes[$md], $post['data']))) {
                throw new Exception("Pizdec ne srabotalo! process event");
             }
-            $ajaxResult['result'] = intval($ajaxResult['last_id']) = $last_id;
+            $ajaxResult['result'] = (bool)$last_id;
+            $ajaxResult['last_id'] = $last_id;
          } else {
             throw new Exception('No access, sry! :(');
          }
