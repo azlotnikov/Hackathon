@@ -10,7 +10,7 @@ function addEvent(description, type) {
         success: function (data) {
             if (data.hasOwnProperty('result')) {
                 if (data.result == 'true') {
-                    
+
                 } else {
                     alert(data.message);
                 }
