@@ -7,18 +7,18 @@ if (isset($_POST['submit'])) {
    $post     = GetPOST();
    $smarty->assign(
       $fields = [
+         User::ROOM_FLD     => $post['room'],
          User::NAME_FLD     => $post['name'],
          User::LOGIN_FLD    => $post['login'],
          User::SURNAME_FLD  => $post['surname']
       ]
    );
-   $pass   = $post['pass'];
-   $repass = $post['repass'];
    try {
       (new DataHandling())->ValidateLogin($post['login'])
-                          ->ValidatePassword($pass)
-                          ->ValidateRepeatPasswords($pass, $repass);
-      Registration::Register($fields, $pass);
+                          ->ValidateRoom($post['room'])
+                          ->ValidatePassword($post['pass'])
+                          ->ValidateRepeatPasswords($post['pass'], $post['repass']);
+      Registration::Register($fields, $post['pass']);
       // Redirect('/success_register');
    } catch (Exception $e) {
       $smarty->assign('db_error', $e->getMessage());

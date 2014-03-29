@@ -17,7 +17,7 @@
   </ul>
   <nav>
     <ul class="style_menu">
-      <li><a href="/" data="main">Главная</a></li><li><a href="/about" data="about">О проекте</a></li><li><a href="/photographs" data="photographs">Фотографы</a></li><li><a href="/videographs" data="videographs">Видеографы</a></li><li><a href="/photosessions" data="photosessions">Фотосессии</a></li><li><a href="/videosessions" data="videosessions">Видеосессии</a></li>
+      <li><a href="/" data="main">Главная</a></li>
   </ul>
   </nav>
 </header>

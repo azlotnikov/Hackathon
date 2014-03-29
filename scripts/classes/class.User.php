@@ -6,6 +6,7 @@ class User extends Entity
    const NAME_FLD          = 'name';
    const PASS_FLD          = 'password';
    const SALT_FLD          = 'salt';
+   const ROOM_FLD          = 'room';
    const LOGIN_FLD         = 'login';
    const PHOTO_FLD         = 'photo_id';
    const PHONE_FLD         = 'phone';
@@ -56,6 +57,13 @@ class User extends Entity
             static::PHONE_FLD,
             StrType(30),
             true
+         ),
+         new Field(
+            static::ROOM_FLD,
+            IntType(),
+            true,
+            'Комната',
+            Array(Validate::IS_NOT_EMPTY)
          ),
          new Field(
             static::DESCRIPTION_FLD,

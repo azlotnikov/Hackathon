@@ -14,6 +14,7 @@ define('GENERAL_DATE_FORMAT', 'Y-m-d H:i:s');
 define('ERROR_QUERY', 'В данный момент невозможно подключение к базе данных.');
 define('ERROR_LOGIN_ALREADY_REGISTERED', 'Этот логин уже зарегистрирован, используйте другой.');
 define('ERROR_LOGIN', 'Неверное имя пользователя или пароль.');
+define('ERROR_ROOM', 'Неправильно указана комната.');
 define('ERROR_PASS', 'Неверный пароль.');
 define('ERROR_OLD_NEW_PASS', 'Введенные пароли не совпадают.');
 define('ERROR_FORM_FILL', 'Некорректно заполнена форма.');

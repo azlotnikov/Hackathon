@@ -1,9 +1,9 @@
 <?php
 class DataHandling
 {
-   public function ValidateNum($num, $message)
+   public function ValidateRoom($num, $message = ERROR_ROOM)
    {
-      if (!is_numeric($num)) {
+      if (!is_numeric($num) || $num < 100 || $num > 800) {
          throw new Exception($message);
       }
       return $this;
@@ -41,11 +41,6 @@ class DataHandling
          throw new Exception($message);
       }
       return $this;
-   }
-
-   function UnixToMySQL($timestamp)
-   {
-      return date('Y-m-d H:i:s', $timestamp);
    }
 
 }
