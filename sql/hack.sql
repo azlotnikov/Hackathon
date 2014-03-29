@@ -37,17 +37,18 @@ CREATE TABLE IF NOT EXISTS `places` (
    `polygon`       VARCHAR(500)  NOT NULL,
    `place_type`    INT DEFAULT   NULL,
    `floor`         INT DEFAULT   NULL,
+   `hostel`        INT DEFAULT   NULL,
    `last_update`   TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
    PRIMARY KEY (`id`),
    FOREIGN KEY (`place_type`) REFERENCES `place_types` (`id`) ON DELETE SET NULL,
    FOREIGN KEY (`floor`)      REFERENCES `floors` (`id`)      ON DELETE SET NULL,
+   FOREIGN KEY (`hostel`)      REFERENCES `hostels` (`id`)    ON DELETE SET NULL,
    UNIQUE KEY(`number`)
 );
 
 CREATE TABLE IF NOT EXISTS `users` (
    `id`            INT(11)      NOT NULL AUTO_INCREMENT,
    `login`         VARCHAR(70)  NOT NULL,
-   `nickname`      VARCHAR(70)  NOT NULL,
    `name`          VARCHAR(70)  NOT NULL,
    `surname`       VARCHAR(70),
    `phone`         VARCHAR(30),

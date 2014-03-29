@@ -21,6 +21,11 @@ switch ($request[0]) {
       // require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/profile.php';
       break;
 
+   case 'map':
+      SetActiveItem('map');
+      require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/map.php';
+      break;
+
    default:
       #error page
 }
