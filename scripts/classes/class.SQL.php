@@ -80,7 +80,7 @@ class SQL
 
    public static function GetCallQuery($func_name, $param_amount = 0)
    {
-      return sprintf('CALL %s(%s)', $func_name, echo ($am > 0 ? '?' : '') . str_repeat(',?', $am - ($am != 0)));
+      return sprintf('CALL %s(%s)', $func_name, ($param_amount > 0 ? '?' : '') . str_repeat(',?', $param_amount - ($param_amount != 0)));
    }
 
    public static function PrepareFieldsForSelect($table, $fields)
