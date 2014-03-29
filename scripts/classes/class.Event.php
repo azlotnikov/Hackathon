@@ -2,16 +2,17 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Entity.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Place.php';
 
-define('etPARTY', 'Мероприятия');
-define('etSERVICE', 'Услуги');
-define('etLEISURE', 'Досуг');
+define('etPARTY', 2);
+define('etSERVICE', 1);
+define('etLEISURE', 3);
 
 class Event extends Entity
 {
    const TABLE             = 'events';
-   const OWNER_FLD         = 'owner_id';
    const TYPE_FLD          = 'event_type';
+   const HEAD_FLD          = 'header';
    const PLACE_FLD         = 'place_id';
+   const OWNER_FLD         = 'owner_id';
    const DUE_DATE_FLD      = 'due_date';
    const DESCRIPTION_FLD   = 'description';
    const CREATION_DATE_FLD = 'creation_date';
@@ -26,9 +27,14 @@ class Event extends Entity
          new Field(
             static::DESCRIPTION_FLD,
             TextType(),
+            true
+         ),
+         new Field(
+            static::HEAD_FLD,
+            StrType(100),
             true,
-            'Описание',
-            Array(Validate::IS_NOT_EMPTY_STRING)
+            'Инициатор',
+            Array(Validate::IS_NUMERIC, Validate::IS_NOT_EMPTY)
          ),
          new Field(
             static::OWNER_FLD,
@@ -118,6 +124,24 @@ class Event extends Entity
       // SQL::PrepareFieldsForSelect(EventType::TABLE, [$_eventType->GetFieldByName(PlaceType::TYPENAME_FLD)])
       // $this->search->SetJoins([EventType::TABLE => [null, [static::TYPE_FLD, EventType::ID_FLD]]]);
       $this->selectFields = SQL::GetListFieldsForSelect($fields);
+   }
+
+   public function AddEvent($data)
+   {
+      //Не забыть разобраться с форматом даты а то будет пиздец
+      extract($data);
+      global $db;
+      return $db->Query(
+         SQL::GetCallFuncQuery('add_event', 'result', 6),
+         [
+            $_SESSION['sid'],
+            $header,
+            $place_id,
+            $event_type,
+            $description,
+            !empty($due_date) ? $due_date : null //if not party then due date must be empty
+         ]
+      )[0]['result'];
    }
 
 }
