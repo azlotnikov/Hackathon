@@ -29,6 +29,8 @@ Map.prototype.init = function () {
         map.stage.add(layer);
     };
     mapImage.src = 'http://www.html5canvastutorials.com/demos/assets/yoda.jpg';
+
+    this.initPlaces();
 };
 
 Map.prototype.getInitInfo = function () {
@@ -70,6 +72,8 @@ Map.prototype.initPlaces = function() {
             points: JSON.parse(p.polygon),
             fillEnabled: false,
             strokeEnabled: true, //!!! for testing
+            stroke: 'red',
+            strokeWidth: 4,
             closed: true
         });
         this.placesLayer.add(poly);
