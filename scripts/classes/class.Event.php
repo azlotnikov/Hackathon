@@ -9,19 +9,14 @@ define('etLEISURE', 'Досуг');
 class Event extends Entity
 {
    const TABLE             = 'events';
-   const DESCRIPTION_FLD   = 'description';
    const OWNER_FLD         = 'owner_id';
    const TYPE_FLD          = 'event_type';
-   const CREATION_DATE_FLD = 'creation_date';
-   const DELETION_DATE_FLD = 'deletion_date';
    const PLACE_FLD         = 'place_id';
+   const DUE_DATE_FLD      = 'due_date';
+   const DESCRIPTION_FLD   = 'description';
+   const CREATION_DATE_FLD = 'creation_date';
 
    const INIT_SCHEME = 2;
-//   const NAME_INFO_SCHEME          = 3;
-//   const EXTRA_DATA_SCHEME         = 4;
-//   const PROFILE_INFO_SCHEME       = 5;
-//   const CONTACT_INFO_SCHEME       = 6;
-//   const REGISTRATION_CHECK_SCHEME = 7;
 
    public function __construct()
    {
@@ -30,7 +25,7 @@ class Event extends Entity
          $this->idField,
          new Field(
             static::DESCRIPTION_FLD,
-            StrType(2000),
+            TextType(),
             true,
             'Описание',
             Array(Validate::IS_NOT_EMPTY_STRING)
