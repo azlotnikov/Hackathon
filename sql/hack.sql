@@ -40,9 +40,9 @@ CREATE TABLE IF NOT EXISTS `places` (
    `hostel`        INT DEFAULT   NULL,
    `last_update`   TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
    PRIMARY KEY (`id`),
-   FOREIGN KEY (`place_type`) REFERENCES `place_types` (`id`) ON DELETE SET NULL,
-   FOREIGN KEY (`floor`)      REFERENCES `floors` (`id`)      ON DELETE SET NULL,
-   FOREIGN KEY (`hostel`)      REFERENCES `hostels` (`id`)    ON DELETE SET NULL,
+   FOREIGN KEY (`place_type`) REFERENCES `place_types` (`id`) ON DELETE CASCADE,
+   FOREIGN KEY (`floor`)      REFERENCES `floors` (`id`)      ON DELETE CASCADE,
+   FOREIGN KEY (`hostel`)     REFERENCES `hostels` (`id`)     ON DELETE CASCADE,
    UNIQUE KEY(`number`)
 );
 
@@ -74,7 +74,6 @@ CREATE TABLE IF NOT EXISTS `events` (
   `id`            INT(11)       NOT NULL AUTO_INCREMENT,
   `owner_id`      INT(11)       NOT NULL,
   `creation_date` DATETIME      NOT NULL,
-  `deletion_date` DATETIME,
   `event_type`    INT(11)       DEFAULT NULL,
   `description`   VARCHAR(2000) NOT NULL,
   PRIMARY KEY (`id`),
@@ -125,3 +124,16 @@ BEGIN
 END//
 
 DELIMITER ;
+
+
+INSERT INTO `hostels`(`number`) VALUES('8.1');
+
+INSERT INTO `floors`(`number`) VALUES('4');
+
+INSERT INTO `place_types`(`type_name`) VALUES
+  ('Комната');
+
+INSERT INTO `event_types`(`type_name`) VALUES
+  ('Услуги'),
+  ('Мероприятия'),
+  ('Досуг');
