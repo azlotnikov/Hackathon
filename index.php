@@ -1,11 +1,11 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/container.php';
 
-
 // $_POST = [
-//    'action' => 'addEvent',
+//    'action' => 'processEvent',
+//    'md'   => 'upd',
 //    'data' => [
-//       'header' => 'Продаю стаф',
+//       'header' => 'Продаю стафчег',
 //       'event_type' => 1,
 //       'description' => 'Продам утюг, девушку, жизнь!',
 //       'place_id'    => 1
@@ -15,6 +15,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/container.php';
 // require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/handlers/handler.Map.php';
 
 // exit;
+
 switch ($request[0]) {
    case '': case null: case false:
       SetActiveItem();
