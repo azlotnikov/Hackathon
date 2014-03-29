@@ -9,14 +9,6 @@ class DataHandling
       return $this;
    }
 
-   public function ValidatePositiveNum($num, $message = '')
-   {
-      if (!is_numeric($num) || $num <= 0) {
-         throw new Exception($message);
-      }
-      return $this;
-   }
-
    public function ValidateLogin($login, $message = ERROR_LOGIN_LEN)
    {
       if (strlen($login) < LOGIN_LEN) throw new Exception($message);
