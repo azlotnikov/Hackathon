@@ -70,12 +70,13 @@ class Place extends Entity
             $idKey = $this->ToPrfxNm(static::ID_FLD);
             foreach ($sample as &$event) {
                $id = $event[$idKey];
-               unset($event[$idKey]);
+//               unset($event[$idKey]);
                $result[$id] = $event;
             }
             $sample = $result;
             break;
       }
+   }
 
    public function SetSelectValues()
    {

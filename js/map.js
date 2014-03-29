@@ -1,6 +1,13 @@
+var eventsTypesConsts = {
+    'party':2,
+    'service':1,
+    'leisure':3
+};
+
 function Map() {
     this.places = {};
     this.events = {};
+    this.cachedEvents = {};
     this.stage = new Kinetic.Stage({
         container: 'container',
         width: 1000,
@@ -36,6 +43,7 @@ Map.prototype.init = function () {
     mapImage.src = 'http://www.html5canvastutorials.com/demos/assets/yoda.jpg';
 
     this.initPlaces();
+    this.renderEvents(eventsTypesConsts['service']);
 };
 
 Map.prototype.getInitInfo = function () {
@@ -64,19 +72,53 @@ Map.prototype.getInitInfo = function () {
     });
 };
 
+
 Map.prototype.renderEvents = function (eventsTypeName) {
     this.eventsLayer.removeChildren();
     var e;
-    for (e in this.events[eventsTypeName]) {
+//    console.log(eventsTypeName);
+//    console.log(this.events);
+//    console.log(this.events[eventsTypeName]);
+    var events = this.events[eventsTypeName];
+    for (e in events) {
+        console.log(events[e]);
+        var place_id = events[e].events_place_id;
+        console.log(this.places[place_id]);
+        var points = this.places[place_id].places_polygon.split(',');
+        console.log(points[0]);
+        console.log(points[1]);
+        var circle = new Kinetic.Circle({
+            x: points[0], //!
+            y: points[1],
+            radius: 18,
+            fill: 'red',
+            opacity: 0.5,
+            strokeEnabled: false
+        });
+
+        circle.eventId = events[e].events_id;
+
+        circle.on('mousedown', function() {
+//            var mousePos = map.stage.getPointerPosition();
+//            var eventForm = $('#eventAddForm');
+//            $('#event_place_id').val(this.placeId);
+//            eventForm.show();
+//            eventForm.css({left: mousePos.x, top: mousePos.y});
+        });
+
+        this.eventsLayer.add(circle);
+
 
     }
+
+    this.eventsLayer.draw();
 };
 
 Map.prototype.initPlaces = function () {
     this.placesLayer.removeChildren();
     var p;
     for (p in this.places) {
-        console.log(this.places[p].places_polygon.split(','));
+        console.log(this.places[p]);
         var poly = new Kinetic.Line({
             points: this.places[p].places_polygon.split(','),
 //            fill: 'red',
@@ -84,8 +126,6 @@ Map.prototype.initPlaces = function () {
             opacity: 0.5,
             closed: true
         });
-
-        console.log(this.places[p].places_id);
 
         poly.placeId = this.places[p].places_id;
 
@@ -104,9 +144,9 @@ Map.prototype.initPlaces = function () {
             eventForm.show();
             eventForm.css({left: mousePos.x, top: mousePos.y});
         });
-        poly.on('mouseup', function() {
-
-        });
+//        poly.on('mouseup', function() {
+//
+//        });
 
         this.placesLayer.add(poly);
     }
@@ -118,15 +158,15 @@ Map.prototype.initPlaces = function () {
 $(function () {
 
     $('#view_parties').click(function () {
-        map.renderEvents('party');
+        map.renderEvents(eventsTypesConsts['party']);
     });
 
     $('#view_services').click(function () {
-        map.renderEvents('service');
+        map.renderEvents(eventsTypesConsts['service']);
     });
 
     $('#view_leisure').click(function () {
-        map.renderEvents('leisure');
+        map.renderEvents(eventsTypesConsts['leisure']);
     });
 
     $('#event_add').click(function () {
