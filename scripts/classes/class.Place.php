@@ -75,10 +75,10 @@ class Place extends Entity
          )
       );
       $this->search->SetJoins([
-                                 PlaceType::TABLE => [null, [static::TYPE_FLD, PlaceType::ID_FLD]],
-                                 Floor::TABLE => [null, [static::FLOOR_FLD, Floor::ID_FLD]],
-                                 Hostel::TABLE => [null, [static::HOSTEL_FLD, Hostel::ID_FLD]]
-                              ]);
+         PlaceType::TABLE => [null, [static::TYPE_FLD, PlaceType::ID_FLD]],
+         Floor::TABLE     => [null, [static::FLOOR_FLD, Floor::ID_FLD]],
+         Hostel::TABLE    => [null, [static::HOSTEL_FLD, Hostel::ID_FLD]]
+      ]);
 
    }
 
