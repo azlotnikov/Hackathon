@@ -19,3 +19,5 @@ class EventType extends Entity
       );
    }
 }
+
+$_eventType = new PlaceType();

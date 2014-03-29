@@ -11,6 +11,13 @@ class Event extends Entity
    const CREATION_DATE_FLD = 'creation_date';
    const DELETION_DATE_FLD = 'deletion_date';
 
+//   const ALL_SCHEME              = 1;
+//   const NAME_INFO_SCHEME          = 3;
+//   const EXTRA_DATA_SCHEME         = 4;
+//   const PROFILE_INFO_SCHEME       = 5;
+//   const CONTACT_INFO_SCHEME       = 6;
+//   const REGISTRATION_CHECK_SCHEME = 7;
+
 
 
    public function __construct()
@@ -56,5 +63,19 @@ class Event extends Entity
       );
    }
 
+   public function SetSelectValues()
+   {
+      global $_eventType;
+      $this->CheckSearch();
+      $this->selectFields = SQL::GetListFieldsForSelect(
+         array_merge(
+            SQL::PrepareFieldsForSelect(static::TABLE, $this->fields),
+            SQL::PrepareFieldsForSelect(EventType::TABLE, [$_eventType->GetFieldByName(PlaceType::TYPENAME_FLD)])
+         )
+      );
+      $this->search->SetJoins([
+            EventType::TABLE => [null, [static::TYPE_FLD, EventType::ID_FLD]]
+      ]);
+   }
 
 }
