@@ -21,3 +21,5 @@ class PlaceType extends Entity
       );
    }
 }
+
+$_placeType = new PlaceType();

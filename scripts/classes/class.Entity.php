@@ -311,7 +311,6 @@ class Entity
 
    public function GetFieldsValue()
    {
-      global $allLangs;
       $result = Array();
       foreach ($this->fields as $field) {
          $value = $field->GetValue();
