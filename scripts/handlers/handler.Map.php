@@ -19,9 +19,12 @@ try {
          ];
          break;
 
-      case 'addEvent':
+      case 'processEvent':
          if (Authentification::CheckCredentials()) {
-            $_event->addEvent($post['data']);
+            //mode must be delete(dlt) or insert(ins) or update(upd)
+            if (!$_event->ProcessEvent($post['md'] == 'ins', $post['data'])) {
+               throw new Exception("Pizdec ne srabotalo! process event");
+            }
          } else {
             throw new Exception('No access, sry! :(');
          }

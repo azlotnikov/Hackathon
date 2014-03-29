@@ -126,20 +126,22 @@ class Event extends Entity
       $this->selectFields = SQL::GetListFieldsForSelect($fields);
    }
 
-   public function AddEvent($data)
+   public function ProcessEvent($isAdd, $data)
    {
       //Не забыть разобраться с форматом даты а то будет пиздец
       extract($data);
       global $db;
       return $db->Query(
-         SQL::GetCallFuncQuery('add_event', 'result', 6),
+         SQL::GetCallFuncQuery('process_event', 'result', 8),
          [
             $_SESSION['sid'],
+            $isAdd,
+            (!empty($id) ? $id : 0),
             $header,
             $place_id,
             $event_type,
             $description,
-            !empty($due_date) ? $due_date : null //if not party then due date must be empty
+            (!empty($due_date) ? $due_date : null) //if not party then due date must be empty
          ]
       )[0]['result'];
    }
