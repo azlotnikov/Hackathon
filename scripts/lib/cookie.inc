@@ -1,6 +1,7 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/constants.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.User.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Session.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/lib/encryption.inc';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/lib/exception.inc';
 
@@ -52,20 +53,27 @@ class AuthCookie extends Cookie
 
    public function Set()
    {
-      parent::Set($sid);
+      parent::Set($this->sid);
    }
 
-   // public function Validate()
-   // {
-   //    global $_user;
-   //    $user = $_user->SetSamplingScheme(User::EMAIL_SCHEME)->GetByEmail($this->email);
-   //    if (
-   //          empty($user)
-   //       || $user[$_user->ToPrfxNm(User::PASS_FLD)] != $this->pass
-   //       || !$user[$_user->ToPrfxNm(User::VERIFICATION_FLD)]
-   //    )
-   //       throw new CookieException();
-   // }
+   public function Validate()
+   {
+      global $_session;
+      $user = $_session->GetBySID($this->sid);
+      if (
+            empty($user)
+         || $user[$_user->ToPrfxNm(User::PASS_FLD)] != $this->pass
+         || !$user[$_user->ToPrfxNm(User::VERIFICATION_FLD)]
+      ) {
+         throw new CookieException();
+      }
+      return $this;
+   }
+
+   public function GetSID()
+   {
+      return $this->sid;
+   }
 
 }
 
