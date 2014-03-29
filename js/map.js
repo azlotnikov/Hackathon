@@ -16,7 +16,7 @@ Map.prototype.getInitInfo = function () {
         },
         success: function (data) {
             if (data.hasOwnProperty('result')) {
-                if (data.status == 'true') {
+                if (data.result == 'true') {
                     this.places = data.places;
                     this.events = data.events;
                 } else {
