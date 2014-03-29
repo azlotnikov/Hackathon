@@ -1,26 +1,6 @@
 <?php
 class DataHandling
 {
-   public function ValidateForm($form_vars, $message = ERROR_FORM_FILL)
-   {
-      $result = true;
-      foreach ($form_vars as $key => $value) {
-         if (!isset($key) || empty($value)) {
-            $result = false;
-         }
-      }
-      if (!count($form_vars) || !$result) throw new Exception($message);
-      return $this;
-   }
-
-   public function ValidateEmail($mail, $message = INCORRECT_MAIL)
-   {
-      if (!preg_match('/^[a-zA-Z0-9_\.\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-\.]+$/', $mail)) {
-         throw new Exception($message);
-      }
-      return $this;
-   }
-
    public function ValidateNum($num, $message)
    {
       if (!is_numeric($num)) {
@@ -63,7 +43,7 @@ class DataHandling
       return $this;
    }
 
-   function unixToMySQL($timestamp)
+   function UnixToMySQL($timestamp)
    {
       return date('Y-m-d H:i:s', $timestamp);
    }
