@@ -127,14 +127,16 @@ END//
 DELIMITER ;
 
 
-INSERT INTO `hostels`(`number`) VALUES('8.1');
+INSERT INTO `hostels`(`number`) VALUES
+   ('8.1');
 
-INSERT INTO `floors`(`number`) VALUES('4');
+INSERT INTO `floors`(`number`) VALUES
+   ('4');
 
 INSERT INTO `place_types`(`type_name`) VALUES
-  ('Комната');
+   ('Комната');
 
 INSERT INTO `event_types`(`type_name`) VALUES
-  ('Услуги'),
-  ('Мероприятия'),
-  ('Досуг');
+   ('Услуги'),
+   ('Мероприятия'),
+   ('Досуг');
