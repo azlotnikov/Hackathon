@@ -75,13 +75,14 @@ class Event extends Entity
             $parties = $services = $leisuries = [];
             $idKey = $this->ToPrfxNm(static::ID_FLD);
             $typeKey = $this->ToPrfxNm(static::TYPE_FLD);
+            $placeKey = $this->ToPrfxNm(static::PLACE_FLD);
             foreach ($sample as $event) {
                if ($event[$typeKey] == etPARTY) {
-                  $parties[] = $event[$idKey];
+                  $parties[] = [$idKey => $event[$idKey], $placeKey => $event[$placeKey]];
                } elseif ($event[$typeKey] == etSERVICE) {
-                  $services[] = $event[$idKey];
+                  $services[] = [$idKey => $event[$idKey], $placeKey => $event[$placeKey]];
                } elseif ($event[$typeKey] == etPARTY) {
-                  $leisuries[] = $event[$idKey];
+                  $leisuries[] = [$idKey => $event[$idKey], $placeKey => $event[$placeKey]];
                }
             }
             $sample = [
@@ -113,7 +114,11 @@ class Event extends Entity
             global $_eventType;
             $fields = SQL::PrepareFieldsForSelect(
                static::TABLE,
-               [$this->idField, $this->GetFieldByName(static::TYPE_FLD)]
+               [
+                  $this->idField,
+                  $this->GetFieldByName(static::TYPE_FLD),
+                  $this->GetFieldByName(static::PLACE_FLD)
+               ]
             );
             break;
 
@@ -138,7 +143,7 @@ class Event extends Entity
             $type,
             (!empty($eid) ? $eid : 0),
             $header,
-            $place_id,
+            (!empty($place_id) ? $place_id : -1),
             $event_type,
             $description,
             (!empty($due_date) ? $due_date : null) //if not party then due date must be empty
