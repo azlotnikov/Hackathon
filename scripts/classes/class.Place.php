@@ -5,7 +5,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Entity.php';
 class Place extends Entity
 {
    const NUMBER_FLD      = 'number';
-   const FLOOR_FLD       = 'floor_id';
+   const FLOOR_FLD       = 'floor';
    const LAST_UPDATE_FLD = 'last_update';
    const POLYGON_FLD     = 'polygon';
    const TYPE_FLD        = 'place_type';
@@ -19,7 +19,7 @@ class Place extends Entity
          $this->idField,
          new Field(
             static::NUMBER_FLD,
-            IntType(),
+            StrType(100),
             true,
             'Номер',
             Array(Validate::IS_NUMERIC)
@@ -48,13 +48,13 @@ class Place extends Entity
       );
    }
 
-   public function ModifySample(&$sample)
-   {
-      if (empty($sample)) return;
-      foreach ($sample as &$set) {
-         //
-
-      }
-      undef($set);
-   }
+//   public function ModifySample(&$sample)
+//   {
+//      if (empty($sample)) return;
+//      foreach ($sample as &$set) {
+//         $polygonKey = $this->ToPrfxNm(static::POLYGON_FLD);
+//         $set[$polygonKey] = json_decode($set[$polygonKey]);
+//      }
+//      undef($set);
+//   }
 }

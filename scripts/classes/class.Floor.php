@@ -4,13 +4,20 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Entity.php';
 
 class Floor extends Entity
 {
-    const TABLE = 'floors';
+   const NUMBER_FLD = 'number';
 
-    public function __construct()
-    {
-        parent::__construct();
-        $this->fields = Array(
+   const TABLE = 'floors';
 
-        );
-    }
+   public function __construct()
+   {
+      parent::__construct();
+      $this->fields = Array(
+         $this->idField,
+         new Field(
+            static::NUMBER_FLD,
+            IntType(),
+            false
+         )
+      );
+   }
 }

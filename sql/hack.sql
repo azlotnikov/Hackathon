@@ -13,6 +13,31 @@ CREATE TABLE IF NOT EXISTS `images` (
    PRIMARY KEY (`id`)
 );
 
+CREATE TABLE IF NOT EXISTS `floors` (
+  `id`         INT(11)    NOT NULL AUTO_INCREMENT,
+  `number`     INT(11)    NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE IF NOT EXISTS `place_types` (
+  `id`            INT(11)         NOT NULL AUTO_INCREMENT,
+  `type_name`     VARCHAR(100)    NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE IF NOT EXISTS `places` (
+   `id`            INT(11)       NOT NULL AUTO_INCREMENT,
+   `number`        VARCHAR(100)  NOT NULL,
+   `polygon`       VARCHAR(500)  NOT NULL,
+   `place_type`    INT DEFAULT   NULL,
+   `floor`         INT DEFAULT   NULL,
+   `last_update`   TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
+   PRIMARY KEY (`id`),
+   FOREIGN KEY (`place_type`) REFERENCES `place_types` (`id`) ON DELETE SET NULL,
+   FOREIGN KEY (`floor`)      REFERENCES `floors` (`id`)      ON DELETE SET NULL,
+   UNIQUE KEY(`number`)
+);
+
 CREATE TABLE IF NOT EXISTS `users` (
    `id`            INT(11)      NOT NULL AUTO_INCREMENT,
    `login`         VARCHAR(70)  NOT NULL,
