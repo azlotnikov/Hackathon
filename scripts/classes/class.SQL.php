@@ -83,6 +83,15 @@ class SQL
       return sprintf('CALL %s(%s)', $func_name, ($param_amount > 0 ? '?' : '') . str_repeat(',?', $param_amount - ($param_amount != 0)));
    }
 
+   public static function GetCallFuncQuery($func_name, $alias, $param_amount = 0)
+   {
+      return sprintf(
+         'SELECT %s(%s) as %s', $func_name,
+         ($param_amount > 0 ? '?' : '') . str_repeat(',?', $param_amount - ($param_amount != 0)),
+         $alias
+      );
+   }
+
    public static function PrepareFieldsForSelect($table, $fields)
    {
       $result = Array();
