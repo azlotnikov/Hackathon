@@ -129,7 +129,7 @@ END//
 
 DROP PROCEDURE IF EXISTS `process_event` //
 CREATE FUNCTION `process_event`(
-   sid VARCHAR(40), isAdd TINYINT(1), id INT, header VARCHAR(100), place_id INT, event_type INT, description TEXT, due_date DATETIME
+   sid VARCHAR(40), act_type INT(2), eid INT, header VARCHAR(100), place_id INT, event_type INT, description TEXT, due_date DATETIME
 )
 RETURNS TINYINT(1)
 BEGIN
@@ -138,10 +138,10 @@ BEGIN
    SELECT `user_id` INTO uuser_id FROM `sessions` WHERE `sid` = sid;
    SET uuser_id = IFNULL(uuser_id, 0);
    IF uuser_id > 0  THEN
-      IF isAdd > 0 THEN
-         INSERT INTO `events`(`header`, `owner_id`, `place_id`, `event_type`, `description`, `due_date`) VALUES
-            (header, uuser_id, place_id, event_type, description, due_date);
-      ELSE
+      SET result = 1;
+      IF act_type = 0 THEN
+         DELETE FROM `events` WHERE `id` =  eid;
+      ELSEIF act_type = 1 THEN
          UPDATE `events` SET
             `header` = header,
             `owner_id` = uuser_id,
@@ -149,9 +149,13 @@ BEGIN
             `event_type` = event_type,
             `description` = description,
             `due_date` = due_date
-         WHERE `id` = id;
+         WHERE `id` = eid;
+      ELSEIF act_type = 2 THEN
+         INSERT INTO `events`(`header`, `owner_id`, `place_id`, `event_type`, `description`, `due_date`) VALUES
+            (header, uuser_id, place_id, event_type, description, due_date);
+      ELSE
+         SET result = 0;
       END IF;
-      SET result = 1;
    ELSE
       SET result = 0;
    END IF;

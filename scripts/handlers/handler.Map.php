@@ -3,6 +3,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/handlers/handler.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Event.php';
 
 $post = GetPOST();
+$modeTypes = ['dlt' => 0, 'upd' => 1, 'ins' => 2];
 $post['action'] = !empty($post['action']) ? $post['action'] : null;
 try {
    switch ($post['action']) {
@@ -21,8 +22,8 @@ try {
 
       case 'processEvent':
          if (Authentification::CheckCredentials()) {
-            //mode must be delete(dlt) or insert(ins) or update(upd)
-            if (!$_event->ProcessEvent($post['md'] == 'ins', $post['data'])) {
+            $md = $post['md'];
+            if (!isset($modeTypes[$md]) || !$_event->ProcessEvent($modeTypes[$md], $post['data'])) {
                throw new Exception("Pizdec ne srabotalo! process event");
             }
          } else {

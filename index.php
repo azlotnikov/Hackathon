@@ -3,8 +3,9 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/container.php';
 
 // $_POST = [
 //    'action' => 'processEvent',
-//    'md'   => 'upd',
+//    'md'   => 'dlt',
 //    'data' => [
+//       'eid' => 1,
 //       'header' => 'Продаю стафчег',
 //       'event_type' => 1,
 //       'description' => 'Продам утюг, девушку, жизнь!',

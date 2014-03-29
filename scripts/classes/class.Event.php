@@ -126,7 +126,7 @@ class Event extends Entity
       $this->selectFields = SQL::GetListFieldsForSelect($fields);
    }
 
-   public function ProcessEvent($isAdd, $data)
+   public function ProcessEvent($type, $data)
    {
       //Не забыть разобраться с форматом даты а то будет пиздец
       extract($data);
@@ -135,8 +135,8 @@ class Event extends Entity
          SQL::GetCallFuncQuery('process_event', 'result', 8),
          [
             $_SESSION['sid'],
-            $isAdd,
-            (!empty($id) ? $id : 0),
+            $type,
+            (!empty($eid) ? $eid : 0),
             $header,
             $place_id,
             $event_type,
