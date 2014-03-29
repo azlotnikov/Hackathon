@@ -34,8 +34,29 @@ class Session extends Entity
    {
       global $db;
       $sid = uniqid($user_id);
-      $db->Query(SQL::GetCallQuery('add_user_session', 2), $user_id, $sid);
+      $db->Query(SQL::GetCallQuery('add_user_session', 2), [$user_id, $sid]);
       return $sid;
+   }
+
+   public function GetBySID($sid)
+   {
+      $this->CheckSearch();
+      $this->selectFields =SQL::GetListFieldsForSelect(
+         SQL::PrepareFieldsForSelect(
+            static::TABLE,
+            [$this->idField, $this->GetFieldByName(static::USER_FLD)]
+         )
+      );
+      $this->search->AddClause(
+         CCond(
+            CF(static::TABLE, $this->GetFieldByName(static::SID_FLD)),
+            CVP($sid),
+            cAND
+         )
+      );
+      $result = $this->GetPart();
+      $this->search->RemoveClause();
+      return $result;
    }
 
 }
