@@ -19,40 +19,46 @@ function Map() {
     this.cachedEvents = {};
     this.stage = new Kinetic.Stage({
         container: 'container',
-        width: 1000,
-        height: 600
+        width: 4146,
+        height: 2382
     });
-    this.placesLayer = new Kinetic.Layer();
-    this.eventsLayer = new Kinetic.Layer();
-
-    this.stage.add(this.placesLayer);
-    this.stage.add(this.eventsLayer);
 }
 
 Map.prototype.init = function () {
     this.getInitInfo();
     var layer = new Kinetic.Layer();
 
-    var mapImage = new Image();
-    mapImage.onload = function () {
+    var imageObj = new Image();
+
+    var map = this;
+
+    imageObj.onload = function () {
+
         var imageMap = new Kinetic.Image({
             x: 1,
             y: 1,
-            image: imageMap,
-            width: 106,
-            height: 118
+            image: imageObj
         });
 
         layer.add(imageMap);
 
+        console.log(imageMap);
+
         map.stage.add(layer);
 
         layer.draw();
-    };
-    mapImage.src = 'http://www.html5canvastutorials.com/demos/assets/yoda.jpg';
 
-    this.initPlaces();
-    this.renderEvents(eventsTypesConsts['service']);
+        map.placesLayer = new Kinetic.Layer();
+        map.eventsLayer = new Kinetic.Layer();
+
+        map.stage.add(map.placesLayer);
+        map.stage.add(map.eventsLayer);
+
+        map.initPlaces();
+        map.renderEvents(eventsTypesConsts['service']);
+    };
+
+    imageObj.src = '/img/map.jpg';
 };
 
 Map.prototype.getInitInfo = function () {
@@ -166,12 +172,14 @@ Map.prototype.initPlaces = function () {
         var poly = new Kinetic.Line({
             points: this.places[p].places_polygon.split(','),
 //            fill: 'red',
-            strokeWidth: 3,
-            opacity: 0.5,
+            strokeWidth: 6,
+            opacity: 0.8,
             closed: true
         });
 
         poly.placeId = this.places[p].places_id;
+
+        var map = this;
 
         poly.on('mouseover', function () {
             this.setStroke('red');
