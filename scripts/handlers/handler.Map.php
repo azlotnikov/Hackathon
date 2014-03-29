@@ -1,12 +1,13 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/handlers/handler.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Event.php';
 
 $post = GetPOST();
+$post['action'] = !empty($post['action']) ? $post['action'] : null;
 try {
    switch ($post['action']) {
       case 'getInitInfo':
          require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Place.php';
-         require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Event.php';
          require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/lib/reg_auth.inc';
          $ajaxResult['data'] = [
             'events' =>
@@ -17,6 +18,17 @@ try {
                : []
          ];
          break;
+
+      case 'addEvent':
+         if (Authentification::CheckCredentials()) {
+            $_event->addEvent($post['data']);
+         } else {
+            throw new Exception('No access, sry! :(');
+         }
+         break;
+
+      default:
+         throw new Exception('pizdec');
    }
 } catch (Exception $e) {
    $ajaxResult['result'] = false;
