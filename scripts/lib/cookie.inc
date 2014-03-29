@@ -60,11 +60,7 @@ class AuthCookie extends Cookie
    {
       global $_session;
       $user = $_session->GetBySID($this->sid);
-      if (
-            empty($user)
-         || $user[$_user->ToPrfxNm(User::PASS_FLD)] != $this->pass
-         || !$user[$_user->ToPrfxNm(User::VERIFICATION_FLD)]
-      ) {
+      if (empty($user)) {
          throw new CookieException();
       }
       return $this;

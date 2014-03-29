@@ -3,7 +3,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/container.php';
 
 // $_POST = [
 //    'action' => 'processEvent',
-//    'md'   => 'dlt',
+//    'md'   => 'ins',
 //    'data' => [
 //       'eid' => 1,
 //       'header' => 'Продаю стафчег',
@@ -11,6 +11,16 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/container.php';
 //       'description' => 'Продам утюг, девушку, жизнь!',
 //       'place_id'    => 1
 //    ]
+// ];
+
+// require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/handlers/handler.Map.php';
+
+// exit;
+
+
+// $_POST = [
+//    'action' => 'getEventInfo',
+//    'data' => [2]
 // ];
 
 // require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/handlers/handler.Map.php';

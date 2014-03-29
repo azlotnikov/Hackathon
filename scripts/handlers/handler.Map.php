@@ -31,6 +31,10 @@ try {
          }
          break;
 
+      case 'getEventInfo':
+         $ajaxResult['data'] = $_event->GetEventInfo($post['data']);
+         break;
+
       default:
          throw new Exception('pizdec');
    }

@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Entity.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.User.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Place.php';
 
 define('etPARTY', 2);
@@ -18,6 +18,7 @@ class Event extends Entity
    const CREATION_DATE_FLD = 'creation_date';
 
    const INIT_SCHEME = 2;
+   const INFO_SCHEME = 3;
 
    public function __construct()
    {
@@ -58,6 +59,11 @@ class Event extends Entity
             Array(Validate::IS_NOT_EMPTY)
          ),
          new Field(
+            static::DUE_DATE_FLD,
+            TimestampType(),
+            true
+         ),
+         new Field(
             static::PLACE_FLD,
             IntType(),
             true,
@@ -92,6 +98,19 @@ class Event extends Entity
             ];
             break;
 
+         case static::INFO_SCHEME:
+            $part_format = 'd.m.Y';
+            $general_format = 'd.m.Y H:i';
+            $dueDateKey    =  $this->ToPrfxNm(static::DUE_DATE_FLD);
+            $createDateKey =  $this->ToPrfxNm(static::CREATION_DATE_FLD);
+            foreach ($sample as &$set) {
+               if ($set[$dueDateKey]) {
+                  $set[$dueDateKey] = (new DateTime($set[$dueDateKey]))->format($part_format);
+               }
+               $set[$createDateKey] = (new DateTime($set[$createDateKey]))->format($general_format);
+            }
+            break;
+
          // case static:::
          //    break;
 
@@ -122,8 +141,26 @@ class Event extends Entity
             );
             break;
 
-         // case static:::
-         //    break;
+         case static::INFO_SCHEME:
+            global $_user;
+            $fields =
+               array_merge(
+                  SQL::PrepareFieldsForSelect(
+                     static::TABLE,
+                     [
+                        $this->idField,
+                        $this->GetFieldByName(static::HEAD_FLD),
+                        $this->GetFieldByName(static::DUE_DATE_FLD),
+                        $this->GetFieldByName(static::DESCRIPTION_FLD),
+                        $this->GetFieldByName(static::CREATION_DATE_FLD)
+                     ]
+                  ),
+                  SQL::PrepareFieldsForSelect(
+                     User::TABLE,
+                     [$_user->GetFieldByName(User::NAME_FLD), $_user->GetFieldByName(User::SURNAME_FLD)]
+                  )
+               );
+               break;
 
       }
       // SQL::PrepareFieldsForSelect(EventType::TABLE, [$_eventType->GetFieldByName(PlaceType::TYPENAME_FLD)])
@@ -149,6 +186,25 @@ class Event extends Entity
             (!empty($due_date) ? $due_date : null) //if not party then due date must be empty
          ]
       )[0]['result'];
+   }
+
+   public function GetEventInfo($ids)
+   {
+      $this->search = new Search(
+         static::TABLE,
+         null,
+         [User::TABLE => [null, [static::OWNER_FLD, User::ID_FLD]]]
+      );
+      foreach ($ids as $id) {
+         $this->search->AddClause(
+            CCond(
+               CF(static::TABLE, $this->GetFieldByName(static::ID_FLD)),
+               CVP($id),
+               cOR
+            )
+         );
+      }
+      return $this->SetSamplingScheme(static::INFO_SCHEME)->GetAll();
    }
 
 }

@@ -3,7 +3,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Entity.php';
 
 class Session extends Entity
 {
-   const SID_FLD  = 'sid_id';
+   const SID_FLD  = 'sid';
    const USER_FLD = 'user_id';
 
    const TABLE = 'sessions';

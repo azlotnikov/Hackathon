@@ -25,6 +25,7 @@ define('ERROR_FORGOTTEN_PASS', 'Невозможно активировать п
 
 //database consts
 define('cAND', 'AND');
+define('cOR', 'OR');
 define('OT_ASC', 'ASC');
 define('OT_DESC', 'DESC');
 define('OT_RAND', 'RAND()');
