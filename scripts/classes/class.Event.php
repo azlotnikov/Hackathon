@@ -1,6 +1,7 @@
 <?php
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Entity.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Place.php';
 
 class Event extends Entity
 {
@@ -10,6 +11,7 @@ class Event extends Entity
    const TYPE_FLD          = 'event_type';
    const CREATION_DATE_FLD = 'creation_date';
    const DELETION_DATE_FLD = 'deletion_date';
+   const PLACE_FLD         = 'place_id';
 
 //   const ALL_SCHEME              = 1;
 //   const NAME_INFO_SCHEME          = 3;
@@ -59,6 +61,13 @@ class Event extends Entity
             true,
             'Время отмены',
             Array(Validate::IS_NOT_EMPTY)
+         ),
+         new Field(
+            static::PLACE_FLD,
+            IntType(),
+            true,
+            'Место',
+            Array(Validate::IS_NOT_EMPTY)
          )
       );
    }
@@ -70,11 +79,12 @@ class Event extends Entity
       $this->selectFields = SQL::GetListFieldsForSelect(
          array_merge(
             SQL::PrepareFieldsForSelect(static::TABLE, $this->fields),
-            SQL::PrepareFieldsForSelect(EventType::TABLE, [$_eventType->GetFieldByName(PlaceType::TYPENAME_FLD)])
+            SQL::PrepareFieldsForSelect(EventType::TABLE, [$_eventType->GetFieldByName(EventType::TYPENAME_FLD)]),
+            SQL::PrepareFieldsForSelect(PlaceType::TABLE, [$_eventType->GetFieldByName(PlaceType::TYPENAME_FLD)])
          )
       );
       $this->search->SetJoins([
-            EventType::TABLE => [null, [static::TYPE_FLD, EventType::ID_FLD]]
+            EventType::TABLE => [null, [static::TYPE_FLD, EventType::ID_FLD], [static::PLACE_FLD, PlaceType::ID_FLD]]
       ]);
    }
 

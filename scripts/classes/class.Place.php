@@ -14,7 +14,7 @@ class Place extends Entity
    const TYPE_FLD        = 'place_type';
    const HOSTEL_FLD      = 'hostel';
 
-//   const ORIGINAL_SCHEME      = 2;
+   const INIT_SCHEME      = 9;
 //   const NAME_INFO_SCHEME  = 3;
 //   const EXTRA_DATA_SCHEME = 4;
 
@@ -64,21 +64,50 @@ class Place extends Entity
 
    public function SetSelectValues()
    {
-      global $_placeType, $_floor, $_hostel;
+      $fields = Array();
+      switch($this->samplingScheme) {
+         case static::INIT_SCHEME:
+            $fields =
+               SQL::PrepareFieldsForSelect(
+                  static::TABLE,
+                  [
+                     $this->idField,
+                     $this->GetFieldByName(static::NUMBER_FLD),
+                     $this->GetFieldByName(static::POLYGON_FLD),
+                     $this->GetFieldByName(static::TYPE_FLD)
+                  ]
+               );
+//            global $_placeType;
+            $this->search->AddClause(
+               CCond(
+                  CF(static::TABLE, $this->GetFieldByName(static::FLOOR_FLD)),
+                  CVP($this->GetFieldByName(static::FLOOR_FLD)->GetValue()),
+                  'cAND'
+               ),
+               CCond(
+                  CF(static::TABLE, $this->GetFieldByName(static::HOSTEL_FLD)),
+                  CVP($this->GetFieldByName(static::HOSTEL_FLD)->GetValue()),
+                  'cAND'
+               )
+            );
+            break;
+      }
       $this->CheckSearch();
-      $this->selectFields = SQL::GetListFieldsForSelect(
-         array_merge(
-            SQL::PrepareFieldsForSelect(static::TABLE, $this->fields),
-            SQL::PrepareFieldsForSelect(PlaceType::TABLE, [$_placeType->GetFieldByName(PlaceType::TYPENAME_FLD)]),
-            SQL::PrepareFieldsForSelect(Floor::TABLE, [$_floor->GetFieldByName(Floor::NUMBER_FLD)]),
-            SQL::PrepareFieldsForSelect(Hostel::TABLE, [$_hostel->GetFieldByName(Floor::NUMBER_FLD)])
-         )
-      );
-      $this->search->SetJoins([
-                                 PlaceType::TABLE => [null, [static::TYPE_FLD, PlaceType::ID_FLD]],
-                                 Floor::TABLE => [null, [static::FLOOR_FLD, Floor::ID_FLD]],
-                                 Hostel::TABLE => [null, [static::HOSTEL_FLD, Hostel::ID_FLD]]
-                              ]);
+      $this->selectFields = SQL::GetListFieldsForSelect($fields);
+//
+//      $this->selectFields = SQL::GetListFieldsForSelect(
+//         array_merge(
+//            SQL::PrepareFieldsForSelect(static::TABLE, $this->fields),
+//            SQL::PrepareFieldsForSelect(PlaceType::TABLE, [$_placeType->GetFieldByName(PlaceType::TYPENAME_FLD)]),
+//            SQL::PrepareFieldsForSelect(Floor::TABLE, [$_floor->GetFieldByName(Floor::NUMBER_FLD)]),
+//            SQL::PrepareFieldsForSelect(Hostel::TABLE, [$_hostel->GetFieldByName(Floor::NUMBER_FLD)])
+//         )
+//      );
+//      $this->search->SetJoins([
+//                                 PlaceType::TABLE => [null, [static::TYPE_FLD, PlaceType::ID_FLD]],
+//                                 Floor::TABLE => [null, [static::FLOOR_FLD, Floor::ID_FLD]],
+//                                 Hostel::TABLE => [null, [static::HOSTEL_FLD, Hostel::ID_FLD]]
+//                              ]);
 
    }
 
