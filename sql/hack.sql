@@ -47,7 +47,6 @@ CREATE TABLE IF NOT EXISTS `places` (
 CREATE TABLE IF NOT EXISTS `users` (
    `id`            INT(11)      NOT NULL AUTO_INCREMENT,
    `login`         VARCHAR(70)  NOT NULL,
-   `nickname`      VARCHAR(70)  NOT NULL,
    `name`          VARCHAR(70)  NOT NULL,
    `surname`       VARCHAR(70),
    `phone`         VARCHAR(30),
