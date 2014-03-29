@@ -175,7 +175,7 @@ INSERT INTO `place_types`(`type_name`) VALUES
    ('Комната');
 
 INSERT INTO `places`(`number`, `polygon`, `place_type`, `floor`, `hostel`) VALUES
-   (400, '[{"x":"1", "y": "5"}, {"x":"500", "y": "200"}]', 1, 1, 1);
+   (400, '73,192,73,160,340,23,500,109,499,139,342,93', 1, 1, 1);
 
 INSERT INTO `event_types`(`type_name`) VALUES
    ('Услуги'),

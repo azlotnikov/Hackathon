@@ -79,8 +79,9 @@ Map.prototype.initPlaces = function () {
         console.log(this.places[p].places_polygon.split(','));
         var poly = new Kinetic.Line({
             points: this.places[p].places_polygon.split(','),
+//            fill: 'red',
             strokeWidth: 3,
-            opacity: 0.3,
+            opacity: 0.5,
             closed: true
         });
 
@@ -99,7 +100,7 @@ Map.prototype.initPlaces = function () {
         poly.on('mousedown', function() {
             var mousePos = map.stage.getPointerPosition();
             var eventForm = $('#eventAddForm');
-            $('event_place_id').val(this.placeId);
+            $('#event_place_id').val(this.placeId);
             eventForm.show();
             eventForm.css({left: mousePos.x, top: mousePos.y});
         });
@@ -129,7 +130,7 @@ $(function () {
     });
 
     $('#event_add').click(function () {
-        addEvent($('#event_header').val(), $('#event_description').val(), $('#event_type').find('option:selected').val());
+        addEvent($('#event_place_id').val(), $('#event_header').val(), $('#event_description').val(), $('#event_type').find('option:selected').val());
     });
 
 });
