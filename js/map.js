@@ -50,4 +50,8 @@ $(document).ready(function () {
         map.renderEvents('leisure');
     });
 
+    $('#event_add').click(function () {
+        addEvent($('event_description').val(), $('event_type').val());
+    });
+
 });
