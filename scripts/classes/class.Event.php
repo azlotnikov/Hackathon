@@ -1,6 +1,9 @@
 <?php
-
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Entity.php';
+
+define('etPARTY', 'Мероприятия');
+define('etSERVICE', 'Услуги');
+define('etLEISURE', 'Досуг');
 
 class Event extends Entity
 {
@@ -11,14 +14,12 @@ class Event extends Entity
    const CREATION_DATE_FLD = 'creation_date';
    const DELETION_DATE_FLD = 'deletion_date';
 
-//   const ALL_SCHEME              = 1;
+   const INIT_SCHEME = 2;
 //   const NAME_INFO_SCHEME          = 3;
 //   const EXTRA_DATA_SCHEME         = 4;
 //   const PROFILE_INFO_SCHEME       = 5;
 //   const CONTACT_INFO_SCHEME       = 6;
 //   const REGISTRATION_CHECK_SCHEME = 7;
-
-
 
    public function __construct()
    {
@@ -53,29 +54,68 @@ class Event extends Entity
             'Время создания',
             Array(Validate::IS_NOT_EMPTY)
          ),
-         new Field(
-            static::DELETION_DATE_FLD,
-            TimestampType(),
-            true,
-            'Время отмены',
-            Array(Validate::IS_NOT_EMPTY)
-         )
       );
+   }
+
+   public function ModifySample(&$sample)
+   {
+      if (empty($sample)) return;
+      switch ($this->samplingScheme) {
+         case static::INIT_SCHEME:
+            $parties = $services = $leisuries = [];
+            $idKey = $this->ToPrfxNm(static::ID_FLD);
+            $typeKey = $this->ToPrfxNm(static::TYPE_FLD);
+            foreach ($sample as $event) {
+               if ($event[$typeKey] == etPARTY) {
+                  $parties[] = $event[$idKey];
+               } elseif ($event[$typeKey] == etSERVICE) {
+                  $services[] = $event[$idKey];
+               } elseif ($event[$typeKey] == etPARTY) {
+                  $leisuries[] = $event[$idKey];
+               }
+            }
+            $sample = [
+               etPARTY   => $parties,
+               etSERVICE => $services,
+               etLEISURE => $leisuries
+            ];
+            break;
+
+         // case static:::
+         //    break;
+
+      }
+      // if ($this->samplingScheme == static::PROFILE_INFO_SCHEME) {
+      //    $registerKey   = $this->ToPrfxNm(static::REGISTER_DATE_FLD);
+      //    $lastUpdateKey = $this->ToPrfxNm(static::LAST_UPDATE_FLD);
+      //    $sample[0][$registerKey]   = (new DateTime($sample[0][$registerKey]))->format('d.m.Y');
+      //    $sample[0][$lastUpdateKey] = (new DateTime($sample[0][$lastUpdateKey]))->format('d.m.Y H:i');
+      // }
    }
 
    public function SetSelectValues()
    {
-      global $_eventType;
+      if ($this->TryToApplyUsualScheme()) return;
       $this->CheckSearch();
-      $this->selectFields = SQL::GetListFieldsForSelect(
-         array_merge(
-            SQL::PrepareFieldsForSelect(static::TABLE, $this->fields),
-            SQL::PrepareFieldsForSelect(EventType::TABLE, [$_eventType->GetFieldByName(PlaceType::TYPENAME_FLD)])
-         )
-      );
-      $this->search->SetJoins([
-            EventType::TABLE => [null, [static::TYPE_FLD, EventType::ID_FLD]]
-      ]);
+      $fields = Array();
+      switch ($this->samplingScheme) {
+         case static::INIT_SCHEME:
+            global $_eventType;
+            $fields = SQL::PrepareFieldsForSelect(
+               static::TABLE,
+               [$this->idField, $this->GetFieldByName(static::TYPE_FLD)]
+            );
+            break;
+
+         // case static:::
+         //    break;
+
+      }
+      // SQL::PrepareFieldsForSelect(EventType::TABLE, [$_eventType->GetFieldByName(PlaceType::TYPENAME_FLD)])
+      // $this->search->SetJoins([EventType::TABLE => [null, [static::TYPE_FLD, EventType::ID_FLD]]]);
+      $this->selectFields = SQL::GetListFieldsForSelect($fields);
    }
 
 }
+
+$_event = new Event();
