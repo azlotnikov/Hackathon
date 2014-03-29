@@ -1,9 +1,8 @@
 <?php
-
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Entity.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.PlaceType.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Hostel.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Floor.php';
+// require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.PlaceType.php';
+// require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Hostel.php';
+// require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Floor.php';
 
 class Place extends Entity
 {
@@ -62,6 +61,22 @@ class Place extends Entity
       );
    }
 
+   public function ModifySample(&$sample)
+   {
+      if (empty($sample)) return;
+      switch ($this->samplingScheme) {
+         case static::INIT_SCHEME:
+            $result = [];
+            $idKey = $this->ToPrfxNm(static::ID_FLD);
+            foreach ($sample as &$event) {
+               $id = $event[$idKey];
+               unset($event[$idKey]);
+               $result[$id] = $event;
+            }
+            $sample = $result;
+            break;
+      }
+
    public function SetSelectValues()
    {
       $fields = Array();
@@ -78,7 +93,6 @@ class Place extends Entity
                      $this->GetFieldByName(static::TYPE_FLD)
                   ]
                );
-//            global $_placeType;
             $this->search->AddClause(
                CCond(
                   CF(static::TABLE, $this->GetFieldByName(static::FLOOR_FLD)),
