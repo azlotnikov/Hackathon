@@ -10,7 +10,6 @@ class User extends Entity
    const PHOTO_FLD         = 'photo_id';
    const PHONE_FLD         = 'phone';
    const SURNAME_FLD       = 'surname';
-   const NICKNAME_FLD      = 'nickname';
    const DESCRIPTION_FLD   = 'description';
    const LAST_UPDATE_FLD   = 'last_update';
    const REGISTER_DATE_FLD = 'register_date';
@@ -52,13 +51,6 @@ class User extends Entity
             static::SURNAME_FLD,
             StrType(70),
             true
-         ),
-         new Field(
-            static::NICKNAME_FLD,
-            StrType(70),
-            true,
-            'Ник пользователя',
-            Array(Validate::IS_NOT_EMPTY)
          ),
          new Field(
             static::PHONE_FLD,
@@ -142,14 +134,7 @@ class User extends Entity
       switch ($this->samplingScheme) {
          case static::REGISTRATION_CHECK_SCHEME:
             $fields =
-               SQL::PrepareFieldsForSelect(
-                  static::TABLE,
-                  Array(
-                     $this->idField,
-                     $this->GetFieldByName(static::VERIFICATION_FLD),
-                     $this->GetFieldByName(static::REGISTER_DATE_FLD)
-                  )
-               );
+               SQL::PrepareFieldsForSelect(static::TABLE, [$this->idField]);
             break;
 
          case static::LOGIN_SCHEME:
@@ -236,10 +221,6 @@ class User extends Entity
             cAND
          )
       );
-      $scheme = $this->samplingScheme;
-      if ($scheme == static::PROFILE_INFO_SCHEME) {
-         $this->search->SetJoins([], [$email]);
-      }
       $result = $this->GetPart();
       $this->search->RemoveClause();
       return $result;
