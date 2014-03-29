@@ -1,8 +1,17 @@
 var eventsTypesConsts = {
-    'party':2,
-    'service':1,
-    'leisure':3
+    'party': 2,
+    'service': 1,
+    'leisure': 3
 };
+
+var eventsColorsConsts = {
+    1: 'blue',
+    2: 'red',
+    3: 'black'
+};
+
+var bigCircleRadius = 20;
+var littleCircleRadius = 10;
 
 function Map() {
     this.places = {};
@@ -44,6 +53,7 @@ Map.prototype.init = function () {
 
     this.initPlaces();
     this.renderEvents(eventsTypesConsts['service']);
+    this.drawEventsNumbers();
 };
 
 Map.prototype.getInitInfo = function () {
@@ -72,38 +82,75 @@ Map.prototype.getInitInfo = function () {
     });
 };
 
+Map.prototype.zerosEventsCirclesForPlaces = function () {
+    var p;
+    for (p in this.places) {
+        this.places[p].circles = 0;
+    }
+};
 
-Map.prototype.renderEvents = function (eventsTypeName) {
+Map.prototype.drawEventsNumbers = function () {
+    var p;
+    for (p in this.places) {
+        if (this.places[p].circles < 2) {
+            continue;
+        }
+        var points = this.places[p].places_polygon.split(',');
+        var x = parseInt(points[0]) + parseInt(bigCircleRadius / 2) + 3;
+        var y = parseInt(points[1]) - parseInt(bigCircleRadius / 2) - 3;
+        var circle = new Kinetic.Circle({
+            x: x, //!
+            y: y,
+            radius: littleCircleRadius,
+            fill: 'purple',
+            opacity: 0.9,
+            strokeEnabled: false
+        });
+
+        this.eventsLayer.add(circle);
+
+        var circleText = new Kinetic.Text({
+            x: x - 4,
+            y: y - 7,
+            text: this.places[p].circles,
+            fontSize: 17,
+            fontFamily: 'Calibri',
+            fill: 'black'
+        });
+
+        this.eventsLayer.add(circleText);
+    }
+    this.eventsLayer.draw();
+};
+
+Map.prototype.renderEvents = function (eventsType) {
     this.eventsLayer.removeChildren();
+    this.zerosEventsCirclesForPlaces();
     var e;
-//    console.log(eventsTypeName);
-//    console.log(this.events);
-//    console.log(this.events[eventsTypeName]);
-    var events = this.events[eventsTypeName];
+    var events = this.events[eventsType];
     for (e in events) {
-        console.log(events[e]);
         var place_id = events[e].events_place_id;
-        console.log(this.places[place_id]);
+        if (this.places[place_id].circles > 0) {
+            this.places[place_id].circles++;
+//            console.log(this.places[place_id].circles);
+            continue;
+        }
         var points = this.places[place_id].places_polygon.split(',');
-        console.log(points[0]);
-        console.log(points[1]);
         var circle = new Kinetic.Circle({
             x: points[0], //!
             y: points[1],
-            radius: 18,
-            fill: 'red',
+            radius: bigCircleRadius,
+            fill: eventsColorsConsts[eventsType],
             opacity: 0.5,
             strokeEnabled: false
         });
 
+        this.places[place_id].circles++;
+
         circle.eventId = events[e].events_id;
 
-        circle.on('mousedown', function() {
-//            var mousePos = map.stage.getPointerPosition();
-//            var eventForm = $('#eventAddForm');
-//            $('#event_place_id').val(this.placeId);
-//            eventForm.show();
-//            eventForm.css({left: mousePos.x, top: mousePos.y});
+        circle.on('mousedown', function () {
+            alert(this.eventId);
         });
 
         this.eventsLayer.add(circle);
@@ -137,7 +184,7 @@ Map.prototype.initPlaces = function () {
             this.setStroke('');
             map.placesLayer.draw();
         });
-        poly.on('mousedown', function() {
+        poly.on('mousedown', function () {
             var mousePos = map.stage.getPointerPosition();
             var eventForm = $('#eventAddForm');
             $('#event_place_id').val(this.placeId);
@@ -171,6 +218,7 @@ $(function () {
 
     $('#event_add').click(function () {
         addEvent($('#event_place_id').val(), $('#event_header').val(), $('#event_description').val(), $('#event_type').find('option:selected').val());
+        location.reload();
     });
 
 });

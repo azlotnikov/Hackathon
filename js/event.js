@@ -24,6 +24,7 @@ function addEvent(place_id, header, description, event_type) {
                 alert('Unknown error!');
             }
         },
+        async: false,
         dataType: 'json'
     });
 }
