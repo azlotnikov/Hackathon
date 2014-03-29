@@ -85,7 +85,6 @@ class AuthorizedUser
       $_session->SetFieldByName(Session::USER_FLD, $user_id);
       $_SESSION['sid'] = $_session->Authorize($user_id);
       if ($isCookie) {
-         echo 500;
          (new AuthCookie($_SESSION['sid']))->Set();
       }
    }
