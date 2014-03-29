@@ -71,19 +71,22 @@ CREATE TABLE IF NOT EXISTS `event_types` (
 );
 
 CREATE TABLE IF NOT EXISTS `events` (
-   `id`            INT(11)   NOT NULL AUTO_INCREMENT,
-   `owner_id`      INT(11)   NOT NULL,
-   `creation_date` DATETIME  NOT NULL,
-   `event_type`    INT(11)   NOT NULL,
-   `description`   TEXT      NOT NULL,
-   `due_date`      CURRENT_TIMESTAMP,
+   `id`            INT          NOT NULL AUTO_INCREMENT,
+   `header`        VARCHAR(100) NOT NULL,
+   `owner_id`      INT          NOT NULL,
+   `place_id`      INT          NOT NULL,
+   `event_type`    INT          NOT NULL,
+   `creation_date` DATETIME     NOT NULL,
+   `description`   TEXT,
+   `due_date`      TIMESTAMP,
    PRIMARY KEY (`id`),
    FOREIGN KEY (`owner_id`)   REFERENCES `users` (`id`)       ON DELETE CASCADE,
+   FOREIGN KEY (`place_id`)   REFERENCES `places` (`id`)      ON DELETE CASCADE,
    FOREIGN KEY (`event_type`) REFERENCES `event_types` (`id`) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS `sessions` (
-   `id`      INT(11)     NOT NULL AUTO_INCREMENT,
+   `id`      INT         NOT NULL AUTO_INCREMENT,
    `user_id` INT         NOT NULL,
    `sid`     VARCHAR(40) NOT NULL,
    PRIMARY KEY(`id`),
@@ -124,6 +127,27 @@ BEGIN
    INSERT INTO `sessions`(`user_id`, `sid`) VALUES(user_id, sid);
 END//
 
+
+DROP PROCEDURE IF EXISTS `add_event` //
+CREATE FUNCTION `add_event`(
+   sid VARCHAR(40), header VARCHAR(100), place_id INT, event_type INT, description TEXT, due_date DATETIME
+)
+RETURNS TINYINT(1)
+BEGIN
+   DECLARE uuser_id INT;
+   DECLARE result TINYINT(1);
+   SELECT `user_id` INTO uuser_id FROM `sessions` WHERE `sid` = sid;
+   SET uuser_id = IFNULL(uuser_id, 0);
+   IF uuser_id > 0  THEN
+      SET result = 1;
+      INSERT INTO `events`(`header`, `owner_id`, `place_id`, `event_type`, `description`, `due_date`) VALUES
+         (header, uuser_id, place_id, event_type, description, due_date);
+   ELSE
+      SET result = 0;
+   END IF;
+   RETURN result;
+END//
+
 DELIMITER ;
 
 
@@ -135,6 +159,9 @@ INSERT INTO `floors`(`number`) VALUES
 
 INSERT INTO `place_types`(`type_name`) VALUES
    ('Комната');
+
+INSERT INTO `places`(`number`, `polygon`, `place_type`, `floor`, `hostel`) VALUES
+   (400, '[{"x":"1", "y": "5"}, {"x":"500", "y": "200"}]', 1, 1, 1);
 
 INSERT INTO `event_types`(`type_name`) VALUES
    ('Услуги'),
