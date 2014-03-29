@@ -4,7 +4,7 @@ define('CONFIRMATION_TERM', 'PT1440M'); //день - 1440 minute
 define('COOKIE_LIFETIME', 86400000);
 define('COOKIE_SITE', 'hack.local');
 define('NUMBER_OF_LOGIN_ATTEMPTS', 3);
-define('LOGIN_LEN', 6);
+define('LOGIN_LEN', 5);
 define('PASS_LEN', 6);
 define('ADMIN_ID', 1);
 define('ADMIN_START_PAGE', 'users');
