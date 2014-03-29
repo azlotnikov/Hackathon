@@ -12,7 +12,7 @@ try {
             'events' =>
                $_event->SetSamplingScheme(Event::INIT_SCHEME)->GetAll(),
             'places' =>
-               Authentification::CheckCredentials()
+               true//Authentification::CheckCredentials()
                ? $_place->SetFieldByName(Place::FLOOR_FLD, $post['floor'])->SetSamplingScheme(Place::INIT_SCHEME)->GetAll()
                : []
          ];

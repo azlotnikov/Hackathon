@@ -75,15 +75,18 @@ Map.prototype.renderEvents = function (eventsTypeName) {
 Map.prototype.initPlaces = function () {
     this.placesLayer.removeChildren();
     var p;
-    console.log(JSON.stringify(this.places));
     for (p in this.places) {
         console.log(this.places[p].places_polygon.split(','));
         var poly = new Kinetic.Line({
             points: this.places[p].places_polygon.split(','),
-            strokeWidth: 4,
+            strokeWidth: 3,
             opacity: 0.3,
             closed: true
         });
+
+        console.log(this.places[p].places_id);
+
+        poly.placeId = this.places[p].places_id;
 
         poly.on('mouseover', function () {
             this.setStroke('red');
@@ -96,6 +99,7 @@ Map.prototype.initPlaces = function () {
         poly.on('mousedown', function() {
             var mousePos = map.stage.getPointerPosition();
             var eventForm = $('#eventAddForm');
+            $('event_place_id').val(this.placeId);
             eventForm.show();
             eventForm.css({left: mousePos.x, top: mousePos.y});
         });
@@ -110,7 +114,7 @@ Map.prototype.initPlaces = function () {
 
 };
 
-$(document).ready(function () {
+$(function () {
 
     $('#view_parties').click(function () {
         map.renderEvents('party');
@@ -125,7 +129,7 @@ $(document).ready(function () {
     });
 
     $('#event_add').click(function () {
-        addEvent($('header').val(), $('event_description').val(), $('event_type').val());
+        addEvent($('#event_header').val(), $('#event_description').val(), $('#event_type').find('option:selected').val());
     });
 
 });
