@@ -1,6 +1,5 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/lib/cookie.inc';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Session.php';
 // require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.UserForgottenPass.php';
 
 //------------class Authentification------------
@@ -10,11 +9,9 @@ class Authentification
    public static function CheckCredentials()
    {
       $isAuth = true;
-      if (empty($_SESSION['email'])) {
+      if (empty($_SESSION['sid'])) {
          try {
-            $cookie = new Cookie();
-            $cookie->Validate();
-            AuthorizedUser::Authorize($cookie->GetEmail(), $cookie->GetPass());
+            AuthorizedUser::Authorize((new AuthCookie())->Validate()->GetSID());
          } catch (CookieException $e) {
             $isAuth = false;
          } catch (Exception $e) {
@@ -30,22 +27,25 @@ class Authentification
 
 class Registration
 {
-   public static function Register($fields)
+   public static function Register($fields, $pass)
    {
       global $_user;
       $userInfo = $_user->SetSamplingScheme(User::REGISTRATION_CHECK_SCHEME)->GetByLogin($fields[User::LOGIN_FLD]);
       $_user->SetFields($fields);
-      if (!empty($userInfo)) {
-         $fields;
-         $_user->SetFields(
-            array_merge(
-               $fields,
-               [
-                  User::SALT_FLD          => Encryption::GenerateRandomString(),
-                  User::REGISTER_DATE_FLD => date(GENERAL_DATE_FORMAT)
-               ]
-            )
-         )->Insert();
+      if (empty($userInfo)) {
+         AuthorizedUser::Authorize(
+            $_user->SetFields(
+               array_merge(
+                  $fields,
+                  [
+                     User::SALT_FLD          => Encryption::GenerateRandomString(),
+                     User::PASS_FLD          => $pass,
+                     User::REGISTER_DATE_FLD => date(GENERAL_DATE_FORMAT)
+                  ]
+               )
+            )->Insert(true),
+            true
+         );
       } else {
          throw new Exception(ERROR_LOGIN_ALREADY_REGISTERED);
       }
@@ -83,9 +83,10 @@ class AuthorizedUser
    {
       global $_session;
       $_session->SetFieldByName(Session::USER_FLD, $user_id);
-      $_SESSION['sid'] = $sid = $_session->Authorize($user_id);
+      $_SESSION['sid'] = $_session->Authorize($user_id);
       if ($isCookie) {
-         (new AuthCookie($sid))->Set();
+         echo 500;
+         (new AuthCookie($_SESSION['sid']))->Set();
       }
    }
 
