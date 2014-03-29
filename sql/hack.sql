@@ -153,6 +153,7 @@ BEGIN
       ELSEIF act_type = 2 THEN
          INSERT INTO `events`(`header`, `owner_id`, `place_id`, `event_type`, `description`, `due_date`) VALUES
             (header, uuser_id, place_id, event_type, description, due_date);
+         SELECT LAST_INSERT_ID() into result;
       ELSE
          SET result = 0;
       END IF;
