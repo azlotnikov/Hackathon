@@ -1,8 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/container.php';
 
-echo "1";
-
 switch ($request[0]) {
    case '': case null: case false:
       SetActiveItem();
