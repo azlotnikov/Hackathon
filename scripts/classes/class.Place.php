@@ -9,6 +9,7 @@ class Place extends Entity
    const LAST_UPDATE_FLD = 'last_update';
    const POLYGON_FLD     = 'polygon';
    const TYPE_FLD        = 'place_type';
+   const HOSTEL_FLD      = 'hostel';
 
    const TABLE = 'places';
 
@@ -44,6 +45,12 @@ class Place extends Entity
             IntType(),
             true,
             'Тип'
+         ),
+         new Field(
+            static::HOSTEL_FLD,
+            IntType(),
+            true,
+            'Общага'
          )
       );
    }

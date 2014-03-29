@@ -25,6 +25,12 @@ CREATE TABLE IF NOT EXISTS `place_types` (
   PRIMARY KEY (`id`)
 );
 
+CREATE TABLE IF NOT EXISTS `hostels` (
+  `id`            INT(11)         NOT NULL AUTO_INCREMENT,
+  `number`        VARCHAR(100)    NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
 CREATE TABLE IF NOT EXISTS `places` (
    `id`            INT(11)       NOT NULL AUTO_INCREMENT,
    `number`        VARCHAR(100)  NOT NULL,
