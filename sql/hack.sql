@@ -64,6 +64,24 @@ CREATE TABLE IF NOT EXISTS `users` (
    UNIQUE KEY(`login`)
 );
 
+CREATE TABLE IF NOT EXISTS `event_types` (
+  `id`        INT(11)      NOT NULL AUTO_INCREMENT,
+  `type_name` VARCHAR(200) NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE IF NOT EXISTS `events` (
+  `id`            INT(11)       NOT NULL AUTO_INCREMENT,
+  `owner_id`      INT(11)       NOT NULL,
+  `creation_date` DATETIME      NOT NULL,
+  `deletion_date` DATETIME,
+  `event_type`    INT(11)       DEFAULT NULL,
+  `description`   VARCHAR(2000) NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`event_type`) REFERENCES `event_types` (`id`) ON DELETE SET NULL,
+  FOREIGN KEY (`owner_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS `sessions` (
    `id`      INT(11)     NOT NULL AUTO_INCREMENT,
    `user_id` INT         NOT NULL,
