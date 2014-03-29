@@ -10,5 +10,8 @@
 <body>
 <div id="container"></div>
 <script src="/js/map.js"></script>
+<div id="eventAddForm" style="width: 200px; height: 200px; border: 1px black solid; position: absolute; display: none;">
+   LOL
+</div>
 </body>
 </html>

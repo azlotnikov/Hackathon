@@ -1,15 +1,16 @@
-function addEvent(description, type) {
+function addEvent(header, description, type) {
     $.ajax({
         type: 'POST',
         url: '/scripts/handlers/handler.Map.php',
         data: {
             action: "addEvent",
+            header: header,
             description: description,
             type: type
         },
         success: function (data) {
             if (data.hasOwnProperty('result')) {
-                if (data.result == 'true') {
+                if (data.result) {
 
                 } else {
                     alert(data.message);

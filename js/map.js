@@ -8,6 +8,9 @@ function Map() {
     });
     this.placesLayer = new Kinetic.Layer();
     this.eventsLayer = new Kinetic.Layer();
+
+    this.stage.add(this.placesLayer);
+    this.stage.add(this.eventsLayer);
 }
 
 Map.prototype.init = function () {
@@ -16,17 +19,19 @@ Map.prototype.init = function () {
 
     var mapImage = new Image();
     mapImage.onload = function () {
-        var image = new Kinetic.Image({
+        var imageMap = new Kinetic.Image({
             x: 1,
             y: 1,
-            image: image,
+            image: imageMap,
             width: 106,
             height: 118
         });
 
-        layer.add(image);
+        layer.add(imageMap);
 
         map.stage.add(layer);
+
+        layer.draw();
     };
     mapImage.src = 'http://www.html5canvastutorials.com/demos/assets/yoda.jpg';
 
@@ -34,17 +39,19 @@ Map.prototype.init = function () {
 };
 
 Map.prototype.getInitInfo = function () {
+    var $this = this;
     $.ajax({
         type: 'POST',
         url: '/scripts/handlers/handler.Map.php',
         data: {
-            action: "getInitInfo"
+            action: "getInitInfo",
+            floor: "1"
         },
         success: function (data) {
             if (data.hasOwnProperty('result')) {
-                if (data.result == 'true') {
-                    this.places = data.places;
-                    this.events = data.events;
+                if (data.result) {
+                    $this.places = data.data.places;
+                    $this.events = data.data.events;
                 } else {
                     alert(data.message);
                 }
@@ -52,7 +59,8 @@ Map.prototype.getInitInfo = function () {
                 alert('Unknown error!');
             }
         },
-        contentType: 'application/json'
+        dataType: 'json',
+        async: false
     });
 };
 
@@ -64,20 +72,41 @@ Map.prototype.renderEvents = function (eventsTypeName) {
     }
 };
 
-Map.prototype.initPlaces = function() {
+Map.prototype.initPlaces = function () {
     this.placesLayer.removeChildren();
     var p;
+    console.log(JSON.stringify(this.places));
     for (p in this.places) {
+        console.log(this.places[p].places_polygon.split(','));
         var poly = new Kinetic.Line({
-            points: JSON.parse(p.polygon),
-            fillEnabled: false,
-            strokeEnabled: true, //!!! for testing
-            stroke: 'red',
+            points: this.places[p].places_polygon.split(','),
             strokeWidth: 4,
+            opacity: 0.3,
             closed: true
         });
+
+        poly.on('mouseover', function () {
+            this.setStroke('red');
+            map.placesLayer.draw();
+        });
+        poly.on('mouseout', function () {
+            this.setStroke('');
+            map.placesLayer.draw();
+        });
+        poly.on('mousedown', function() {
+            var mousePos = map.stage.getPointerPosition();
+            var eventForm = $('#eventAddForm');
+            eventForm.show();
+            eventForm.css({left: mousePos.x, top: mousePos.y});
+        });
+        poly.on('mouseup', function() {
+
+        });
+
         this.placesLayer.add(poly);
     }
+
+    this.placesLayer.draw();
 
 };
 
@@ -96,7 +125,7 @@ $(document).ready(function () {
     });
 
     $('#event_add').click(function () {
-        addEvent($('event_description').val(), $('event_type').val());
+        addEvent($('header').val(), $('event_description').val(), $('event_type').val());
     });
 
 });
