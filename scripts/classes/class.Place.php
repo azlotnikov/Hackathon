@@ -65,6 +65,7 @@ class Place extends Entity
    public function SetSelectValues()
    {
       $fields = Array();
+      $this->CheckSearch();
       switch($this->samplingScheme) {
          case static::INIT_SCHEME:
             $fields =
@@ -92,7 +93,6 @@ class Place extends Entity
             );
             break;
       }
-      $this->CheckSearch();
       $this->selectFields = SQL::GetListFieldsForSelect($fields);
 //
 //      $this->selectFields = SQL::GetListFieldsForSelect(
@@ -108,7 +108,6 @@ class Place extends Entity
 //                                 Floor::TABLE => [null, [static::FLOOR_FLD, Floor::ID_FLD]],
 //                                 Hostel::TABLE => [null, [static::HOSTEL_FLD, Hostel::ID_FLD]]
 //                              ]);
-
    }
 
 //   public function ModifySample(&$sample)
