@@ -19,4 +19,7 @@ class Hostel extends Entity
             false
          )
       );
-   }}
+   }
+}
+
+$_hostel = new Hostel();

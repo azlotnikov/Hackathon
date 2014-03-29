@@ -21,3 +21,5 @@ class Floor extends Entity
       );
    }
 }
+
+$_floor = new Floor();

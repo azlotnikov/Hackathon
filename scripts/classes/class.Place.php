@@ -65,3 +65,5 @@ class Place extends Entity
 //      undef($set);
 //   }
 }
+
+$_place = new Place();

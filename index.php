@@ -1,6 +1,8 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/container.php';
 
+echo "1";
+
 switch ($request[0]) {
    case '': case null: case false:
       SetActiveItem();
@@ -19,6 +21,11 @@ switch ($request[0]) {
    case 'profile':
       SetActiveItem('profile');
       // require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/profile.php';
+      break;
+
+   case 'map':
+      SetActiveItem('map');
+      require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/map.php';
       break;
 
    default:
