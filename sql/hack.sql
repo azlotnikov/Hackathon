@@ -97,7 +97,22 @@ CREATE TABLE IF NOT EXISTS `sessions` (
    FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS `admin` (
+   `id`       INT         NOT NULL AUTO_INCREMENT,
+   `login`    VARCHAR(50) NOT NULL,
+   `pass_md5` VARCHAR(50) NOT NULL,
+   PRIMARY KEY (`id`)
+);
+
 DELIMITER //
+
+DROP TRIGGER IF EXISTS `update_admin`//
+CREATE TRIGGER `update_admin` BEFORE UPDATE ON `admin`
+FOR EACH ROW BEGIN
+   IF new.pass_md5 != old.pass_md5 THEN
+      SET new.pass_md5 = MD5(new.pass_md5);
+   END IF;
+END//
 
 DROP FUNCTION IF EXISTS `create_encrypted_pass` //
 CREATE FUNCTION `create_encrypted_pass`(pass VARCHAR(80), salt VARCHAR(8))
@@ -124,10 +139,10 @@ FOR EACH ROW BEGIN
 END//
 
 DROP PROCEDURE IF EXISTS `add_user_session` //
-CREATE PROCEDURE `add_user_session`(IN user_id INT, IN sid VARCHAR(40))
+CREATE PROCEDURE `add_user_session`(IN uuser_id INT, IN sid VARCHAR(40))
 BEGIN
-   DELETE FROM `sessions` WHERE `user_id` = user_id;
-   INSERT INTO `sessions`(`user_id`, `sid`) VALUES(user_id, sid);
+   DELETE FROM `sessions` WHERE `user_id` = uuser_id;
+   INSERT INTO `sessions`(`user_id`, `sid`) VALUES(uuser_id, sid);
 END//
 
 DROP FUNCTION IF EXISTS `get_user_ad_amount_by_id` //
@@ -182,6 +197,8 @@ BEGIN
 END//
 
 DELIMITER ;
+
+INSERT INTO `admin`(`login`, `pass_md5`) VALUES('admin', '21232f297a57a5a743894a0e4a801fc3');
 
 INSERT INTO `hostels`(`number`) VALUES
    ('8.1');

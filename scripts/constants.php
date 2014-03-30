@@ -7,7 +7,7 @@ define('NUMBER_OF_LOGIN_ATTEMPTS', 3);
 define('LOGIN_LEN', 5);
 define('PASS_LEN', 6);
 define('ADMIN_ID', 1);
-define('ADMIN_START_PAGE', 'users');
+define('ADMIN_START_PAGE', 'map');
 define('GENERAL_DATE_FORMAT', 'Y-m-d H:i:s');
 
 //errors messages

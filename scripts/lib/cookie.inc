@@ -94,13 +94,13 @@ class CookieProfileView extends Cookie
    {
       global $db;
       try {
-         $db->Query(SQL::GetCallQuery('update_user_views', 1), [$this->$user_id]);
+         $db->Query(SQL::GetCallQuery('update_user_views', 1), [$this->user_id]);
       } catch (DBException $e) {
          throw new CookieException();
       }
       setcookie(
          static::COOKIENAME . $this->user_id,
-         $this->_Package([$this->user_id]),
+         $this->_Package($this->user_id),
          time() + static::EXPIRATION,
          static::COOKIEPATH,
          static::COOKIEDOMAIN

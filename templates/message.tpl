@@ -16,6 +16,8 @@
     {$successMsg|default:''}
     {if $data|default:false}
       Данные успешно изменены!
+    {elseif $isRegister|default:false}
+      Вы успешно зарегистрированы!
     {elseif $extra_data|default:false}
       Дополнительная информация успешно изменена!
     {elseif $contact_data|default:false}

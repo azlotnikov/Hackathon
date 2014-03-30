@@ -42,6 +42,8 @@
       <h1>{$user_info.users_name|default:''} {$user_info.users_surname|default:''}</h1>
       {if !empty($user_info.users_phone)}<h2>{$user_info.users_phone}</h2>{/if}
       <h2 class="room">{$user_info.users_room|default:''} комната</h2>
+      <h2>Просмотров профиля: {$user_info.users_profile_views}</h2>
+      <h2>Кол-во объявлений: {$user_info.ad_amount}</h2>
       {if $acc_self}
          <button class="upload" type="submit">{if !empty($user_info.users_photo_id)}Поменять аватар{else}Загрузить аватар{/if}</button>
       {/if}

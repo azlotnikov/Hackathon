@@ -23,9 +23,8 @@ var eventsObjects = {
    }
 };
 
-
-var min_scale = 0.3,  //минимальный масштаб карты
-   max_scale = 1,    //максимальный мастштаб карты
+var min_scale = 0.1,  //минимальный масштаб карты
+   max_scale = 1.2,    //максимальный мастштаб карты
    bigCircleRadius = 40,   //радиус большого кружка события
    littleCircleRadius = 10;   //радиус маленького кружка события
 
@@ -112,8 +111,9 @@ Map.prototype.initLvl2 = function () {
    });
 }
 
-Map.prototype.init = function () {
+Map.prototype.init = function (floor) {
    loadIcons();
+   map.floor = floor;
    iconsTimer = setInterval(map.initLvl2, 100);
 };
 
@@ -124,7 +124,7 @@ Map.prototype.getInitInfo = function () {
       url: '/scripts/handlers/handler.Map.php',
       data: {
          action: "getInitInfo",
-         floor: "1",
+         floor: map.floor,
          hostel: '1'
       },
       success: function (data) {
@@ -240,7 +240,6 @@ Map.prototype.initPlaces = function () {
          }
          $('#event_form').show('fast').css({left: mousePos.x + $("#container").position().left, top: mousePos.y + $("#container").position().top});
       });
-
       this.placesLayer.add(poly);
    }
    this.placesLayer.draw();
@@ -342,7 +341,8 @@ function eventOnClick() {
          url: '/scripts/handlers/handler.Map.php',
          data: {
             action: "getEventInfo",
-            data: events
+            data: events,
+            floor: map.floor
          },
          success: function (data) {
             if (data.hasOwnProperty('result')) {
@@ -360,7 +360,7 @@ function eventOnClick() {
       });
    }
 
-   events = cachedEvents.concat(events);
+   events = events.concat(cachedEvents);
    var e;
    var text = '';
    var eventData;
@@ -379,6 +379,11 @@ function eventOnClick() {
       $('#event_form').hide();
    }
    $('#events_info').show('fast').css({left: mousePos.x + $("#container").position().left, top: mousePos.y + $("#container").position().top});
+
+   events = cachedEvents.concat(events);
+   var e;
+   var text = '';
+   var eventData;
 }
 
 
@@ -451,13 +456,14 @@ Map.prototype.changeScale = function (new_scale) {
 //        var d = document.getElementById('field');
 //        var canvasPos = getPos(d);
 //        var absPos = this.stage.getAbsolutePosition();
-////        var mousePos = map.stage.getPosition();
+////        var mousePos = {x: this.stage.width / 2, y: this.stage.height / 2};
+////
+////        alert(this.stage.getWidth);
+//        var smallCalc = (this.stage.getWidth / 2 - absPos.x - canvasPos.x) / this.scale;
+//        var smallCalcY = (this.stage.getHeight / 2 - absPos.y) / this.scale;
 //
-//        var smallCalc = (this.stage.width / 2 - absPos.x - canvasPos.x) / this.scale;
-//        var smallCalcY = (this.stage.height / 2 - absPos.y - canvasPos.y) / this.scale;
-//
-//        var endCalc = (this.stage.width / 2 - canvasPos.x) - new_scale * smallCalc;
-//        var endCalcY = (this.stage.height / 2 - canvasPos.y) - new_scale * smallCalcY;
+//        var endCalc = (this.stage.getWidth / 2 - canvasPos.x) - new_scale * smallCalc;
+//        var endCalcY = (this.stage.getHeight / 2 - - canvasPos.y) - new_scale * smallCalcY;
 
 //        this.stage.setPosition(endCalc, endCalcY);
 //        alert(JSON.stringify(this.eventsLayer.scale));
@@ -495,11 +501,25 @@ function clearEventForm() {
 }
 
 $(function () {
-   map.init();
+   map.init($('#floor_select').val());
    map.lastUpdatedDate = getCurrentDate();
 
    $('#layers input[name="events_layer"]').change(handleEventsLayers);
+   $("#slider").slider({value: map.scale,
+      min: min_scale,
+      max: max_scale,
+      range: false,
+      step: 0.1,
+      slide: function (event, ui) {
+         map.changeScale(ui.value);
+         handleEventsLayers();
+      }});
 
+   $('#floor_select').change(function () {
+      map.init($('#floor_select').val());
+      handleEventsLayers();
+      clearEventForm();
+   });
 
    $('#event_form_close').click(function () {
       $('#event_form').hide();
@@ -540,5 +560,46 @@ $(function () {
       return false;
    });
 });
+
+   // $('#event_form_close').click(function () {
+   //    $('#event_form').hide();
+   // });
+
+   // $('#events_info_close').click(function () {
+   //    $('#events_info').hide();
+   // });
+
+   // $('#event_datetime').datetimepicker({
+   //    lang: 'ru',
+   //    format: 'Y-m-d H:i:s'
+   // });
+
+   // $('#event_type').change(function () {
+   //    if ($(this).val() == '2') {
+   //       $('#event_datetime').show();
+   //    } else {
+   //       $('#event_datetime').hide();
+   //    }
+   // });
+
+   // $('#event_form form').submit(function () {
+   //    var event_type = $('#event_type').find('option:selected').val(),
+   //    place_id = $('#event_place_id').val(),
+   //    event_id = addEvent(place_id, $('#event_header').val(), $('#event_description').val(), event_type, $('#event_datetime').val());
+   //    if (!(event_type in map.events)) {
+   //       map.events[event_type] = [];
+   //    }
+   //    map.events[event_type][event_id] = {
+   //       events_id: event_id,
+   //       events_place_id: place_id
+   //    };
+   //      //TODO render events of this type if not
+   //    handleEventsLayers();
+   //    clearEventForm();
+   //    $('#event_form').hide();
+   //    return false;
+   // });
+// });
+// }
 
 var map = new Map();
