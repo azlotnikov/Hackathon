@@ -87,7 +87,7 @@ class Event extends Entity
                   $parties[] = [$idKey => $event[$idKey], $placeKey => $event[$placeKey]];
                } elseif ($event[$typeKey] == etSERVICE) {
                   $services[] = [$idKey => $event[$idKey], $placeKey => $event[$placeKey]];
-               } elseif ($event[$typeKey] == etPARTY) {
+               } elseif ($event[$typeKey] == etLEISURE) {
                   $leisuries[] = [$idKey => $event[$idKey], $placeKey => $event[$placeKey]];
                }
             }
@@ -101,14 +101,18 @@ class Event extends Entity
          case static::INFO_SCHEME:
             $part_format = 'd.m.Y';
             $general_format = 'd.m.Y H:i';
+            $idKey         = $this->ToPrfxNm(static::ID_FLD);
             $dueDateKey    =  $this->ToPrfxNm(static::DUE_DATE_FLD);
             $createDateKey =  $this->ToPrfxNm(static::CREATION_DATE_FLD);
+            $result = [];
             foreach ($sample as &$set) {
                if ($set[$dueDateKey]) {
                   $set[$dueDateKey] = (new DateTime($set[$dueDateKey]))->format($part_format);
                }
                $set[$createDateKey] = (new DateTime($set[$createDateKey]))->format($general_format);
+               $result[$set[$idKey]] = $set;
             }
+            $sample = $result;
             break;
 
          // case static:::
