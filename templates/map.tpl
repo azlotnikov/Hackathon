@@ -45,4 +45,7 @@
          </div>
       </form>
    </div>
+   <div id="events_info">
+      <textarea id="events_info_text"></textarea>
+   </div>
 {/block}

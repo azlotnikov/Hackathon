@@ -17,9 +17,9 @@ class Event extends Entity
    const OWNER_FLD         = 'owner_id';
    const DUE_DATE_FLD      = 'due_date';
    const DESCRIPTION_FLD   = 'description';
-   const UPDATED_DATE_FLD  = 'updated_date'
+   const UPDATED_DATE_FLD  = 'updated_date';
    const CREATION_DATE_FLD = 'creation_date';
-   const DELETION_DATE_FLD = 'deletion_date'
+   const DELETION_DATE_FLD = 'deletion_date';
 
    const INIT_SCHEME          = 2;
    const INFO_SCHEME          = 3;

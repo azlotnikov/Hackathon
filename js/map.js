@@ -245,33 +245,37 @@ Map.prototype.addEvents = function (eventType) {   //строка типа party
         });
 
         circle.eventId = e;
-        circle.eventType = eventTypeId;
+        circle.eventTypeId = eventTypeId;
         circle.placeId = placeId;
 
         circle.on('mousedown', function () {
-            if (this.eventId in map.cachedEvents) {
-                alert(JSON.stringify(map.cachedEvents[this.eventId]));
-            } else {
+                if (this.eventId in map.cachedEvents) {
+                    alert(JSON.stringify(map.cachedEvents[this.eventId]));
+                } else {
                 var p;
                 var events = [];
-                for (p in map.events[this.eventType]) {
-                    if (map.events[this.eventType][p].events_place_id == this.placeId) {
-                        events.push(map.events[this.eventType][p].events_id);
+                for (p in map.events[this.eventTypeId]) {
+                    if (map.events[this.eventTypeId][p].events_place_id == this.placeId) {
+                        events.push(map.events[this.eventTypeId][p].events_id);
                     }
                 }
+//                alert(JSON.stringify(events));
 //                var $this = this;
                 $.ajax({
                     type: 'POST',
                     url: '/scripts/handlers/handler.Map.php',
                     data: {
                         action: "getEventInfo",
-                        data: JSON.stringify(events)
+                        data: events
                     },
                     success: function (data) {
+//                        alert(JSON.stringify(data));
                         if (data.hasOwnProperty('result')) {
                             if (data.result) {
-                                //$this
-                                map.cachedEvents = map.cachedEvents.concat(data.data).unique();
+                                var mousePos = map.stage.getPointerPosition();
+                                $('#events_info_text').val(JSON.stringify(data));
+                                $('#events_info').show('fast').css({left: mousePos.x + $("#container").position().left, top: mousePos.y + $("#container").position().top});
+//                                map.cachedEvents = map.cachedEvents.concat(data.data).unique();
                             } else {
                                 alert(data.message);
                             }
