@@ -139,7 +139,7 @@ BEGIN
    RETURN IFNULL(amount, 0);
 END//
 
-DROP PROCEDURE IF EXISTS `process_event` //
+DROP FUNCTION IF EXISTS `process_event` //
 CREATE FUNCTION `process_event`(
    sid VARCHAR(40), act_type INT(2), eid INT, header VARCHAR(100), place_id INT, event_type INT, description TEXT, due_date DATETIME
 )

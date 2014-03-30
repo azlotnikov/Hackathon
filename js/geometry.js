@@ -98,6 +98,8 @@ function getLineParams(_p1, _p2){
 }
 
 function solveQuadroEq(_a, _b, _c){
+   //console.log("EQU");
+   //console.log(_a + " " + _b + " " + _c);
    var D = pow(_b) - 4 * _a * _c;
    return [
       (-1 * _b + Math.sqrt(D)) / (2 * _a), 
@@ -110,28 +112,44 @@ function slidePointOnLineInPolygon(_lineParams, _point, _dist, _polygon){
    if (_lineParams.A == 0){
       p = _point;
       p.x -= _dist;
+      //console.log("A == 0");
+      //console.log(JSON.stringify(p));
       return p;
    }
    else if (_lineParams.B == 0){
       p = _point;
       p.y -= _dist;
+      //console.log("B == 0");
+      //console.log(JSON.stringify(p));
       return p;   
    }
    else{
       with (_lineParams){
+         //console.log("lineParams");
+         //console.log(JSON.stringify(_lineParams));
+         //console.log("delta");
+         //console.log(_dist);
+         //console.log("point");
+         //console.log(JSON.stringify(_point));
          var solutions = solveQuadroEq(
             1 + pow(B / A),
             2 * _point.x * B / A - 2 * _point.y + 2 * B * C / pow(A),
             pow(_point.x) + 2 * C * _point.x / A + pow(C / A) + pow(_point.y) - pow(_dist)
          );
+         //console.log("SOLUTIONS");
+         //console.log(JSON.stringify(solutions));
          p.y = solutions[0];
          p.x = -1 * (C + B * p.y) / A;
          if (isPointInPolygon(p, _polygon) >= 0){
+            //console.log("SOL[0]");
+            //console.log(JSON.stringify(p));
             return p;
          }
          else{
             p.y = solutions[1];
             p.x = -1 * (C + B * p.y) / A;
+            //console.log("SOL[1]");
+            //console.log(JSON.stringify(p));
             return p;
          }
       }
@@ -149,45 +167,66 @@ function slidePolygonOnLineInPolygon(_lineParams, _polygonA, _polygon, _delta){
 function getRectCoords(_xDim, _yDim, _polygon){
    var maxL = Math.max(_xDim, _yDim);
    var minL = Math.min(_xDim, _yDim);
-   var p = [];
+   var minX = 100000;
+   var minY = 100000;
+   var pf = [];
    for (var i = 1; i < _polygon.length; i += 2){
-      p.push(
+      pf.push(
          {
             x: _polygon[i - 1],
             y: _polygon[i]
          }
       );
+      minX = Math.min(minX, _polygon[i - 1]);
+      minY = Math.min(minY, _polygon[i]);
    }
-   switch (p.length){
-      case 4:
-         var line01 = getLineParams(p[0], p[1]);
-         var line12 = getLineParams(p[1], p[2]);
-         var line23 = getLineParams(p[2], p[3]);
-         var line30 = getLineParams(p[3], p[0]);
+   for (var i = 0; i < pf.length; i++){
+      pf[i].x -= minX;
+      pf[i].y -= minY;
+   }
 
-         var dist01 = getDist(p[0], p[1]);
-         var dist12 = getDist(p[1], p[2]);
+   //console.log(JSON.stringify(pf));
+   //console.log(pf.length);
+   switch (pf.length){
+      case 4:
+         var line01 = getLineParams(pf[0], pf[1]);
+         //console.log("line01");
+         //console.log(JSON.stringify(line01));
+         var line12 = getLineParams(pf[1], pf[2]);
+         // var line23 = getLineParams(p[2], p[3]);
+         // var line30 = getLineParams(p[3], p[0]);
+
+         var dist01 = getDist(pf[0], pf[1]);
+         var dist12 = getDist(pf[1], pf[2]);
+         // var res = p;
 
          if (dist01 > dist12){
-            var res = p;
+            //console.log("getRectCoords, if1");
+            //console.log(JSON.stringify(pf));
             if (maxL < dist01){
-               res = slidePolygonOnLineInPolygon(line01, res, _polygon, (dist01 - maxL) / 2);
+               pf = slidePolygonOnLineInPolygon(line01, pf, _polygon, (dist01 - maxL) / 2);
             }
-            if (minL < dist12){
-               res = slidePolygonOnLineInPolygon(line12, res, _polygon, (dist12 - minL) / 2);
-            }
+            // if (minL < dist12){
+            //    pf = slidePolygonOnLineInPolygon(line12, pf, _polygon, (dist12 - minL) / 2);
+            // }
+            //console.log("after");
+            //console.log(JSON.stringify(pf));
          }
          else{
-            var res = p;
+            //console.log("getRectCoords, if2");
             if (minL < dist01){
-               res = slidePolygonOnLineInPolygon(line01, res, _polygon, (dist01 - minL) / 2);
+               pf = slidePolygonOnLineInPolygon(line01, pf, _polygon, (dist01 - minL) / 2);
             }
             if (maxL < dist12){
-               res = slidePolygonOnLineInPolygon(line12, res, _polygon, (dist12 - maxL) / 2);
+               pf = slidePolygonOnLineInPolygon(line12, pf, _polygon, (dist12 - maxL) / 2);
             }
          }
-
-         return res;
+         //console.log(JSON.stringify(pf));
+         for (var i = 0; i < pf.length; i++){
+            pf[i].x += minX;
+            pf[i].y += minY;
+   }
+         return pf;
    }
 }
 
@@ -197,6 +236,10 @@ function getCenters(_cnt, _dia, delta, _polygon) { //_dia = [_dia1, _dia2] delta
                            _polygon
    );
    var delta = getDist(rect[1], rect[0]);
+   // //console.log("input");
+   // //console.log(_polygon);
+   //console.log("rect");
+   //console.log(JSON.stringify(rect));
    var result = [];
    for (var i = 0; i < _cnt; i++){
       result.push(
@@ -208,6 +251,8 @@ function getCenters(_cnt, _dia, delta, _polygon) { //_dia = [_dia1, _dia2] delta
             ])
       );
    }
+   // //console.log(JSON.stringify(result));
+   //console.log("");
    return result;
 }
 
