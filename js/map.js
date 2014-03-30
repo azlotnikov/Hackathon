@@ -361,6 +361,7 @@ function eventOnClick() {
         text += '<a href="#">' + eventData.events_header + '</a><br>';
         text += eventData.events_description + '<br>';
         text += eventData.events_creation_date + '<br>';
+        text += eventData.events_due_date + '<br>';
         text += '<a href="#">' + eventData.users_name + ' ' + eventData.users_surname + '</a><br>';
     }
     var mousePos = map.stage.getPointerPosition();
@@ -493,7 +494,7 @@ $(function () {
 
     $('#event_datetime').datetimepicker({
         lang: 'ru',
-        format: 'd.m.Y H:i'
+        format: 'Y-m-d H:i:s'
     });
 
     $('#event_type').change(function () {
@@ -507,7 +508,7 @@ $(function () {
     $('#event_form form').submit(function () {
         var event_type = $('#event_type').find('option:selected').val(),
             place_id = $('#event_place_id').val(),
-            event_id = addEvent(place_id, $('#event_header').val(), $('#event_description').val(), event_type);
+            event_id = addEvent(place_id, $('#event_header').val(), $('#event_description').val(), event_type, $('#event_datetime').val());
         map.events[event_type][event_id] = {
             events_id: event_id,
             events_place_id: place_id

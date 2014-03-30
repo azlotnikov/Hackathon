@@ -1,4 +1,4 @@
-function addEvent(place_id, header, description, event_type) {
+function addEvent(place_id, header, description, event_type, due_date) {
     var last_id = null;
     $.ajax({
         type: 'POST',
@@ -10,8 +10,8 @@ function addEvent(place_id, header, description, event_type) {
                 header: header,
                 description: description,
                 event_type: event_type,
-                place_id: place_id
-//            due_date: due_date
+                place_id: place_id,
+                due_date: due_date
             }
         },
         success: function (data) {
