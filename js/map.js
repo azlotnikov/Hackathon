@@ -98,6 +98,7 @@ Map.prototype.init = function () {
 
         imageMap.on("click", function () {  //скрыть формочку при клике на пустое место
             $("#event_form").hide();
+            $('#events_info').hide();
         });
     };
 
