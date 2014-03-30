@@ -183,7 +183,12 @@ class Event extends Entity
                   ),
                   SQL::PrepareFieldsForSelect(
                      User::TABLE,
-                     [$_user->GetFieldByName(User::NAME_FLD), $_user->GetFieldByName(User::SURNAME_FLD)]
+                     [
+                        $_user->idField,
+                        $_user->GetFieldByName(User::NAME_FLD),
+                        $_user->GetFieldByName(User::SURNAME_FLD),
+                        $_user->GetFieldByName(User::PHOTO_FLD)
+                     ]
                   )
                );
                break;

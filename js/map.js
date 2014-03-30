@@ -359,11 +359,12 @@ function eventOnClick() {
     var eventData;
     for (e = 0; e < events.length; e++) {
         eventData = map.cachedEvents[events[e]];
-        text += '<a href="#">' + eventData.events_header + '</a><br>';
-        text += eventData.events_description + '<br>';
-        text += eventData.events_creation_date + '<br>';
-        text += eventData.events_due_date + '<br>';
-        text += '<a href="#">' + eventData.users_name + ' ' + eventData.users_surname + '</a><br>';
+        text += '<article>';
+       text += '<img src="/img/avatar_s.jpg" class="avatar" /><div class="right_info">';
+       text += '<h1><a href="/profile/?user_id=' + eventData.users_id + '">' + eventData.users_name + ' ' + eventData.users_surname + '</a>:</h1>';
+       text += '<date>' + eventData.events_creation_date + '</date>';
+       text += '<p>' + eventData.events_description + '</p>';
+       text += '</div></article>';
     }
     var mousePos = map.stage.getPointerPosition();
 //            var mousePos = {x: 10, y: 10};

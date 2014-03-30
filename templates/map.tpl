@@ -54,8 +54,6 @@
    </div>
    <div id="events_info">
       <button id="events_info_close" type="button">x</button>
-      <div id="events_info_data">
-
-      </div>
+      <div id="events_info_data"></div>
    </div>
 {/block}
