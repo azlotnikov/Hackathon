@@ -96,6 +96,8 @@ Map.prototype.init = function () {
         map.stage.add(map.placesLayer);
         map.stage.add(map.eventsLayer);
 
+        map.changeScale(0.6); //!TODO set to default ?
+
         map.imageLayer.add(imageMap);
         map.imageLayer.draw();
 
@@ -436,18 +438,19 @@ function getPos(el) {
 
 Map.prototype.changeScale = function (new_scale) {
     if (new_scale > min_scale && new_scale < max_scale) {
-        var d = document.getElementById('field');
-        var canvasPos = getPos(d);
-        var absPos = this.stage.getAbsolutePosition();
-//        var mousePos = map.stage.getPosition();
+//        var d = document.getElementById('field');
+//        var canvasPos = getPos(d);
+//        var absPos = this.stage.getAbsolutePosition();
+////        var mousePos = map.stage.getPosition();
+//
+//        var smallCalc = (this.stage.width / 2 - absPos.x - canvasPos.x) / this.scale;
+//        var smallCalcY = (this.stage.height / 2 - absPos.y - canvasPos.y) / this.scale;
+//
+//        var endCalc = (this.stage.width / 2 - canvasPos.x) - new_scale * smallCalc;
+//        var endCalcY = (this.stage.height / 2 - canvasPos.y) - new_scale * smallCalcY;
 
-        var smallCalc = (this.stage.width / 2 - absPos.x - canvasPos.x) / this.scale;
-        var smallCalcY = (this.stage.height / 2 - absPos.y - canvasPos.y) / this.scale;
-
-        var endCalc = (this.stage.width / 2 - canvasPos.x) - new_scale * smallCalc;
-        var endCalcY = (this.stage.height / 2 - canvasPos.y) - new_scale * smallCalcY;
-
-        this.stage.setPosition(endCalc, endCalcY);
+//        this.stage.setPosition(endCalc, endCalcY);
+//        alert(JSON.stringify(this.eventsLayer.scale));
         this.imageLayer.scaleX(new_scale);
         this.imageLayer.scaleY(new_scale);
 
@@ -457,18 +460,20 @@ Map.prototype.changeScale = function (new_scale) {
         this.eventsLayer.scaleX(new_scale);
         this.eventsLayer.scaleY(new_scale);
 
+//        alert(JSON.stringify(this.eventsLayer.scale));
+
         this.imageLayer.draw();
         this.placesLayer.draw();
         this.eventsLayer.draw();
 
-        var eventForm = $('#event_form');
-        if (eventForm.css('display') != 'none') {
-//            var x = map.activePlace.x;
-//            var y = map.activePlace.y;
-//            console.log('x: ' + x);
-//            console.log('y: ' + y);
-//            eventForm.css({left: x, top: y});
-        }
+//        var eventForm = $('#event_form');
+//        if (eventForm.css('display') != 'none') {
+////            var x = map.activePlace.x;
+////            var y = map.activePlace.y;
+////            console.log('x: ' + x);
+////            console.log('y: ' + y);
+////            eventForm.css({left: x, top: y});
+//        }
 
         this.scale = new_scale;
     }
