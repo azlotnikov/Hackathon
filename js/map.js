@@ -78,8 +78,7 @@ Map.prototype.init = function (floor) {
     // console.log("OOO " + this.lastUpdatedDate);
     setInterval(this.getNewInfo, UPDATE_INTERVAL);
 
-    var layer = new Kinetic.Layer(),
-        imageObj = new Image();
+    var imageObj = new Image();
 
     imageObj.onload = function () {
 
@@ -102,7 +101,6 @@ Map.prototype.init = function (floor) {
         map.imageLayer.add(imageMap);
         map.imageLayer.draw();
 
-        layer.draw();
         map.initPlaces();       //нарисовать скрытый слой с местами
         loadIcons();
         handleEventsLayers();   //определяет какие события из чекбоксов нарисовать

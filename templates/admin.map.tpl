@@ -4,6 +4,7 @@
   <link href="/css/admin.css" rel="stylesheet" />
   <link href="/css/main.css" rel="stylesheet" />
   <script src="/js/admin.js"></script>
+  <script src="/js/kinectjs.js"></script>
 {/block}
 {block name='page'}
 <div id="wrap">
@@ -32,5 +33,38 @@
          <option value="1">Этаж 8</option>
       </select>
    </div>
+   <div id="container"></div>
+   <script>
+      var stage = new Kinetic.Stage({        //канвас
+         container: 'container',
+         width: $(document).width() - 100,
+         height: $(document).height() - 100,
+         draggable: true
+      });
+
+      var layer = new Kinetic.Layer(),
+              imageObj = new Image();
+
+      imageObj.onload = function () {
+
+         var imageMap = new Kinetic.Image({
+            x: 1,
+            y: 1,
+            image: imageObj
+         });
+
+         layer.add(imageMap);
+
+         stage.add(layer);
+
+         layer.scaleX(0.6);
+         layer.scaleY(0.6);
+
+         layer.draw();
+      };
+
+      imageObj.src = '/img/map.jpg';
+
+   </script>
 </div>
 {/block}
