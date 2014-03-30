@@ -40,17 +40,7 @@ var min_scale = 0.1,  //минимальный масштаб карты
     littleCircleRadius = 10;   //радиус маленького кружка события
 
 function Map() {               //самый главный объект карта
-    this.scale = 0.7;         //начальный масштаб
-    this.places = {};          //массив всех мест: ключ - id места
-    this.events = {};          //массив всех событий
-//  this.activePlace  = {};
-    this.cachedEvents = {};
-    this.stage = new Kinetic.Stage({        //канвас
-        container: 'container',
-        width: $(document).width() - 100,
-        height: $(document).height() - 100,
-        draggable: true
-    });
+
 }
 
 function loadIcons() {
@@ -70,12 +60,38 @@ function loadIcons() {
     eventsObjects["leisure"].imageIcon.src = '/img/icon_leisure.png';
 }
 
-Map.prototype.init = function () {
+Map.prototype.init = function (floor) {
+    this.scale = 0.7;         //начальный масштаб
+    this.places = {};          //массив всех мест: ключ - id места
+    this.events = {};          //массив всех событий
+    this.cachedEvents = {};
+    this.floor = floor;
+    this.stage = new Kinetic.Stage({        //канвас
+        container: 'container',
+        width: $(document).width() - 20, //TODO replace with normal?!!!
+        height: $(document).height() - 20,
+        draggable: true
+    });
     this.getInitInfo();                             //получение информации обо всем на карте ajax
     // console.log("OO " + Date());
     // this.lastUpdatedDate = Date();
     // console.log("OOO " + this.lastUpdatedDate);
     setInterval(this.getNewInfo, UPDATE_INTERVAL);
+
+    if (this.eventsLayer) {
+        this.eventsLayer.removeChildren();
+        delete this.eventsLayer;
+    }
+
+    if (this.placesLayer) {
+        this.placesLayer.removeChildren();
+        delete this.placesLayer;
+    }
+
+    if (this.imageLayer) {
+        this.imageLayer.removeChildren();
+        delete this.imageLayer;
+    }
 
     var layer = new Kinetic.Layer(),
         imageObj = new Image();
@@ -102,7 +118,7 @@ Map.prototype.init = function () {
         map.imageLayer.draw();
 
         layer.draw();
-        map.initPlaces();       //нарисовать скрытый слой с местами
+        map.initPlaces();
         loadIcons();
         handleEventsLayers();   //определяет какие события из чекбоксов нарисовать
 
@@ -112,7 +128,7 @@ Map.prototype.init = function () {
         });
     };
 
-    imageObj.src = '/img/map.jpg';
+    imageObj.src = '/img/map.jpg'; //TODO add floor loading
 
 
 };
@@ -124,7 +140,7 @@ Map.prototype.getInitInfo = function () {
         url: '/scripts/handlers/handler.Map.php',
         data: {
             action: "getInitInfo",
-            floor: "1",
+            floor: this.floor,
             hostel: '1'
         },
         success: function (data) {
@@ -153,7 +169,8 @@ Map.prototype.getNewInfo = function () {
         url: '/scripts/handlers/handler.Map.php',
         data: {
             action: "getNewInfo",
-            last_updated_date: map.lastUpdatedDate
+            last_updated_date: map.lastUpdatedDate,
+            floor: this.floor
         },
         success: function (data) {
             console.log(data);
@@ -498,7 +515,7 @@ function clearEventForm() {
 }
 
 $(function () {
-    map.init();
+    map.init($('#floor_select').val());
     map.lastUpdatedDate = getCurrentDate();
 
     $('#layers input[name="events_layer"]').change(handleEventsLayers);
@@ -524,6 +541,12 @@ $(function () {
     $('#event_datetime').datetimepicker({
         lang: 'ru',
         format: 'Y-m-d H:i:s'
+    });
+
+    $('#floor_select').change(function () {
+        map.init($('#floor_select').val());
+        handleEventsLayers();
+        clearEventForm();
     });
 
     $('#event_type').change(function () {

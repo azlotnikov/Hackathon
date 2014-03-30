@@ -21,6 +21,19 @@
       <input type="checkbox" name="events_layer" id="show_events_service" checked/><label for="show_events_service">Услуги</label>
       <input type="checkbox" name="events_layer" id="show_events_leisure" checked/><label for="show_events_leisure">Досуг</label>
    </div>
+   <div id="floor_select_section">
+      <label for="floor_select">Этаж: </label>
+      <select id="floor_select">
+         <option value="1">Этаж 1</option>
+         <option value="2">Этаж 2</option>
+         <option value="3">Этаж 3</option>
+         <option value="4">Этаж 4</option>
+         <option value="5" selected>Этаж 5</option>
+         <option value="6">Этаж 6</option>
+         <option value="7">Этаж 7</option>
+         <option value="8">Этаж 8</option>
+      </select>
+   </div>
    <div id="slider" style="width: 300px;"></div>
    <section id="field">
       <div id="container"></div>
