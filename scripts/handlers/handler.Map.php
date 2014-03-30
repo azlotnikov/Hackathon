@@ -10,9 +10,12 @@ try {
    switch ($post['action']) {
       case 'getInitInfo':
          require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Place.php';
+         $_place->SetFieldByName(Place::FLOOR_FLD, $post['floor'])
+                ->SetFieldByName(Place::HOSTEL_FLD, $post['hostel']);
          $ajaxResult['data'] = [
-            'events' => $_event->SetSamplingScheme(Event::INIT_SCHEME)->GetAll(),
-            'places' => Authentification::CheckCredentials() ? $_place->GetAvailable($post['floor'], $post['hostel']) : []
+            'events'          => $_event->SetSamplingScheme(Event::INIT_SCHEME)->GetAll(),
+            'places'          => $_place->SetSamplingScheme(Place::INIT_SCHEME)->GetAll(),
+            'availabe_places' => $_place->SetSamplingScheme(Place::AVAILABLE_SCHEME)->GetAll()
          ];
          break;
 

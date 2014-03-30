@@ -11,11 +11,14 @@ class Place extends Entity
    const TYPE_FLD        = 'place_type';
    const HOSTEL_FLD      = 'hostel';
 
-   const INIT_SCHEME      = 9;
-//   const NAME_INFO_SCHEME  = 3;
+   const INIT_SCHEME       = 2;
+   const AVAILABLE_SCHEME  = 3;
 //   const EXTRA_DATA_SCHEME = 4;
 
    const TABLE = 'places';
+
+   private
+      $initFields = null;
 
    public function __construct()
    {
@@ -64,6 +67,7 @@ class Place extends Entity
       if (empty($sample)) return;
       switch ($this->samplingScheme) {
          case static::INIT_SCHEME:
+         case static::AVAILABLE_SCHEME:
             $result = [];
             $idKey = $this->ToPrfxNm(static::ID_FLD);
             foreach ($sample as &$event) {
@@ -92,7 +96,24 @@ class Place extends Entity
                      $this->GetFieldByName(static::TYPE_FLD)
                   ]
                );
-            global $_user, $_session;
+               $this->initFields = $fields;
+               $this->search->AddClause(
+                  CCond(
+                     CF(static::TABLE, $this->GetFieldByName(static::FLOOR_FLD)),
+                     CVP($this->GetFieldByName(static::FLOOR_FLD)->GetValue()),
+                     cAND
+                  )
+               )->AddClause(
+                  CCond(
+                     CF(static::TABLE, $this->GetFieldByName(static::HOSTEL_FLD)),
+                     CVP($this->GetFieldByName(static::HOSTEL_FLD)->GetValue()),
+                     cAND,
+                     opEQ
+                  )
+               );
+            break;
+
+         case static::AVAILABLE_SCHEME:
 // SELECT
 //    places.id  as places_id,
 //    places.number  as places_number,
@@ -108,74 +129,56 @@ class Place extends Entity
 //       )
 //       OR places.place_type <> 1
 //    )
-            $this->search = new Search(
-               static::TABLE,
-               new Clause(
-                  CCond(
-                     CF(static::TABLE, $this->GetFieldByName(static::FLOOR_FLD)),
-                     CVP($this->GetFieldByName(static::FLOOR_FLD)->GetValue()),
-                     cAND
-                  ),
-                  CCond(
-                     CF(static::TABLE, $this->GetFieldByName(static::HOSTEL_FLD)),
-                     CVP($this->GetFieldByName(static::HOSTEL_FLD)->GetValue()),
-                     cAND,
-                     opEQ
-                  ),
-                  CCond(
-                     CF(static::TABLE, $this->GetFieldByName(static::TYPE_FLD)),
-                     CVP(1),
-                     cAND,
-                     opEQ,
-                     '(('
-                  ),
-                  CCond(
-                     CF(static::TABLE, $this->GetFieldByName(static::NUMBER_FLD)),
-                     CVS(
-                        '(' . SQL::SimpleQuerySelect(
-                           $_user->ToTblNm(User::ROOM_FLD),
-                           sprintf(
-                              '%s %s',
+            $fields = $this->initFields;
+            global $_user, $_session;
+            $this->search->AddClause(
+               CCond(
+                  CF(static::TABLE, $this->GetFieldByName(static::TYPE_FLD)),
+                  CVP(1),
+                  cAND,
+                  opEQ,
+                  '(('
+               )
+            )->AddClause(
+               CCond(
+                  CF(static::TABLE, $this->GetFieldByName(static::NUMBER_FLD)),
+                  CVS(
+                     '(' . SQL::SimpleQuerySelect(
+                        $_user->ToTblNm(User::ROOM_FLD),
+                        sprintf(
+                           '%s %s',
+                           User::TABLE,
+                           SQL::MakeJoin(
                               User::TABLE,
-                              SQL::MakeJoin(
-                                 User::TABLE,
-                                 [Session::TABLE => [null, [User::ID_FLD, Session::USER_FLD]]]
-                              )
-                           ),
-                           new Clause(
-                              CCond(
-                                 CF(Session::TABLE, $_session->GetFieldByName(Session::SID_FLD)),
-                                 CVS(sprintf("'%s'", $_SESSION['sid']))
-                              )
+                              [Session::TABLE => [null, [User::ID_FLD, Session::USER_FLD]]]
                            )
-                        ) . ')'
-                     ),
-                     cAND,
-                     opEQ,
-                     null,
-                     ')'
+                        ),
+                        new Clause(
+                           CCond(
+                              CF(Session::TABLE, $_session->GetFieldByName(Session::SID_FLD)),
+                              CVS(sprintf("'%s'", $_SESSION['sid']))
+                           )
+                        )
+                     ) . ')'
                   ),
-                  CCond(
-                     CF(static::TABLE, $this->GetFieldByName(static::TYPE_FLD)),
-                     CVP(1),
-                     cOR,
-                     opNE,
-                     null,
-                     ')'
-                  )
+                  cAND,
+                  opEQ,
+                  null,
+                  ')'
+               )
+            )->AddClause(
+               CCond(
+                  CF(static::TABLE, $this->GetFieldByName(static::TYPE_FLD)),
+                  CVP(1),
+                  cOR,
+                  opNE,
+                  null,
+                  ')'
                )
             );
             break;
       }
       $this->selectFields = SQL::GetListFieldsForSelect($fields);
-   }
-
-   public function GetAvailable($floor, $hostel)
-   {
-      return $this->SetFieldByName(Place::FLOOR_FLD, $floor)
-                   ->SetFieldByName(Place::HOSTEL_FLD, $hostel)
-                  ->SetSamplingScheme(Place::INIT_SCHEME)
-                  ->GetAll();
    }
 
 }

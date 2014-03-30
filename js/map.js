@@ -128,6 +128,7 @@ Map.prototype.getInitInfo = function () {
             hostel: '1'
         },
         success: function (data) {
+            console.log(JSON.stringify(data));
             if (data.hasOwnProperty('result')) {
                 if (data.result) {
                     $this.places = data.data.places;
@@ -146,7 +147,7 @@ Map.prototype.getInitInfo = function () {
 
 Map.prototype.getNewInfo = function () {
     var $this = this;
-    console.log("getNewInfo called " + map.lastUpdatedDate);
+    // console.log("getNewInfo called " + map.lastUpdatedDate);
     $.ajax({
         type: 'POST',
         url: '/scripts/handlers/handler.Map.php',
@@ -202,6 +203,17 @@ Map.prototype.initPlaces = function () {
     this.placesLayer.removeChildren();
     var p;
     for (p in this.places) {
+      // map.places[p].poss = [];
+      // map.places[p].poss.push(null);
+      // for (var k = 1; k <= 3; k++){
+         // map.places[p].poss.push(getCenters(
+            // k, 
+            // [bigCircleRadius, littleCircleRadius],
+            // [8, 7],
+            // polygonFromString(map.places[p].places_polygon)
+         // ));         
+      // }
+      // console.log(JSON.stringify(map.places[p].poss));
         var poly = new Kinetic.Line({
             points: this.places[p].places_polygon.split(','),
             strokeWidth: 4,
@@ -377,17 +389,38 @@ function eventOnClick() {
 
 
 Map.prototype.addEvents = function (eventType) {   //строка типа party
-    eventTypeId = eventsObjects[eventType].id;
-    var events = this.events[eventTypeId];
-    var e;
-    for (e in events) {
-        var placeId = events[e].events_place_id;
-        if (this.places[placeId].circles[eventTypeId] > 0) {
-            this.places[placeId].circles[eventTypeId]++;
-            continue;
-        }
-        this.places[placeId].circles[eventTypeId]++;
-        var center = getCenter(polygonFromString(this.places[placeId].places_polygon));
+   eventTypeId = eventsObjects[eventType].id;
+   var events = this.events[eventTypeId];
+   var e;
+   for (e in events) {
+      var placeId = events[e].events_place_id;
+      // if (!this.places[placeId]){
+         // continue;
+      // }
+      if (this.places[placeId].circles[eventTypeId] > 0) {
+         this.places[placeId].circles[eventTypeId]++;
+         continue;
+      }
+      this.places[placeId].circles[eventTypeId]++;
+      var e1;
+      var e2;
+      // var posCnt = 0;
+      // for (e1 in eventsObjects){
+         // var events1 = this.events[eventsObjects[e1].id];
+         // for (e2 in events1){
+            // if (events1[e2].events_place_id){
+               // posCnt++;
+               // break;
+            // }
+         // }
+      // }
+      // console.log(posCnt);
+      // console.log(eventTypeId);
+      // var center = this.places[placeId].poss[posCnt][eventTypeId];
+      // console.log(JSON.stringify(center));
+      var center = getCenter(
+         polygonFromString(this.places[placeId].places_polygon)
+      );
         center.x += eventsObjects[eventType].offsetX;
         center.y += eventsObjects[eventType].offsetY;
         var circle = new Kinetic.Circle({
