@@ -411,7 +411,7 @@ Map.prototype.addEvents = function (eventType) {   //строка типа party
         circle.eventTypeId = eventTypeId;
         circle.placeId = placeId;
 
-        circle.on('mousedown', eventOnClick);
+        circle.on('click', eventOnClick);
 
         this.eventsLayer.add(circle);
         var icon = new Kinetic.Image({
@@ -423,7 +423,7 @@ Map.prototype.addEvents = function (eventType) {   //строка типа party
         icon.eventId = e;
         icon.eventTypeId = eventTypeId;
         icon.placeId = placeId;
-        icon.on('mousedown', eventOnClick);
+        icon.on('click', eventOnClick);
 
         this.eventsLayer.add(icon);
     }
