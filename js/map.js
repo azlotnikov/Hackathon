@@ -34,8 +34,8 @@ var eventsObjects = {
 };
 
 
-var min_scale = 0.3,  //минимальный масштаб карты
-    max_scale = 1,    //максимальный мастштаб карты
+var min_scale = 0.1,  //минимальный масштаб карты
+    max_scale = 1.2,    //максимальный мастштаб карты
     bigCircleRadius = 40,   //радиус большого кружка события
     littleCircleRadius = 10;   //радиус маленького кружка события
 
@@ -359,11 +359,11 @@ function eventOnClick() {
     for (e = 0; e < events.length; e++) {
         eventData = map.cachedEvents[events[e]];
         text += '<article>';
-       text += '<img src="/img/avatar_s.jpg" class="avatar" /><div class="right_info">';
-       text += '<h1><a href="/profile/?user_id=' + eventData.users_id + '">' + eventData.users_name + ' ' + eventData.users_surname + '</a>:</h1>';
-       text += '<date>' + eventData.events_creation_date + '</date>';
-       text += '<p>' + eventData.events_description + '</p>';
-       text += '</div></article>';
+        text += '<img src="/img/avatar_s.jpg" class="avatar" /><div class="right_info">';
+        text += '<h1><a href="/profile/?user_id=' + eventData.users_id + '">' + eventData.users_name + ' ' + eventData.users_surname + '</a>:</h1>';
+        text += '<date>' + eventData.events_creation_date + '</date>';
+        text += '<p>' + eventData.events_description + '</p>';
+        text += '</div></article>';
     }
     var mousePos = map.stage.getPointerPosition();
 //            var mousePos = {x: 10, y: 10};
@@ -377,7 +377,7 @@ function eventOnClick() {
 
 
 Map.prototype.addEvents = function (eventType) {   //строка типа party
-    eventTypeId = eventsObjects[eventType].id;
+    var eventTypeId = eventsObjects[eventType].id;
     var events = this.events[eventTypeId];
     var e;
     for (e in events) {
@@ -490,6 +490,15 @@ $(function () {
 
     $('#layers input[name="events_layer"]').change(handleEventsLayers);
 
+    $("#slider").slider({value: map.scale,
+        min: min_scale,
+        max: max_scale,
+        range: false,
+        step: 0.1,
+        slide: function (event, ui) {
+            map.changeScale(ui.value);
+            handleEventsLayers();
+        }});
 
     $('#event_form_close').click(function () {
         $('#event_form').hide();

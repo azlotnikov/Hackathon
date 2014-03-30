@@ -4,21 +4,24 @@
    <link href="/css/footer.css" rel="stylesheet"/>
    <link href="/css/forms.css" rel="stylesheet"/>
    <link rel="stylesheet" type="text/css" href="/css/jquery.datetimepicker.css"/ >
+   <link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.10.4.custom.css"/ >
    <script src="/js/map_utils.js"></script>
    <script src="/js/kinectjs.js"></script>
    <script src="/js/geometry.js"></script>
    <script src="/js/event.js"></script>
    <script src="/js/jquery.datetimepicker.js"></script>
+   <script src="/js/jquery-ui-1.10.4.custom.js"></script>
 
    <link href="/css/map.css" rel="stylesheet"/>
 {/block}
 {block name='div.main'}
    {include file="header.tpl"}
    <div id="layers">
-      <input type="checkbox" name="events_layer" id="show_events_party" checked/><label for="show_events_party">Party</label>
-      <input type="checkbox" name="events_layer" id="show_events_service" checked/><label for="show_events_service">Service</label>
-      <input type="checkbox" name="events_layer" id="show_events_leisure" checked/><label for="show_events_leisure">Leisure</label>
+      <input type="checkbox" name="events_layer" id="show_events_party" checked/><label for="show_events_party">Мероприятия</label>
+      <input type="checkbox" name="events_layer" id="show_events_service" checked/><label for="show_events_service">Услуги</label>
+      <input type="checkbox" name="events_layer" id="show_events_leisure" checked/><label for="show_events_leisure">Досуг</label>
    </div>
+   <div id="slider" style="width: 300px;"></div>
    <section id="field">
       <div id="container"></div>
    </section>
