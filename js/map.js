@@ -300,7 +300,7 @@ $(function () {
         map.renderEvents(eventsTypesConsts['service']);
     });
 
-    $('#event_add').click(function () {
+   $('#event_form form').submit(function () {
         var event_type = $('#event_type').find('option:selected').val();
         var place_id = $('#event_place_id').val();
         var event_id = addEvent(place_id, $('#event_header').val(), $('#event_description').val(), event_type);
@@ -312,6 +312,7 @@ $(function () {
         });
         console.log(map.events[event_type]);
         map.renderEvents(event_type);
+        return false;
     });
 
 });
