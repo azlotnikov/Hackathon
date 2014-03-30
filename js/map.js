@@ -326,7 +326,7 @@ Map.prototype.addEvents = function (eventType) {   //строка типа party
             }
             var mousePos = map.stage.getPointerPosition();
 //            var mousePos = {x: 10, y: 10};
-            $('#events_info').html(text);
+            $('#events_info_data').html(text);
             $('#events_info').show('fast').css({left: mousePos.x + $("#container").position().left, top: mousePos.y + $("#container").position().top});
 
         });
@@ -402,6 +402,10 @@ $(function () {
 
     $('#event_form_close').click(function () {
         $('#event_form').hide();
+    });
+
+    $('#events_info_close').click(function () {
+        $('#events_info').hide();
     });
 
     $('#event_datetime').datetimepicker({
