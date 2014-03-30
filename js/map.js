@@ -16,25 +16,26 @@ var eventsObjects = {
         id: 1,
         offsetX: -23,
         offsetY: 21,
-        color: 'blue'
+        color: '#37b0fa'
     },
     'party': {
         id: 2,
         offsetX: 0,
         offsetY: -20,
-        color: 'red'
+        color: '#e42d3a'
     },
     'leisure': {
         id: 3,
         offsetX: 23,
         offsetY: 21,
-        color: 'yellow'
+        color: 'pink'
     }
 };
 
-var min_scale = 0.3,  //минимальный масштаб карты
-    max_scale = 1,    //максимальный мастштаб карты
-    bigCircleRadius = 20,   //радиус большого кружка события
+
+var min_scale          = 0.3,  //минимальный масштаб карты
+    max_scale          = 1,    //максимальный мастштаб карты
+    bigCircleRadius    = 40,   //радиус большого кружка события
     littleCircleRadius = 10;   //радиус маленького кружка события
 
 function Map() {               //самый главный объект карта
@@ -51,10 +52,24 @@ function Map() {               //самый главный объект карт
     });
 }
 
+function loadIcons() {
+    eventsObjects["service"].imageIcon = new Image();
+    eventsObjects["service"].imageIcon.onload = function () {};
+    eventsObjects["service"].imageIcon.src = '/img/icon_party.png';
+//
+    eventsObjects["party"].imageIcon = new Image();
+    eventsObjects["party"].imageIcon.onload = function () {};
+    eventsObjects["party"].imageIcon.src = '/img/icon_party.png';
+//
+    eventsObjects["leisure"].imageIcon = new Image();
+    eventsObjects["leisure"].imageIcon.onload = function () {};
+    eventsObjects["leisure"].imageIcon.src = '/img/icon_party.png';
+}
+
 Map.prototype.init = function () {
     this.getInitInfo();                             //получение информации обо всем на карте ajax
 
-    var layer = new Kinetic.Layer(),
+    var layer    = new Kinetic.Layer(),
         imageObj = new Image();
 
     imageObj.onload = function () {
@@ -78,6 +93,7 @@ Map.prototype.init = function () {
 
         layer.draw();
         map.initPlaces();       //нарисовать скрытый слой с местами
+        loadIcons();
         handleEventsLayers();   //определяет какие события из чекбоксов нарисовать
 
         imageMap.on("click", function () {  //скрыть формочку при клике на пустое место
@@ -86,6 +102,9 @@ Map.prototype.init = function () {
     };
 
     imageObj.src = '/img/map.jpg';
+
+
+
 };
 
 Map.prototype.getInitInfo = function () {
@@ -182,7 +201,7 @@ Map.prototype.drawEventsNumbers = function () {
                 text: this.places[p].circles[eventsObjects[e].id],
                 fontSize: 17,
                 fontFamily: 'Calibri',
-                fill: 'black'
+                fill: 'white'
             });
 //
             this.eventsLayer.add(circleText);
@@ -240,9 +259,15 @@ Map.prototype.addEvents = function (eventType) {   //строка типа party
             y: center.y,
             radius: bigCircleRadius,
             fill: eventsObjects[eventType].color,
-            opacity: 0.6,
+            opacity: 0.9,
+            shadowColor: "black",
+            shadowEnabled: true,
+            shadowOpacity: 0.7,
+            shadowOffsetX: -5,
+            shadowOffsetY: 5,
             strokeEnabled: false
         });
+
 
         circle.eventId = e;
         circle.eventTypeId = eventTypeId;
@@ -301,6 +326,14 @@ Map.prototype.addEvents = function (eventType) {   //строка типа party
         });
 
         this.eventsLayer.add(circle);
+        var icon = new Kinetic.Image({
+            x: center.x - 25,
+            y: center.y - 25,
+            image: eventsObjects[eventType].imageIcon
+        });
+
+        this.eventsLayer.add(icon);
+
     }
 };
 
