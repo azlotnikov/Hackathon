@@ -59,7 +59,7 @@ class Search
       return !empty($this->limitParams) ? $this->limitParams[1] : -1;
    }
 
-   public function SetJoins($joinFields, $joinParams = Array())
+   public function SetJoins($joinFields = [], $joinParams = [])
    {
       $this->joinFields   = $joinFields;
       $this->joinParams   = $joinParams;

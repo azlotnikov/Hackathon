@@ -128,6 +128,15 @@ BEGIN
    INSERT INTO `sessions`(`user_id`, `sid`) VALUES(user_id, sid);
 END//
 
+DROP FUNCTION IF EXISTS `get_user_ad_amount_by_id` //
+CREATE FUNCTION `get_user_ad_amount_by_id`(user_id INT)
+RETURNS INT
+BEGIN
+   DECLARE amount INT;
+   SELECT COUNT(`id`) INTO amount FROM `events` WHERE `owner_id` = user_id;
+   RETURN IFNULL(amount, 0);
+END//
+
 DROP PROCEDURE IF EXISTS `process_event` //
 CREATE FUNCTION `process_event`(
    sid VARCHAR(40), act_type INT(2), eid INT, header VARCHAR(100), place_id INT, event_type INT, description TEXT, due_date DATETIME
@@ -164,8 +173,13 @@ BEGIN
    RETURN result;
 END//
 
-DELIMITER ;
+DROP PROCEDURE IF EXISTS `update_user_views` //
+CREATE PROCEDURE `update_user_views`(IN uuser_id INT)
+BEGIN
+   UPDATE `users` SET `profile_views` = `profile_views` + 1 WHERE `id` = uuser_id;
+END//
 
+DELIMITER ;
 
 INSERT INTO `hostels`(`number`) VALUES
    ('8.1');

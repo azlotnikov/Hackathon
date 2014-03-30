@@ -63,7 +63,7 @@ class AuthCookie extends Cookie
       if (empty($user)) {
          throw new CookieException();
       }
-      return $this;
+      return $user[$_session->ToPrfxNm(Session::USER_FLD)];
    }
 
    public function GetSID()
@@ -73,38 +73,37 @@ class AuthCookie extends Cookie
 
 }
 
-// class CookieProfileView extends CookieBase
-// {
-//    private
-//       $user_id;
+class CookieProfileView extends Cookie
+{
+   private
+      $user_id;
 
-//    const COOKIENAME = 'USERPROFILEVIEW';
-//    const EXPIRATION = 86400; //86400 seconds in a 1 day
-//    // const EXPIRATION = 5;
+   const COOKIENAME = 'USERPROFILEVIEW';
+   const EXPIRATION = 86400; //86400 seconds in a 1 day
+   // const EXPIRATION = 5;
 
-//    function __construct($user_id)
-//    {
-//       $this->user_id = $user_id;
-//       if (array_key_exists(static::COOKIENAME . $user_id, $_COOKIE)) {
-//          throw new CookieException();
-//       }
-//    }
+   function __construct($user_id)
+   {
+      $this->user_id = $user_id;
+      if (array_key_exists(static::COOKIENAME . $user_id, $_COOKIE)) {
+         throw new CookieException();
+      }
+   }
 
-//    public function Set()
-//    {
-//       $views = User::PROFILE_VIEWS_FLD;
-//       global $db;
-//       try {
-//          $db->Query('UPDATE ' . User::TABLE . " SET $views = $views + 1 WHERE " . User::ID_FLD . ' = ?', [$this->user_id]);
-//       } catch (DBException $e) {
-//          throw new CookieException();
-//       }
-//       setcookie(
-//          static::COOKIENAME . $this->user_id,
-//          $this->_Package([$this->user_id]),
-//          time() + static::EXPIRATION,
-//          static::COOKIEPATH,
-//          static::COOKIEDOMAIN
-//       );
-//    }
-// }
+   public function Set()
+   {
+      global $db;
+      try {
+         $db->Query(SQL::GetCallQuery('update_user_views', 1), [$this->$user_id]);
+      } catch (DBException $e) {
+         throw new CookieException();
+      }
+      setcookie(
+         static::COOKIENAME . $this->user_id,
+         $this->_Package([$this->user_id]),
+         time() + static::EXPIRATION,
+         static::COOKIEPATH,
+         static::COOKIEDOMAIN
+      );
+   }
+}
