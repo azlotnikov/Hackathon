@@ -165,8 +165,6 @@ Map.prototype.getNewInfo = function () {
                 } else {
                     alert(data.message);
                 }
-            } else {
-                throw 'Unknown ajax result!';
             }
         },
         dataType: 'json',
