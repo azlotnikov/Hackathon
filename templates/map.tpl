@@ -3,6 +3,7 @@
    <link href="/css/header.css" rel="stylesheet"/>
    <link href="/css/footer.css" rel="stylesheet"/>
    <link href="/css/forms.css" rel="stylesheet"/>
+   <link href="/css/events.css" rel="stylesheet"/>
    <link rel="stylesheet" type="text/css" href="/css/jquery.datetimepicker.css"/ >
    <link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.10.4.custom.css"/ >
    <script src="/js/map_utils.js"></script>
@@ -69,8 +70,9 @@
          </div>
       </form>
    </div>
-   <div id="events_info">
+   <div id="events_info" class="events on_map">
       <button id="events_info_close" type="button">x</button>
-      <div id="events_info_data"></div>
+      <h1 class="top"></h1>
+      <div class="events_info_data"></div>
    </div>
 {/block}

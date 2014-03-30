@@ -26,7 +26,7 @@ class Event extends Entity
    const LIST_SCHEME          = 4;
    const NEW_DELETTION_SCHEME = 5;
 
-   const LIST_LIMIT = 2;
+   const LIST_LIMIT = 10;
 
    private
       $createDateKey   = null,
@@ -235,15 +235,18 @@ class Event extends Entity
                   $this->idField,
                   $this->GetFieldByName(static::HEAD_FLD),
                   $this->GetFieldByName(static::CREATION_DATE_FLD),
-                  $this->GetFieldByName(static::TYPE_FLD)
+                  $this->GetFieldByName(static::DUE_DATE_FLD),
+                  $this->GetFieldByName(static::TYPE_FLD),
+                  $this->GetFieldByName(static::DESCRIPTION_FLD)
                ]
             ),
             SQL::PrepareFieldsForSelect(
                User::TABLE,
                [
-                  $_user->GetFieldByName(User::ID_FLD),
+                  $_user->idField,
                   $_user->GetFieldByName(User::NAME_FLD),
-                  $_user->GetFieldByName(User::SURNAME_FLD)
+                  $_user->GetFieldByName(User::SURNAME_FLD),
+                  $_user->GetFieldByName(User::PHOTO_FLD)
                ]
             ),
             SQL::PrepareFieldsForSelect(
