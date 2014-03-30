@@ -30,5 +30,6 @@ $userId = $accSelf ? $displayedUser[$_user->ToPrfxNm(User::ID_FLD)] : $userId;
 $smarty->assign('acc_self', $accSelf)
        ->assign('user_id', $userId)
        ->assign('user_info', $displayedUser)
+       ->assign('loaded_amount', Event::LIST_LIMIT)
        ->assign('events_list', $_event->GetList($userId))
        ->display('profile.tpl');

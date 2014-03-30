@@ -21,7 +21,23 @@
 }
 
 #center_block {
-   width: 1000px;
+   margin: 0 auto;
+}
+
+#left_profile_block {
+  width: 500px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+#right_profile_block {
+  width: 800px;
+  text-align: left;
+  display: inline-block;
+}
+
+.events {
+  margin-bottom: 25px;
 }
 
 #main_block {
@@ -40,7 +56,7 @@
 
 div.control {
    text-align: left;
-   margin-left: 230px;
+   margin-left: 240px;
 }
 
 div.control ul li {

@@ -1,0 +1,100 @@
+.events {
+   background: rgba(255, 255, 255, 0.9);
+   display: inline-block;
+   padding: 10px 15px;
+   box-shadow: -2px 2px 2px rgba(0, 0, 0, 0.5);
+   border: 1px rgba(0, 0, 0, 0.7) solid;
+   vertical-align: top;
+   text-align: left;
+}
+
+button.get_more {
+   width: 100%;
+   text-align: center;
+}
+
+.events.on_map {
+   position: absolute;
+   display: none;
+   padding-right: 35px;
+}
+
+.events.on_board {
+   margin-right: 20px;
+}
+
+.events.on_board h1.top {
+   font-size: 140%;
+   margin-bottom: 20px;
+   text-align: center;
+}
+
+.events.on_map h1.top {
+   font-size: 130%;
+   margin-bottom: 10px;
+   text-align: center;
+}
+
+.events_info_data {
+   padding-right: 15px;
+   max-height: 500px;
+   overflow-y: scroll;
+}
+
+.events article {
+  margin-bottom: 17px;
+}
+
+.events img.avatar {
+  float: left;
+  width: 50px;
+  height: 50px;
+  border-radius: 50px;
+}
+
+.events div.right_info h2 {
+   font-weight: bold;
+   margin-bottom: 2px;
+}
+
+.events div.header {
+   margin-bottom: 5px;
+}
+
+.events div.right_info {
+  margin-left: 60px;
+  width: 250px;
+}
+
+.events div.right_info h1 {
+  font-weight: bold;
+  display: inline-block;
+}
+
+.events div.right_info h1 a {
+  text-decoration: none;
+}
+
+.events div.right_info div.header date {
+  font-style: italic;
+  font-size: 80%;
+  display: block;
+  float: right;
+  margin-top: 3px;
+}
+
+.events div.right_info span.due_date {
+   color: #e42d3a;
+   display: block;
+   margin-top: 1px;
+   font-size: 90%;
+}
+
+.events div.right_info span.due_date date {
+   float: right;
+   font-style: italic;
+}
+
+.events div.right_info p {
+
+}

@@ -26,15 +26,16 @@ var eventsObjects = {
 var min_scale = 0.1,  //минимальный масштаб карты
    max_scale = 1.2,    //максимальный мастштаб карты
    bigCircleRadius = 40,   //радиус большого кружка события
+   rus_names = {1 : 'Услуги', 2 : 'Мероприятия', 3 : 'Досуг'},
    littleCircleRadius = 10;   //радиус маленького кружка события
 
 function Map() {               //самый главный объект карта
-   this.scale = 0.7;         //начальный масштаб
-   this.places = {};          //массив всех мест: ключ - id места
-   this.events = {};          //массив всех событий
-// this.activePlace  = {};
+   this.scale        = 0.7;         //начальный масштаб
+   this.places       = {};          //массив всех мест: ключ - id места
+   this.events       = {};          //массив всех событий
+//  this.activePlace  = {};
    this.cachedEvents = {};
-   this.stage = new Kinetic.Stage({        //канвас
+   this.stage        = new Kinetic.Stage({        //канвас
       container: 'container',
       width: $(document).width() - 100,
       height: $(document).height() - 100,
@@ -105,11 +106,7 @@ Map.prototype.initLvl2 = function () {
 
    imageObj.src = '/img/map.jpg';
    clearInterval(iconsTimer);
-   imageMap.on("click", function () {  //скрыть формочку при клике на пустое место
-      $("#event_form").hide();
-      $('#events_info').hide();
-   });
-}
+};
 
 Map.prototype.init = function (floor) {
    loadIcons();
@@ -128,7 +125,6 @@ Map.prototype.getInitInfo = function () {
          hostel: '1'
       },
       success: function (data) {
-         console.log(JSON.stringify(data));
          if (data.hasOwnProperty('result')) {
             if (data.result) {
                $this.places = data.data.places;
@@ -163,10 +159,9 @@ Map.prototype.getNewInfo = function () {
             } else {
                alert(data.message);
             }
-         }
+        }
       },
-      dataType: 'json',
-      async: false
+      dataType: 'json'
    });
 };
 
@@ -368,22 +363,23 @@ function eventOnClick() {
       eventData = map.cachedEvents[events[e]];
       text += '<article>';
       text += '<img src="/img/avatar_s.jpg" class="avatar" /><div class="right_info">';
-      text += '<h1><a href="/profile/?user_id=' + eventData.users_id + '">' + eventData.users_name + ' ' + eventData.users_surname + '</a>:</h1>';
-      text += '<date>' + eventData.events_creation_date + '</date>';
+      text += '<div class="header"><h1><a href="/profile/?user_id=' + eventData.users_id + '">' + eventData.users_name + ' ' + eventData.users_surname + ':</a></h1>';
+      text += '<date>' + eventData.events_creation_date + '</date></div>';
+      text += '<h2>' + eventData.events_header + '</h2>';
+      if (this.eventTypeId == 2) {
+         text += '<span class="due_date">Дата начала: <date>' + eventData.events_due_date + '</date></span>';
+      }
       text += '<p>' + eventData.events_description + '</p>';
       text += '</div></article>';
    }
    var mousePos = map.stage.getPointerPosition();
-   $('#events_info_data').html(text);
+//            var mousePos = {x: 10, y: 10};
+   $('div.events_info_data').html(text);
+   $('#events_info > h1').text(rus_names[this.eventTypeId]);
    if ($('#event_form:visible')) {
       $('#event_form').hide();
    }
    $('#events_info').show('fast').css({left: mousePos.x + $("#container").position().left, top: mousePos.y + $("#container").position().top});
-
-   events = cachedEvents.concat(events);
-   var e;
-   var text = '';
-   var eventData;
 }
 
 
@@ -560,7 +556,6 @@ $(function () {
       return false;
    });
 });
-
    // $('#event_form_close').click(function () {
    //    $('#event_form').hide();
    // });
