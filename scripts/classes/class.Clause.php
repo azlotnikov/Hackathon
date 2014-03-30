@@ -77,7 +77,7 @@ class ClauseCondition extends BaseClausePart
    public
       $lp   = '',
       $rp   = '',
-      $op   = '=',
+      $op   = opEQ,
       $cond = '';
 
    public function __construct($left, $right, $cond, $op, $lp, $rp)

@@ -25,6 +25,12 @@ define('ERROR_CONTACT_PHONE', 'Введен неверный номер теле
 define('ERROR_FORGOTTEN_PASS', 'Невозможно активировать пароль.');
 
 //database consts
+define('opEQ', '=');
+define('opNE', '<>');
+define('opGT', '>');
+define('opGE', '>=');
+define('opLT', '<');
+define('opLE', '<=');
 define('cAND', 'AND');
 define('cOR', 'OR');
 define('OT_ASC', 'ASC');
