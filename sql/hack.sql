@@ -204,7 +204,14 @@ INSERT INTO `hostels`(`number`) VALUES
    ('8.1');
 
 INSERT INTO `floors`(`number`) VALUES
-   ('4');
+   ('1'),
+   ('2'),
+   ('3'),
+   ('4'),
+   ('5'),
+   ('6'),
+   ('7'),
+  ('8');
 
 INSERT INTO `place_types`(`type_name`) VALUES
    ('Комната'),
