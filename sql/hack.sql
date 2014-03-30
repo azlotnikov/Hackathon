@@ -139,10 +139,10 @@ FOR EACH ROW BEGIN
 END//
 
 DROP PROCEDURE IF EXISTS `add_user_session` //
-CREATE PROCEDURE `add_user_session`(IN user_id INT, IN sid VARCHAR(40))
+CREATE PROCEDURE `add_user_session`(IN uuser_id INT, IN sid VARCHAR(40))
 BEGIN
-   DELETE FROM `sessions` WHERE `user_id` = user_id;
-   INSERT INTO `sessions`(`user_id`, `sid`) VALUES(user_id, sid);
+   DELETE FROM `sessions` WHERE `user_id` = uuser_id;
+   INSERT INTO `sessions`(`user_id`, `sid`) VALUES(uuser_id, sid);
 END//
 
 DROP FUNCTION IF EXISTS `get_user_ad_amount_by_id` //
