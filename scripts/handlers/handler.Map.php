@@ -39,6 +39,7 @@ try {
          //deleted events - id only
          //new events + edited - info like in getInitInfo
          $ajaxResult['data'] = $_event->GetNewInfo($post['last_updated_date']);
+         unset($ajaxResult['message']);
          break;
 
       default:
