@@ -4,15 +4,29 @@ var eventsTypesConsts = {
     'leisure': 3
 };
 
+var eventsCircleOffset = {
+    1: {
+        x: -23,
+        y: 21
+    },
+    2: {
+        x: 0,
+        y: -20
+    },
+    3: {
+        x: 23,
+        y: 21
+    }
+}
+
 var eventsColorsConsts = {
     1: 'blue',
     2: 'red',
-    3: 'black'
+    3: 'yellow'
 };
 
 var min_scale = 0.3;
 var max_scale = 1;
-var scale_eps = 0.005;
 
 var bigCircleRadius = 20;
 var littleCircleRadius = 10;
@@ -96,79 +110,94 @@ Map.prototype.getInitInfo = function () {
 
 Map.prototype.zerosEventsCirclesForPlaces = function () {
     var p;
+    var e;
     for (p in this.places) {
-        this.places[p].circles = 0;
+//        for (e in eventsTypesConsts) { TODO whats the fuck?
+            this.places[p].circles = [];
+            this.places[p]['circles'][1] = 0;
+            this.places[p]['circles'][2] = 0;
+            this.places[p]['circles'][3] = 0;
+//        }
     }
 };
 
 Map.prototype.drawEventsNumbers = function () {
     var p;
+    var e;
     for (p in this.places) {
-        if (this.places[p].circles < 2) {
-            continue;
+        for (e in eventsTypesConsts) {
+            if (this.places[p]['circles'][eventsTypesConsts[e]] < 2) {
+                continue;
+            }
+            var center = getCenter(polygonFromString(this.places[p].places_polygon));
+
+            center.x += eventsCircleOffset[eventsTypesConsts[e]].x;
+            center.y += eventsCircleOffset[eventsTypesConsts[e]].y;
+
+            var x = center.x + parseInt(bigCircleRadius / 2) + 3;
+            var y = center.y - parseInt(bigCircleRadius / 2) - 3;
+
+            var circle = new Kinetic.Circle({
+                x: x, //!
+                y: y,
+                radius: littleCircleRadius,
+                fill: 'purple',
+                opacity: 0.9,
+                strokeEnabled: false
+            });
+//
+            this.eventsLayer.add(circle);
+
+            var circleText = new Kinetic.Text({
+                x: x - 4,
+                y: y - 7,
+                text: this.places[p]['circles'][eventsTypesConsts[e]],
+                fontSize: 17,
+                fontFamily: 'Calibri',
+                fill: 'black'
+            });
+//
+            this.eventsLayer.add(circleText);
         }
-//        var points = this.places[p].places_polygon.split(',');
-        var center = getCenter(polygonFromString(this.places[p].places_polygon));
-        var x = center.x + parseInt(bigCircleRadius / 2) + 3;
-        var y = center.y - parseInt(bigCircleRadius / 2) - 3;
-        var circle = new Kinetic.Circle({
-            x: x, //!
-            y: y,
-            radius: littleCircleRadius,
-            fill: 'purple',
-            opacity: 0.9,
-            strokeEnabled: false
-        });
-
-        this.eventsLayer.add(circle);
-
-        var circleText = new Kinetic.Text({
-            x: x - 4,
-            y: y - 7,
-            text: this.places[p].circles,
-            fontSize: 17,
-            fontFamily: 'Calibri',
-            fill: 'black'
-        });
-
-        this.eventsLayer.add(circleText);
     }
     this.eventsLayer.draw();
 };
 
-Map.prototype.clearEvents = function() {
+Map.prototype.clearEvents = function () {
     this.eventsLayer.removeChildren();
     this.zerosEventsCirclesForPlaces();
 };
 
-Map.prototype.renderEvents = function() {
+Map.prototype.renderEvents = function () {
     this.eventsLayer.draw();
     this.drawEventsNumbers();
 };
 
-Map.prototype.addEvents = function (eventsType) {
-    var events = this.events[eventsType];
+Map.prototype.addEvents = function (eventType) {
+    var events = this.events[eventType];
     var e;
     for (e in events) {
         var place_id = events[e].events_place_id;
-        if (this.places[place_id].circles > 0) {
-            this.places[place_id].circles++;
+        if (this.places[place_id]['circles'][eventType] > 0) {
+            this.places[place_id]['circles'][eventType]++;
             continue;
         }
 //        console.log(this.places[place_id].places_polygon);
 //        console.log(polygonFromString(this.places[place_id].places_polygon));
         var center = getCenter(polygonFromString(this.places[place_id].places_polygon));
-//        console.log(center);
+        center.x += eventsCircleOffset[eventType].x;
+        center.y += eventsCircleOffset[eventType].y;
+        console.log(center);
         var circle = new Kinetic.Circle({
             x: center.x, //!
             y: center.y,
             radius: bigCircleRadius,
-            fill: eventsColorsConsts[eventsType],
+            fill: eventsColorsConsts[eventType],
             opacity: 0.5,
             strokeEnabled: false
         });
 
-        this.places[place_id].circles++;
+        this.places[place_id]['circles'][e]++;
 
         circle.eventId = events[e].events_id;
 
@@ -270,7 +299,7 @@ Map.prototype.changeScale = function (new_scale) {
 
 function handleLayers() {
     map.clearEvents();
-    $('#layers input[name="events_layer"]:checked').each(function(){
+    $('#layers input[name="events_layer"]:checked').each(function () {
         var arr = $(this).attr('id').split('_');
         map.addEvents(eventsTypesConsts[arr[2]]);
     });
@@ -278,6 +307,8 @@ function handleLayers() {
 }
 
 $(function () {
+    map.init();
+
     $('container').on("contextmenu", function (evt) {
         evt.preventDefault();
     });
@@ -289,7 +320,7 @@ $(function () {
         $('#event_form').hide();
     });
 
-   $('#event_form form').submit(function () {
+    $('#event_form form').submit(function () {
         var event_type = $('#event_type').find('option:selected').val();
         var place_id = $('#event_place_id').val();
         var event_id = addEvent(place_id, $('#event_header').val(), $('#event_description').val(), event_type);
@@ -297,8 +328,8 @@ $(function () {
             events_id: event_id,
             events_place_id: parseInt(place_id)
         });
-       //TODO render events of this type if not
-       handleLayers();
+        //TODO render events of this type if not
+//        handleLayers();
 //        map.renderEvents(event_type);
         return false;
     });
@@ -306,5 +337,3 @@ $(function () {
 });
 
 var map = new Map();
-
-map.init();

@@ -12,8 +12,8 @@
    {include file="header.tpl"}
    <div id="layers">
       <label for="show_events_party">Party</label><input type="checkbox" name="events_layer" id="show_events_party" checked/>
-      <label for="show_events_service">Service</label><input type="checkbox" name="events_layer" id="show_events_service"/>
-      <label for="show_events_leisure">Leisure</label><input type="checkbox" name="events_layer" id="show_events_leisure"/>
+      <label for="show_events_service">Service</label><input type="checkbox" name="events_layer" id="show_events_service" checked/>
+      <label for="show_events_leisure">Leisure</label><input type="checkbox" name="events_layer" id="show_events_leisure" checked/>
    </div>
    <section id="field">
       <div id="container"></div>
