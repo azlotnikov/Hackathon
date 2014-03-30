@@ -98,11 +98,11 @@ class Event extends Entity
             $placeKey = $this->ToPrfxNm(static::PLACE_FLD);
             foreach ($sample as $event) {
                if ($event[$typeKey] == etPARTY) {
-                  $parties[] = [$idKey => $event[$idKey], $placeKey => $event[$placeKey]];
+                  $parties[$event[$idKey]] = [$idKey => $event[$idKey], $placeKey => $event[$placeKey]];
                } elseif ($event[$typeKey] == etSERVICE) {
-                  $services[] = [$idKey => $event[$idKey], $placeKey => $event[$placeKey]];
+                  $services[$event[$idKey]] = [$idKey => $event[$idKey], $placeKey => $event[$placeKey]];
                } elseif ($event[$typeKey] == etLEISURE) {
-                  $leisuries[] = [$idKey => $event[$idKey], $placeKey => $event[$placeKey]];
+                  $leisuries[$event[$idKey]] = [$idKey => $event[$idKey], $placeKey => $event[$placeKey]];
                }
             }
             $sample = [
