@@ -1,0 +1,35 @@
+header {
+   height: 80px;
+   background: white;
+   padding: 15px;
+   border-radius: 0px 0px 15px 15px;
+   margin-bottom: 50px;
+   text-align: center;
+}
+
+header img {
+   display: inline-block;
+   margin: 0 30px;
+}
+
+header nav {
+   display: block;
+   vertical-align: top;
+   margin-top: 10px;
+}
+
+header ul li {
+   display: inline-block;
+   font-size: 120%;
+}
+
+header ul li a {
+   padding: 5px 10px;
+   text-decoration: none;
+   display: inline-block;
+   color: black;
+}
+
+header ul li:first-child a {
+   padding-left: 0;
+}

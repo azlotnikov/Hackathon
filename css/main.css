@@ -11,16 +11,16 @@ body {
 }
 
 a {
-  color: #674842;
+  color: #37b0fa;
   text-decoration: underline;
 }
 
 button {
-  background: #d33d3d;
+  background: #37b0fa;
   padding: 10px 15px;
   font-size: 90%;
   border-radius: 8px;
   cursor: pointer;
   color: white;
-  border: 0;
+  border: 1px black solid;
 }
