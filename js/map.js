@@ -142,60 +142,59 @@ Map.prototype.getInitInfo = function () {
 };
 
 Map.prototype.getNewInfo = function () {
-   var $this = this;
-   console.log("getNewInfo called " + map.lastUpdatedDate);
-   $.ajax({
-      type: 'POST',
-      url: '/scripts/handlers/handler.Map.php',
-      data: {
-         action: "getNewInfo",
-         last_updated_date: map.lastUpdatedDate
-      },
-      success: function (data) {
-         console.log(data);
-         if (data.hasOwnProperty('result')) {
-            if (data.result) {
-               if (data.data.deleted.length > 0 || data.data.created.length > 0){
-                  map.lastUpdatedDate = getCurrentDate();
-                  map.CacheUpdate(data.data.deleted, data.data.created);
-               }               
+    var $this = this;
+    console.log("getNewInfo called " + map.lastUpdatedDate);
+    $.ajax({
+        type: 'POST',
+        url: '/scripts/handlers/handler.Map.php',
+        data: {
+            action: "getNewInfo",
+            last_updated_date: map.lastUpdatedDate
+        },
+        success: function (data) {
+            console.log(data);
+            if (data.hasOwnProperty('result')) {
+                if (data.result) {
+                    if (data.data.deleted.length > 0 || data.data.created.length > 0) {
+                        map.lastUpdatedDate = getCurrentDate();
+                        map.CacheUpdate(data.data.deleted, data.data.created);
+                    }
+                } else {
+                    alert(data.message);
+                }
             } else {
-               alert(data.message);
+                throw 'Unknown ajax result!';
             }
-         } else {
-            throw 'Unknown ajax result!';
-         }
-      },
-      dataType: 'json',
-      async: false
-   });
+        },
+        dataType: 'json',
+        async: false
+    });
 };
 
-Map.prototype.CacheUpdate = function(_deleted, _created) {
-   var eIdx;
-   map.lastUpdatedDate = getCurrentDate();
-   for (eIdx in _deleted){    
-      var eType = parseInt(_deleted[eIdx].events_event_type);
-      var eId = parseInt(_deleted[eIdx].events_id);   
-      if (!map.events[eType])
-         continue;
-      if (map.events[eType][eId]){
-         delete map.events[eType][eId];
-      }
-      var e;
-      for (e in map.cachedEvents[eType]){
-         if (map.cachedEvents[eType][e] == eId){
-            delete map.cachedEvents[eType][e];
-            break;
-         }
-      }
-   }
-   for (eIdx in _created){
+Map.prototype.CacheUpdate = function (_deleted, _created) {
+    var eIdx;
+    map.lastUpdatedDate = getCurrentDate();
+    for (eIdx in _deleted) {
+        var eType = parseInt(_deleted[eIdx].events_event_type);
+        var eId = parseInt(_deleted[eIdx].events_id);
+        if (!map.events[eType])
+            continue;
+        if (map.events[eType][eId]) {
+            delete map.events[eType][eId];
+        }
+        var e;
+        for (e in map.cachedEvents[eType]) {
+            if (map.cachedEvents[eType][e] == eId) {
+                delete map.cachedEvents[eType][e];
+                break;
+            }
+        }
+    }
+    for (eIdx in _created) {
 
-   }
-   handleEventsLayers();
+    }
+    handleEventsLayers();
 };
-
 
 
 Map.prototype.initPlaces = function () {
@@ -426,56 +425,59 @@ Map.prototype.addEvents = function (eventType) {   //строка типа party
     }
 };
 
-/*
- function getPos(el) {
- for (var lx = 0, ly = 0;
- el != null;
- lx += el.offsetLeft, ly += el.offsetTop, el = el.offsetParent);
- return {x: lx, y: ly};
- }
+
+function getPos(el) {
+    for (var lx = 0, ly = 0;
+         el != null;
+         lx += el.offsetLeft, ly += el.offsetTop, el = el.offsetParent);
+    return {x: lx, y: ly};
+}
 
 
- Map.prototype.changeScale = function (new_scale) {
- if (new_scale > min_scale && new_scale < max_scale) {
- var d = document.getElementById('field');
- var canvasPos = getPos(d);
- var absPos = this.stage.getAbsolutePosition();
- //        var mousePos = map.stage.getPosition();
+Map.prototype.changeScale = function (new_scale) {
+    if (new_scale > min_scale && new_scale < max_scale) {
+        var d = document.getElementById('field');
+        var canvasPos = getPos(d);
+        var absPos = this.stage.getAbsolutePosition();
+//        var mousePos = map.stage.getPosition();
 
- var smallCalc = (this.stage.width / 2 - absPos.x - canvasPos.x) / this.scale;
- var smallCalcY = (this.stage.height / 2 - absPos.y - canvasPos.y) / this.scale;
+        var smallCalc = (this.stage.width / 2 - absPos.x - canvasPos.x) / this.scale;
+        var smallCalcY = (this.stage.height / 2 - absPos.y - canvasPos.y) / this.scale;
 
- var endCalc = (this.stage.width / 2 - canvasPos.x) - new_scale * smallCalc;
- var endCalcY = (this.stage.height / 2 - canvasPos.y) - new_scale * smallCalcY;
+        var endCalc = (this.stage.width / 2 - canvasPos.x) - new_scale * smallCalc;
+        var endCalcY = (this.stage.height / 2 - canvasPos.y) - new_scale * smallCalcY;
 
- this.stage.setPosition(endCalc, endCalcY);
- this.imageLayer.scaleX(new_scale);
- this.imageLayer.scaleY(new_scale);
+        this.stage.setPosition(endCalc, endCalcY);
+        this.imageLayer.scaleX(new_scale);
+        this.imageLayer.scaleY(new_scale);
 
- this.placesLayer.scaleX(new_scale);
- this.placesLayer.scaleY(new_scale);
+        this.placesLayer.scaleX(new_scale);
+        this.placesLayer.scaleY(new_scale);
 
- this.eventsLayer.scaleX(new_scale);
- this.eventsLayer.scaleY(new_scale);
+        this.eventsLayer.scaleX(new_scale);
+        this.eventsLayer.scaleY(new_scale);
 
- this.imageLayer.draw();
- this.placesLayer.draw();
- this.eventsLayer.draw();
+        this.imageLayer.draw();
+        this.placesLayer.draw();
+        this.eventsLayer.draw();
 
- var eventForm = $('#event_form');
- if (eventForm.css('display') != 'none') {
- //            var x = map.activePlace.x;
- //            var y = map.activePlace.y;
- //            console.log('x: ' + x);
- //            console.log('y: ' + y);
- //            eventForm.css({left: x, top: y});
- }
+        var eventForm = $('#event_form');
+        if (eventForm.css('display') != 'none') {
+//            var x = map.activePlace.x;
+//            var y = map.activePlace.y;
+//            console.log('x: ' + x);
+//            console.log('y: ' + y);
+//            eventForm.css({left: x, top: y});
+        }
 
- this.scale = new_scale;
- }
- };
- */
+        this.scale = new_scale;
+    }
+};
 
+function clearEventForm() {
+    $('#event_header').val('');
+    $('#event_description').val('');
+}
 
 $(function () {
     map.init();
@@ -515,6 +517,8 @@ $(function () {
         };
         //TODO render events of this type if not
         handleEventsLayers();
+        clearEventForm();
+        $('#event_form').hide();
         return false;
     });
 
