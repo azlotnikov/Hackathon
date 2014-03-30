@@ -30,7 +30,7 @@ class Place extends Entity
             StrType(100),
             true,
             'Номер',
-            Array(Validate::IS_NUMERIC)
+            Array(Validate::IS_NOT_EMPTY)
          ),
          new Field(
             static::LAST_UPDATE_FLD,
