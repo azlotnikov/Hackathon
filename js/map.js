@@ -5,20 +5,20 @@ var inits = [false, false, false] //for image loading
 var eventsObjects = {
    'service': {
       id: 1,
-      offsetX: -23,
-      offsetY: 21,
+      offsetX: -29,
+      offsetY: 29,
       color: '#37b0fa'
    },
    'party': {
       id: 2,
       offsetX: 0,
-      offsetY: -20,
+      offsetY: -25,
       color: '#e42d3a'
    },
    'leisure': {
       id: 3,
-      offsetX: 23,
-      offsetY: 21,
+      offsetX: 29,
+      offsetY: 29,
       color: '#419829'
    }
 };
