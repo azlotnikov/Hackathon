@@ -124,7 +124,8 @@ Map.prototype.getInitInfo = function () {
         url: '/scripts/handlers/handler.Map.php',
         data: {
             action: "getInitInfo",
-            floor: "1"
+            floor: "1",
+            hostel: '1'
         },
         success: function (data) {
             if (data.hasOwnProperty('result')) {

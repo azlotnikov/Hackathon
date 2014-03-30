@@ -93,7 +93,7 @@ class ClauseCondition extends BaseClausePart
    public function GetSQL($isCond)
    {
       $cond = $isCond ? $this->cond . ' ' : '';
-      return $cond . $this->left->GetSQL($isCond) . ' ' . $this->op . ' ' . $this->right->GetSQL($isCond);
+      return $cond . $this->lp . $this->left->GetSQL($isCond) . ' ' . $this->op . ' ' . $this->right->GetSQL($isCond) . $this->rp;
    }
 
    public function GetParams()

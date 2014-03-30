@@ -1,8 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Entity.php';
-// require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.PlaceType.php';
-// require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Hostel.php';
-// require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Floor.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.User.php';
 
 class Place extends Entity
 {
@@ -94,46 +92,92 @@ class Place extends Entity
                      $this->GetFieldByName(static::TYPE_FLD)
                   ]
                );
-            $this->search->AddClause(
-               CCond(
-                  CF(static::TABLE, $this->GetFieldByName(static::FLOOR_FLD)),
-                  CVP($this->GetFieldByName(static::FLOOR_FLD)->GetValue()),
-                  'cAND'
-               ),
-               CCond(
-                  CF(static::TABLE, $this->GetFieldByName(static::HOSTEL_FLD)),
-                  CVP($this->GetFieldByName(static::HOSTEL_FLD)->GetValue()),
-                  'cAND'
+            global $_user, $_session;
+// SELECT
+//    places.id  as places_id,
+//    places.number  as places_number,
+//    places.polygon  as places_polygon,
+//    places.place_type  as places_place_type
+// FROM places
+// WHERE
+//    places.floor = 1 AND
+//    (
+//       (
+//          places.place_type = 1 AND
+//          places.number = (SELECT users.room FROM users INNER JOIN sessions ON sessions.user_id = users.id WHERE sessions.sid = '153382469192f1')
+//       )
+//       OR places.place_type <> 1
+//    )
+            $this->search = new Search(
+               static::TABLE,
+               new Clause(
+                  CCond(
+                     CF(static::TABLE, $this->GetFieldByName(static::FLOOR_FLD)),
+                     CVP($this->GetFieldByName(static::FLOOR_FLD)->GetValue()),
+                     cAND
+                  ),
+                  CCond(
+                     CF(static::TABLE, $this->GetFieldByName(static::HOSTEL_FLD)),
+                     CVP($this->GetFieldByName(static::HOSTEL_FLD)->GetValue()),
+                     cAND,
+                     opEQ
+                  ),
+                  CCond(
+                     CF(static::TABLE, $this->GetFieldByName(static::TYPE_FLD)),
+                     CVP(1),
+                     cAND,
+                     opEQ,
+                     '(('
+                  ),
+                  CCond(
+                     CF(static::TABLE, $this->GetFieldByName(static::NUMBER_FLD)),
+                     CVS(
+                        '(' . SQL::SimpleQuerySelect(
+                           $_user->ToTblNm(User::ROOM_FLD),
+                           sprintf(
+                              '%s %s',
+                              User::TABLE,
+                              SQL::MakeJoin(
+                                 User::TABLE,
+                                 [Session::TABLE => [null, [User::ID_FLD, Session::USER_FLD]]]
+                              )
+                           ),
+                           new Clause(
+                              CCond(
+                                 CF(Session::TABLE, $_session->GetFieldByName(Session::SID_FLD)),
+                                 CVS(sprintf("'%s'", $_SESSION['sid']))
+                              )
+                           )
+                        ) . ')'
+                     ),
+                     cAND,
+                     opEQ,
+                     null,
+                     ')'
+                  ),
+                  CCond(
+                     CF(static::TABLE, $this->GetFieldByName(static::TYPE_FLD)),
+                     CVP(1),
+                     cOR,
+                     opNE,
+                     null,
+                     ')'
+                  )
                )
             );
             break;
       }
       $this->selectFields = SQL::GetListFieldsForSelect($fields);
-//
-//      $this->selectFields = SQL::GetListFieldsForSelect(
-//         array_merge(
-//            SQL::PrepareFieldsForSelect(static::TABLE, $this->fields),
-//            SQL::PrepareFieldsForSelect(PlaceType::TABLE, [$_placeType->GetFieldByName(PlaceType::TYPENAME_FLD)]),
-//            SQL::PrepareFieldsForSelect(Floor::TABLE, [$_floor->GetFieldByName(Floor::NUMBER_FLD)]),
-//            SQL::PrepareFieldsForSelect(Hostel::TABLE, [$_hostel->GetFieldByName(Floor::NUMBER_FLD)])
-//         )
-//      );
-//      $this->search->SetJoins([
-//                                 PlaceType::TABLE => [null, [static::TYPE_FLD, PlaceType::ID_FLD]],
-//                                 Floor::TABLE => [null, [static::FLOOR_FLD, Floor::ID_FLD]],
-//                                 Hostel::TABLE => [null, [static::HOSTEL_FLD, Hostel::ID_FLD]]
-//                              ]);
    }
 
-//   public function ModifySample(&$sample)
-//   {
-//      if (empty($sample)) return;
-//      foreach ($sample as &$set) {
-//         $polygonKey = $this->ToPrfxNm(static::POLYGON_FLD);
-//         $set[$polygonKey] = json_decode($set[$polygonKey]);
-//      }
-//      undef($set);
-//   }
+   public function GetAvailable($floor, $hostel)
+   {
+      return $this->SetFieldByName(Place::FLOOR_FLD, $floor)
+                   ->SetFieldByName(Place::HOSTEL_FLD, $hostel)
+                  ->SetSamplingScheme(Place::INIT_SCHEME)
+                  ->GetAll();
+   }
+
 }
 
 $_place = new Place();

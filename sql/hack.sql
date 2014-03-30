@@ -190,10 +190,8 @@ INSERT INTO `floors`(`number`) VALUES
    ('4');
 
 INSERT INTO `place_types`(`type_name`) VALUES
-   ('Комната');
-
-INSERT INTO `places`(`number`, `polygon`, `place_type`, `floor`, `hostel`) VALUES
-   (400, '73,192,340,192,340,23,73,23', 1, 1, 1);
+   ('Комната'),
+   ('Тех. Помещение');
 
 INSERT INTO `event_types`(`type_name`) VALUES
    ('Услуги'),
