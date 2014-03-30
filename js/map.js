@@ -1,8 +1,7 @@
 var eventsTypesConsts = {
     'party': 2,
     'service': 1,
-    'leisure': 3,
-    'all': 0
+    'leisure': 3
 };
 
 var eventsColorsConsts = {
@@ -108,9 +107,10 @@ Map.prototype.drawEventsNumbers = function () {
         if (this.places[p].circles < 2) {
             continue;
         }
-        var points = this.places[p].places_polygon.split(',');
-        var x = parseInt(points[0]) + parseInt(bigCircleRadius / 2) + 3;
-        var y = parseInt(points[1]) - parseInt(bigCircleRadius / 2) - 3;
+//        var points = this.places[p].places_polygon.split(',');
+        var center = getCenter(polygonFromString(this.places[p].places_polygon));
+        var x = center.x + parseInt(bigCircleRadius / 2) + 3;
+        var y = center.y - parseInt(bigCircleRadius / 2) - 3;
         var circle = new Kinetic.Circle({
             x: x, //!
             y: y,
@@ -136,52 +136,54 @@ Map.prototype.drawEventsNumbers = function () {
     this.eventsLayer.draw();
 };
 
-Map.prototype.renderEvents = function (eventsType) {
-    this.eventsLayer.removeChildren();
-    this.zerosEventsCirclesForPlaces();
-    var events = [];
-    if (eventsType != 0) {
-        events = this.events[eventsType];
+Map.prototype.renderEvents = function (eventsType, dontRender) {
+    dontRender = dontRender || false;
+    if (!dontRender) {
+        this.eventsLayer.removeChildren();
+        this.zerosEventsCirclesForPlaces();
     }
-    var i;
+    var events = this.events[eventsType];
     var e;
-//    for (i in this.events) {
-        for (e in events) {
-            var place_id = events[e].events_place_id;
-            if (this.places[place_id].circles > 0) {
-                this.places[place_id].circles++;
-                continue;
-            }
-            var center = getCenter(this.places[place_id].places_polygon.split(','));
-            var circle = new Kinetic.Circle({
-                x: center.x, //!
-                y: center.y,
-                radius: bigCircleRadius,
-                fill: eventsColorsConsts[eventsType],
-                opacity: 0.5,
-                strokeEnabled: false
-            });
-
+    for (e in events) {
+        var place_id = events[e].events_place_id;
+        if (this.places[place_id].circles > 0) {
             this.places[place_id].circles++;
-
-            circle.eventId = events[e].events_id;
-
-            circle.on('mousedown', function () {
-                alert(this.eventId);
-            });
-
-            this.eventsLayer.add(circle);
+            continue;
         }
-//    }
-    this.eventsLayer.draw();
-    this.drawEventsNumbers();
+//        console.log(this.places[place_id].places_polygon);
+//        console.log(polygonFromString(this.places[place_id].places_polygon));
+        var center = getCenter(polygonFromString(this.places[place_id].places_polygon));
+//        console.log(center);
+        var circle = new Kinetic.Circle({
+            x: center.x, //!
+            y: center.y,
+            radius: bigCircleRadius,
+            fill: eventsColorsConsts[eventsType],
+            opacity: 0.5,
+            strokeEnabled: false
+        });
+
+        this.places[place_id].circles++;
+
+        circle.eventId = events[e].events_id;
+
+        circle.on('mousedown', function () {
+            alert(this.eventId);
+        });
+
+        this.eventsLayer.add(circle);
+    }
+    if (!dontRender) {
+        this.eventsLayer.draw();
+        this.drawEventsNumbers();
+    }
 };
 
 Map.prototype.initPlaces = function () {
     this.placesLayer.removeChildren();
     var p;
     for (p in this.places) {
-        console.log(this.places[p]);
+//        console.log(this.places[p]);
         var poly = new Kinetic.Line({
             points: this.places[p].places_polygon.split(','),
 //            fill: 'red',
@@ -202,15 +204,13 @@ Map.prototype.initPlaces = function () {
             this.setStroke('');
             map.placesLayer.draw();
         });
-        poly.on('mousedown', function (e) {
+        poly.on('click', function (e) {
+            console.log('BTN: ' + JSON.stringify(e));
             var mousePos = map.stage.getPointerPosition();
             $('#event_place_id').val(this.placeId);
             $('#event_form').show('slow').css({left: mousePos.x, top: mousePos.y});
             map.activePlace = this;
         });
-//        poly.on('mouseup', function() {
-//
-//        });
 
         this.placesLayer.add(poly);
     }
@@ -268,6 +268,10 @@ Map.prototype.changeScale = function (new_scale) {
 };
 
 $(function () {
+    $('container').on("contextmenu", function (evt) {
+        evt.preventDefault();
+    });
+
     $('#view_parties').click(function () {
         map.renderEvents(eventsTypesConsts['party']);
     });
@@ -285,7 +289,9 @@ $(function () {
     });
 
     $('#show_events_all').click(function () {
-        map.renderEvents(eventsTypesConsts['all']);
+        map.renderEvents(eventsTypesConsts['party'], true);
+        map.renderEvents(eventsTypesConsts['leisure'], true);
+        map.renderEvents(eventsTypesConsts['service']);
     });
 
     $('#show_events_party').click(function () {
