@@ -28,7 +28,7 @@ var eventsObjects = {
         id: 3,
         offsetX: 23,
         offsetY: 21,
-        color: 'pink'
+        color: '#419829'
     }
 };
 
@@ -55,7 +55,7 @@ function Map() {               //самый главный объект карт
 function loadIcons() {
     eventsObjects["service"].imageIcon = new Image();
     eventsObjects["service"].imageIcon.onload = function () {};
-    eventsObjects["service"].imageIcon.src = '/img/icon_party.png';
+    eventsObjects["service"].imageIcon.src = '/img/icon_service.png';
 //
     eventsObjects["party"].imageIcon = new Image();
     eventsObjects["party"].imageIcon.onload = function () {};
@@ -63,7 +63,7 @@ function loadIcons() {
 //
     eventsObjects["leisure"].imageIcon = new Image();
     eventsObjects["leisure"].imageIcon.onload = function () {};
-    eventsObjects["leisure"].imageIcon.src = '/img/icon_party.png';
+    eventsObjects["leisure"].imageIcon.src = '/img/icon_leisure.png';
 }
 
 Map.prototype.init = function () {
@@ -140,13 +140,18 @@ Map.prototype.initPlaces = function () {
     for (p in this.places) {
         var poly = new Kinetic.Line({
             points: this.places[p].places_polygon.split(','),
-            strokeWidth: 6,
+            strokeWidth: 4,
             opacity: 0.8,
+            shadowColor: "black",
+            shadowEnabled: true,
+            shadowOpacity: 0.8,
+            shadowOffsetX: -3,
+            shadowOffsetY: 3,
             closed: true
         });
         poly.placeId = this.places[p].places_id;
         poly.on('mouseover', function () {
-            this.setStroke('red');
+            this.setStroke('white');
             map.placesLayer.draw();
         });
         poly.on('mouseout', function () {
@@ -196,11 +201,12 @@ Map.prototype.drawEventsNumbers = function () {
 //
             this.eventsLayer.add(circle);
 
+
             var circleText = new Kinetic.Text({
-                x: x - 4,
+                x: x - ((this.places[p].circles[eventsObjects[e].id] > 9) ? 8 : 4),
                 y: y - 7,
                 text: this.places[p].circles[eventsObjects[e].id],
-                fontSize: 17,
+                fontSize: 15,
                 fontFamily: 'Calibri',
                 fill: 'white'
             });
