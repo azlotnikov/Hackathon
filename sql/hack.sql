@@ -208,7 +208,8 @@ INSERT INTO `floors`(`number`) VALUES
 
 INSERT INTO `place_types`(`type_name`) VALUES
    ('Комната'),
-   ('Тех. Помещение');
+   ('Тех. Помещение'),
+   ('Холл');
 
 INSERT INTO `event_types`(`type_name`) VALUES
    ('Услуги'),
