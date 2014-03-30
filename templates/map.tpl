@@ -21,7 +21,7 @@
    </section>
    <script src="/js/map.js"></script>
    <div id="event_form">
-      <form>
+      <form action="/">
          <div class="form_block">
             <label for="event_header">Заголовок</label>
             <input id="event_header" name="event_header" value="Событие"/>
