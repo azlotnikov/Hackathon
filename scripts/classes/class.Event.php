@@ -194,7 +194,7 @@ class Event extends Entity
                static::TABLE,
                new Clause(
                   CCond(
-                     CF(static::DELETION_DATE_FLD),
+                     CF(static::TABLE, $this->GetFieldByName(static::DELETION_DATE_FLD)),
                      CVP($this->lastUpdatedDate),
                      null,
                      opGE
