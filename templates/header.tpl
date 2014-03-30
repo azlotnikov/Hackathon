@@ -17,7 +17,7 @@
   <a href='/'><img src="/img/logo.png" class="logo" /></a>
   <nav>
     <ul class="style_menu">
-      <li><a href="/" data="main">Главная</a></li><li><a href="/map" data="main">Карта</a></li><li><a href="/" data="main">Все события</a></li>
+      <li><a href="/" data="main">Главная</a></li><li><a href="/map" data="main">Карта</a></li><li><a href="/events" data="main">Все события</a></li>
     </ul>
   </nav>
 </header>

@@ -7,5 +7,4 @@
 {/block}
 {block name='div.main'}
   {include file="header.tpl"}
-  
 {/block}
