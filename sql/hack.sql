@@ -72,14 +72,16 @@ CREATE TABLE IF NOT EXISTS `event_types` (
 );
 
 CREATE TABLE IF NOT EXISTS `events` (
-   `id`            INT          NOT NULL AUTO_INCREMENT,
-   `header`        VARCHAR(100) NOT NULL,
-   `owner_id`      INT          NOT NULL,
-   `place_id`      INT          NOT NULL,
-   `event_type`    INT          NOT NULL,
-   `creation_date` TIMESTAMP    NOT NULL,
-   `description`   TEXT,
-   `due_date`      DATETIME,
+   `id`               INT          NOT NULL AUTO_INCREMENT,
+   `header`           VARCHAR(100) NOT NULL,
+   `owner_id`         INT          NOT NULL,
+   `place_id`         INT          NOT NULL,
+   `event_type`       INT          NOT NULL,
+   `creation_date`    DATETIME     NOT NULL,
+   `description`      TEXT,
+   `due_date`         DATETIME,
+   `updated_date`     TIMESTAMP,
+   `deletion_date`    DATETIME DEFAULT NULL,
    PRIMARY KEY (`id`),
    FOREIGN KEY (`owner_id`)   REFERENCES `users` (`id`)       ON DELETE CASCADE,
    FOREIGN KEY (`place_id`)   REFERENCES `places` (`id`)      ON DELETE CASCADE,
@@ -150,7 +152,7 @@ BEGIN
    IF uuser_id > 0  THEN
       SET result = 1;
       IF act_type = 0 THEN
-         DELETE FROM `events` WHERE `id` =  eid;
+         UPDATE `events` SET `deletion_date` = CURRENT_TIMESTAMP WHERE `id` = eid;
       ELSEIF act_type = 1 THEN
          UPDATE `events` SET
             `header` = header,
@@ -161,8 +163,8 @@ BEGIN
             `due_date` = due_date
          WHERE `id` = eid;
       ELSEIF act_type = 2 THEN
-         INSERT INTO `events`(`header`, `owner_id`, `place_id`, `event_type`, `description`, `due_date`) VALUES
-            (header, uuser_id, place_id, event_type, description, due_date);
+         INSERT INTO `events`(`header`, `owner_id`, `place_id`, `event_type`, `description`, `due_date`, `creation_date`) VALUES
+            (header, uuser_id, place_id, event_type, description, due_date, CURRENT_TIMESTAMP);
          SELECT LAST_INSERT_ID() into result;
       ELSE
          SET result = 0;
