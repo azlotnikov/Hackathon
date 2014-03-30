@@ -70,7 +70,8 @@ function loadIcons() {
     eventsObjects["leisure"].imageIcon.src = '/img/icon_leisure.png';
 }
 
-Map.prototype.init = function () {
+Map.prototype.init = function (floor) {
+    this.floor = floor;
     this.getInitInfo();                             //получение информации обо всем на карте ajax
     // console.log("OO " + Date());
     // this.lastUpdatedDate = Date();
@@ -124,7 +125,7 @@ Map.prototype.getInitInfo = function () {
         url: '/scripts/handlers/handler.Map.php',
         data: {
             action: "getInitInfo",
-            floor: "1",
+            floor: map.floor,
             hostel: '1'
         },
         success: function (data) {
@@ -153,7 +154,9 @@ Map.prototype.getNewInfo = function () {
         url: '/scripts/handlers/handler.Map.php',
         data: {
             action: "getNewInfo",
-            last_updated_date: map.lastUpdatedDate
+            last_updated_date: map.lastUpdatedDate,
+            floor: map.floor,
+            hostel: '1'
         },
         success: function (data) {
             console.log(data);
@@ -498,7 +501,7 @@ function clearEventForm() {
 }
 
 $(function () {
-    map.init();
+    map.init($('#floor_select').val());
     map.lastUpdatedDate = getCurrentDate();
 
     $('#layers input[name="events_layer"]').change(handleEventsLayers);
@@ -512,6 +515,12 @@ $(function () {
             map.changeScale(ui.value);
             handleEventsLayers();
         }});
+
+    $('#floor_select').change(function () {
+        map.init($('#floor_select').val());
+        handleEventsLayers();
+        clearEventForm();
+    });
 
     $('#event_form_close').click(function () {
         $('#event_form').hide();
