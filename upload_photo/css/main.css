@@ -6,11 +6,12 @@
 }
 
 #upload_photo button.upload, #resize_photo button.go_end {
-  padding: 7px 10px;
   margin: 20px auto;
   display: block;
+  background: #37b0fa;
+  padding: 10px 15px;
+  font-size: 90%;
   cursor: pointer;
-  background: #36a09f;
   color: white;
   border: 0;
 }

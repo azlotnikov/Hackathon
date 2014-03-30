@@ -362,7 +362,7 @@ function eventOnClick() {
    for (e = 0; e < events.length; e++) {
       eventData = map.cachedEvents[events[e]];
       text += '<article>';
-      text += '<img src="/img/avatar_s.jpg" class="avatar" /><div class="right_info">';
+      text += '<img src="/scripts/uploads/' + eventData.users_photo_id + '_s.jpg" class="avatar" /><div class="right_info">';
       text += '<div class="header"><h1><a href="/profile/?user_id=' + eventData.users_id + '">' + eventData.users_name + ' ' + eventData.users_surname + ':</a></h1>';
       text += '<date>' + eventData.events_creation_date + '</date></div>';
       text += '<h2>' + eventData.events_header + '</h2>';

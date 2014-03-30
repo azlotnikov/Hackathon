@@ -64,6 +64,15 @@ div.control ul li {
    margin-bottom: 5px;
 }
 
+div.control h2 {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+div.control h2 span {
+  font-weight: normal;
+}
+
 /*#my_account aside {
   float: left;
   width: 200px;

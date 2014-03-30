@@ -5,7 +5,7 @@
         <h1 class="top">{$events.type_alias}</h1>
         {foreach from=$events.events item=event}
           <article>
-            <img src="/img/avatar_s.jpg" class="avatar" />
+            <img src="/scripts/uploads/{$event.users_photo_id}_s.jpg" class="avatar" />
             <div class="right_info">
               <div class="header">
                 <h1><a href="/profile/?user_id={$event.users_id}">{$event.users_name} {$event.users_surname} ({$event.places_number}):</a></h1>
