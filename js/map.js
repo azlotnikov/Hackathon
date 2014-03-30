@@ -10,6 +10,11 @@ var eventsColorsConsts = {
     3: 'black'
 };
 
+var scale = 1;
+var min_scale = 0.4;
+var max_scale = 1.6;
+var scale_eps = 0.005;
+
 var bigCircleRadius = 20;
 var littleCircleRadius = 10;
 
@@ -19,40 +24,47 @@ function Map() {
     this.cachedEvents = {};
     this.stage = new Kinetic.Stage({
         container: 'container',
-        width: 1000,
-        height: 600
+        width: $(document).width() - 100,
+        height: $(document).height() - 100,
+        draggable: true
     });
-    this.placesLayer = new Kinetic.Layer();
-    this.eventsLayer = new Kinetic.Layer();
-
-    this.stage.add(this.placesLayer);
-    this.stage.add(this.eventsLayer);
 }
 
 Map.prototype.init = function () {
     this.getInitInfo();
     var layer = new Kinetic.Layer();
 
-    var mapImage = new Image();
-    mapImage.onload = function () {
+    var imageObj = new Image();
+
+    var map = this;
+
+    imageObj.onload = function () {
+
         var imageMap = new Kinetic.Image({
             x: 1,
             y: 1,
-            image: imageMap,
-            width: 106,
-            height: 118
+            image: imageObj
         });
 
-        layer.add(imageMap);
+        map.imageLayer = new Kinetic.Layer();
+        map.placesLayer = new Kinetic.Layer();
+        map.eventsLayer = new Kinetic.Layer();
 
-        map.stage.add(layer);
+        map.stage.add(map.imageLayer);
+        map.stage.add(map.placesLayer);
+        map.stage.add(map.eventsLayer);
+
+        map.imageLayer.add(imageMap);
+
+        map.imageLayer.draw();
 
         layer.draw();
-    };
-    mapImage.src = 'http://www.html5canvastutorials.com/demos/assets/yoda.jpg';
 
-    this.initPlaces();
-    this.renderEvents(eventsTypesConsts['service']);
+        map.initPlaces();
+        map.renderEvents(eventsTypesConsts['service']);
+    };
+
+    imageObj.src = '/img/map.jpg';
 };
 
 Map.prototype.getInitInfo = function () {
@@ -166,12 +178,14 @@ Map.prototype.initPlaces = function () {
         var poly = new Kinetic.Line({
             points: this.places[p].places_polygon.split(','),
 //            fill: 'red',
-            strokeWidth: 3,
-            opacity: 0.5,
+            strokeWidth: 6,
+            opacity: 0.8,
             closed: true
         });
 
         poly.placeId = this.places[p].places_id;
+
+        var map = this;
 
         poly.on('mouseover', function () {
             this.setStroke('red');
@@ -199,7 +213,74 @@ Map.prototype.initPlaces = function () {
 
 };
 
+function getPos(el) {
+    for (var lx = 0, ly = 0;
+         el != null;
+         lx += el.offsetLeft, ly += el.offsetTop, el = el.offsetParent);
+    return {x: lx, y: ly};
+}
+
+function onMouseWheel(e, delta, dx, dy) {
+
+    // mozilla fix...
+    if (e.originalEvent.detail) {
+        delta = e.originalEvent.detail;
+    }
+    else {
+        delta = e.originalEvent.wheelDelta;
+    }
+
+    if (delta !== 0) {
+        e.preventDefault();
+    }
+
+    var _cur_scale;
+    if (delta > 0) {
+        _cur_scale = scale + Math.abs(delta / 640);
+    } else {
+        _cur_scale = scale - Math.abs(delta / 640);
+    }
+
+    if (_cur_scale > min_scale && _cur_scale < max_scale && Math.abs(_cur_scale - scale) > scale_eps) {
+
+        var cur_scale = _cur_scale;
+
+        var d = document.getElementById('field');
+        var cnvsPos = getPos(d);
+        var Apos = map.stage.getAbsolutePosition();
+        var mousePos = map.stage.getPosition();
+
+        var smallCalc = (e.originalEvent.pageY - Apos.x - cnvsPos.x) / scale;
+        var smallCalcY = (e.originalEvent.pageY - Apos.y - cnvsPos.y) / scale;
+
+        var endCalc = (e.originalEvent.pageY - cnvsPos.x) - cur_scale * smallCalc;
+        var endCalcY = (e.originalEvent.pageY - cnvsPos.y) - cur_scale * smallCalcY;
+
+        scale = cur_scale;
+
+        map.stage.setPosition(endCalc, endCalcY);
+        map.imageLayer.scaleX(cur_scale);
+        map.imageLayer.scaleY(cur_scale);
+
+        map.placesLayer.scaleX(cur_scale);
+        map.placesLayer.scaleY(cur_scale);
+
+        map.eventsLayer.scaleX(cur_scale);
+        map.eventsLayer.scaleY(cur_scale);
+
+        map.imageLayer.draw();
+        map.placesLayer.draw();
+        map.eventsLayer.draw();
+    }
+
+}
+
 $(function () {
+
+    $('#field').bind('mousewheel MozMousePixelScroll', function (event, delta, deltaX, deltaY) {
+        event.preventDefault();
+        onMouseWheel(event, delta, deltaX, deltaY);
+    });
 
     $('#view_parties').click(function () {
         map.renderEvents(eventsTypesConsts['party']);

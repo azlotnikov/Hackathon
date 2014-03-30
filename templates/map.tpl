@@ -3,15 +3,18 @@
 <head>
    <title>Map</title>
    <meta charset="utf-8" />
-   <script src="/js/kinetic-v5.1.0.min.js"></script>
+   <script src="/js/kinectjs.js"></script>
    <script src="/js/jquery.js"></script>
    <script src="/js/event.js"></script>
+   <link href="/css/map.css" rel="stylesheet" />
 
 </head>
 <body>
-<div id="container"></div>
+<section id="field">
+   <div id="container"></div>
+</section>
 <script src="/js/map.js"></script>
-<div id="eventAddForm" style="width: 200px; height: 200px; border: 1px black solid; position: absolute; display: none;">
+<div id="eventAddForm">
    <input id="event_header" value="Заголовок"/>
    <select id="event_type">
       <option value="1" selected>Услуги</option>
