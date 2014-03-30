@@ -195,12 +195,10 @@ Map.prototype.initPlaces = function () {
             this.setStroke('');
             map.placesLayer.draw();
         });
-        poly.on('mousedown', function () {
+        poly.on('mousedown', function (e) {
             var mousePos = map.stage.getPointerPosition();
-            var eventForm = $('#eventAddForm');
             $('#event_place_id').val(this.placeId);
-            eventForm.show();
-            eventForm.css({left: mousePos.x, top: mousePos.y});
+            $('#event_form').show('slow').css({left: mousePos.x, top: mousePos.y});
         });
 //        poly.on('mouseup', function() {
 //

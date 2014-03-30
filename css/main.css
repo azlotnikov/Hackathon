@@ -1,0 +1,26 @@
+body {
+  margin: 0 auto;
+  font-family: Calibri;
+}
+
+#wrap {
+  height: auto;
+  margin: 0 auto;
+  background: #fff;
+  padding: 0 20px 50px;
+}
+
+a {
+  color: #674842;
+  text-decoration: underline;
+}
+
+button {
+  background: #d33d3d;
+  padding: 10px 15px;
+  font-size: 90%;
+  border-radius: 8px;
+  cursor: pointer;
+  color: white;
+  border: 0;
+}
