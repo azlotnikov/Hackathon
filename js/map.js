@@ -1,14 +1,14 @@
-Array.prototype.unique = function () {
-    var a = this.concat();
-    for (var i = 0; i < a.length; ++i) {
-        for (var j = i + 1; j < a.length; ++j) {
-            if (a[i] === a[j])
-                a.splice(j--, 1);
-        }
-    }
-
-    return a;
-};
+//Array.prototype.unique = function () {
+//    var a = this.concat();
+//    for (var i = 0; i < a.length; ++i) {
+//        for (var j = i + 1; j < a.length; ++j) {
+//            if (a[i] === a[j])
+//                a.splice(j--, 1);
+//        }
+//    }
+//
+//    return a;
+//};
 
 
 var eventsObjects = {
@@ -249,18 +249,20 @@ Map.prototype.addEvents = function (eventType) {   //строка типа party
         circle.placeId = placeId;
 
         circle.on('mousedown', function () {
-            if (this.eventId in map.cachedEvents) {
-                alert(JSON.stringify(map.cachedEvents[this.eventId]));
-            } else {
-                var p;
-                var events = [];
-                for (p in map.events[this.eventTypeId]) {
-                    if (map.events[this.eventTypeId][p].events_place_id == this.placeId) {
+//            alert(JSON.stringify(map.cachedEvents));
+            var p;
+            var events = [];
+            var cachedEvents = [];
+            for (p in map.events[this.eventTypeId]) {
+                if (map.events[this.eventTypeId][p].events_place_id == this.placeId) {
+                    if (map.events[this.eventTypeId][p].events_id in map.cachedEvents) {
+                        cachedEvents.push(map.events[this.eventTypeId][p].events_id);
+                    } else {
                         events.push(map.events[this.eventTypeId][p].events_id);
                     }
                 }
-//                alert(JSON.stringify(events));
-//                var $this = this;
+            }
+            if (events.length > 0) {
                 $.ajax({
                     type: 'POST',
                     url: '/scripts/handlers/handler.Map.php',
@@ -272,10 +274,7 @@ Map.prototype.addEvents = function (eventType) {   //строка типа party
 //                        alert(JSON.stringify(data));
                         if (data.hasOwnProperty('result')) {
                             if (data.result) {
-                                var mousePos = map.stage.getPointerPosition();
-                                $('#events_info_text').val(JSON.stringify(data));
-                                $('#events_info').show('fast').css({left: mousePos.x + $("#container").position().left, top: mousePos.y + $("#container").position().top});
-//                                map.cachedEvents = map.cachedEvents.concat(data.data).unique();
+                                map.cachedEvents = $.extend(map.cachedEvents, data.data);
                             } else {
                                 alert(data.message);
                             }
@@ -287,6 +286,18 @@ Map.prototype.addEvents = function (eventType) {   //строка типа party
                     async: false
                 });
             }
+
+            events = events.concat(cachedEvents);
+            var e;
+            var text = '';
+            for (e = 0; e < events.length; e++) {
+                text += JSON.stringify(map.cachedEvents[events[e]]) + "\n";
+            }
+            var mousePos = map.stage.getPointerPosition();
+//            var mousePos = {x: 10, y: 10};
+            $('#events_info_text').val(text);
+            $('#events_info').show('fast').css({left: mousePos.x + $("#container").position().left, top: mousePos.y + $("#container").position().top});
+
         });
 
         this.eventsLayer.add(circle);
@@ -373,7 +384,7 @@ $(function () {
             event_id = addEvent(place_id, $('#event_header').val(), $('#event_description').val(), event_type);
         map.events[event_type][event_id] = {
             events_id: event_id,
-            events_place_id: parseInt(place_id)
+            events_place_id: place_id
         };
         //TODO render events of this type if not
         handleEventsLayers();
