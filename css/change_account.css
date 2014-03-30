@@ -1,0 +1,39 @@
+#save {
+  margin-top: 20px;
+}
+
+#my_categories > ul > li {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 20px;
+}
+
+#my_categories > ul > li > ul {
+  display: block;
+  margin-top: 10px;
+  margin-left: 4px;
+  border-left: 1px solid #CACACA;
+  padding-left: 7px;
+}
+
+#my_categories > ul > li > ul li {
+  margin-bottom: 3px;
+}
+
+#my_categories > ul > li > ul li label {
+  display: inline-block;
+  font-weight: normal;
+}
+
+#change_info {
+  text-align: center;
+}
+
+.red {
+  background: #e42d3a;
+}
+
+#change_info h1 {
+  font-size: 150%;
+  margin-bottom: 17px;
+}

@@ -43,6 +43,7 @@ button.get_more {
 
 .events article {
   margin-bottom: 17px;
+  min-height: 50px;
 }
 
 .events img.avatar {

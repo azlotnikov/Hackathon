@@ -56,7 +56,7 @@
         <h1>Удаление аккаунта</h1>
         <span class="error top_error">{$errorMsg|default:''}</span>
         <small>Вы уверены?</small>
-        <div class="buttons"><button id="save" name="submit" value="delete">Да, удалить аккаунт</button><button id="cancel" type="button" onClick="javascript:location.assign('/profile')">Отмена</button></div>
+        <div class="buttons"><button id="save" class="red" name="submit" value="delete">Да, удалить аккаунт</button><button id="cancel" type="button" onClick="javascript:location.assign('/profile')">Отмена</button></div>
       </form>
     {elseif $type==change_name}
       <form action="/change_data/?type=change_name" method="POST" id="change_name">
