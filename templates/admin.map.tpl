@@ -4,7 +4,63 @@
   <link href="/css/admin.css" rel="stylesheet" />
   <link href="/css/main.css" rel="stylesheet" />
   <script src="/js/admin.js"></script>
-  <script src="/js/kinectjs.js"></script>
+   <script>
+      $(function(){
+         var canv        = document.getElementById("canv"),
+             ctx         = canv.getContext('2d'), // Контекст
+             isDraw      = false,
+             coords      = [],
+             startP      = {},
+             pic         = new Image();
+         canv.width      = 4146;
+         canv.height     = 2482;
+         startP.x    = null;
+         startP.y    = null;
+         pic.src         = '/img/map.jpg';
+         pic.onload = function() {
+            ctx.drawImage(pic, 0, 0);
+         }
+         ctx.strokeStyle = "red";
+         ctx.lineWidth = 5;
+         canv.onclick = function(e) {
+            var rect = canv.getBoundingClientRect();
+            x = e.clientX - rect.left;
+            y = e.clientY - rect.top;
+            coords.push(x + ',' + y);
+
+            if (isDraw) {
+               ctx.lineTo(x, y);
+               ctx.stroke();
+            } else {
+               ctx.beginPath();
+               ctx.moveTo(x, y);
+               startP.x = x;
+               startP.y = y;
+               isDraw = true;
+            }
+         }
+         $("#next").click(function() {
+            ctx.lineTo(startP.x, startP.y);
+            ctx.stroke();
+            coords = [];
+            startP.x = null;
+            startP.y = null;
+            isDraw = false;
+            var num = prompt('Номер');
+            $.ajax({
+               type: 'POST',
+               url: '/scripts/handlers/handler.Admin.php',
+               data: {
+                  number: num,
+                  polygon: coords.join(","),
+                  place_type: $('#place_type').val(),
+                  floor: $('#floor_select').val(),
+                  hostel: '1'
+               }
+            });
+         });
+      });
+   </script>
 {/block}
 {block name='page'}
 <div id="wrap">
@@ -24,47 +80,23 @@
       {*TODO generate floors ids*}
       <select id="floor_select">
          <option value="1">Этаж 1</option>
-         <option value="1">Этаж 2</option>
-         <option value="1">Этаж 3</option>
-         <option value="1">Этаж 4</option>
-         <option value="1" selected>Этаж 5</option>
-         <option value="1">Этаж 6</option>
-         <option value="1">Этаж 7</option>
-         <option value="1">Этаж 8</option>
+         <option value="2">Этаж 2</option>
+         <option value="3">Этаж 3</option>
+         <option value="4">Этаж 4</option>
+         <option value="5" selected>Этаж 5</option>
+         <option value="6">Этаж 6</option>
+         <option value="7">Этаж 7</option>
+         <option value="8">Этаж 8</option>
       </select>
+      <select id="place_type">
+         <option value="1">Жилая комната</option>
+         <option value="2">Тех. помещение</option>
+         <option value="3">Холл</option>
+      </select>
+      <button id="next">Сохранить</button>
    </div>
-   <div id="container"></div>
-   <script>
-      var stage = new Kinetic.Stage({        //канвас
-         container: 'container',
-         width: $(document).width() - 100,
-         height: $(document).height() - 100,
-         draggable: true
-      });
-
-      var layer = new Kinetic.Layer(),
-              imageObj = new Image();
-
-      imageObj.onload = function () {
-
-         var imageMap = new Kinetic.Image({
-            x: 1,
-            y: 1,
-            image: imageObj
-         });
-
-         layer.add(imageMap);
-
-         stage.add(layer);
-
-         layer.scaleX(0.6);
-         layer.scaleY(0.6);
-
-         layer.draw();
-      };
-
-      imageObj.src = '/img/map.jpg';
-
-   </script>
+   <canvas id="canv">Обновите браузер</canvas>
+   <div id="coords"></div>
+   <button id="next">Next</button>
 </div>
 {/block}
