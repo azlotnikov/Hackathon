@@ -40,8 +40,8 @@ var eventsColorsConsts = {
 var min_scale = 0.3;
 var max_scale = 1;
 
-var bigCircleRadius = 40;
-var littleCircleRadius = 20;
+var bigCircleRadius = 20;
+var littleCircleRadius = 10;
 
 function Map() {
     this.scale = 0.7;
@@ -124,21 +124,25 @@ Map.prototype.zerosEventsCirclesForPlaces = function () {
     var p;
     var e;
     for (p in this.places) {
-//        for (e in eventsTypesConsts) { TODO whats the fuck?
         this.places[p].circles = [];
-        this.places[p].circles[1] = 0;
-        this.places[p].circles[2] = 0;
-        this.places[p].circles[3] = 0;
-//        }
+        for (e in eventsTypesConsts) {
+            this.places[p].circles[eventsTypesConsts[e]] = 0;
+        }
     }
+
 };
 
 Map.prototype.drawEventsNumbers = function () {
     var p;
     var e;
+
     for (p in this.places) {
         for (e in eventsTypesConsts) {
-            if (this.places[p]['circles'][eventsTypesConsts[e]] < 2) {
+            if (this.places[p].circles.length == 0) {
+                continue;
+            }
+            // alert(this.places[p])
+            if (this.places[p].circles[eventsTypesConsts[e]] < 2) {
                 continue;
             }
             var center = getCenter(polygonFromString(this.places[p].places_polygon));
@@ -163,7 +167,7 @@ Map.prototype.drawEventsNumbers = function () {
             var circleText = new Kinetic.Text({
                 x: x - 4,
                 y: y - 7,
-                text: this.places[p]['circles'][eventsTypesConsts[e]],
+                text: this.places[p].circles[eventsTypesConsts[e]],
                 fontSize: 17,
                 fontFamily: 'Calibri',
                 fill: 'black'
@@ -181,21 +185,26 @@ Map.prototype.clearEvents = function () {
 };
 
 Map.prototype.renderEvents = function () {
-    this.eventsLayer.draw();
     this.drawEventsNumbers();
+    this.eventsLayer.draw();
 };
 
 Map.prototype.addEvents = function (eventType) {
     var events = this.events[eventType];
     var e;
-    for (e in events) {
+    for (e = 0; e < events.length; e++) {
+        //e = events[]
         var placeId = events[e].events_place_id;
+        
         if (this.places[placeId].circles[eventType] > 0) {
+            
+            // alert(this.places[placeId].circles)
             this.places[placeId].circles[eventType]++;
             continue;
         }
 //        console.log(this.places[place_id].places_polygon);
 //        console.log(polygonFromString(this.places[place_id].places_polygon));
+this.places[placeId].circles[eventType]++;
         var center = getCenter(polygonFromString(this.places[placeId].places_polygon));
         center.x += eventsCircleOffset[eventType].x;
         center.y += eventsCircleOffset[eventType].y;
@@ -208,8 +217,6 @@ Map.prototype.addEvents = function (eventType) {
             opacity: 0.5,
             strokeEnabled: false
         });
-
-        this.places[placeId]['circles'][e]++;
 
         circle.eventId = events[e].events_id;
         circle.eventType = eventType;
@@ -375,8 +382,9 @@ $(function () {
             events_id: event_id,
             events_place_id: parseInt(place_id)
         });
+        alert('!');
         //TODO render events of this type if not
-//        handleLayers();
+       handleLayers();
 //        map.renderEvents(event_type);
         return false;
     });
