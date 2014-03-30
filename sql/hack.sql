@@ -178,6 +178,9 @@ BEGIN
             `due_date` = due_date
          WHERE `id` = eid;
       ELSEIF act_type = 2 THEN
+         IF event_type = 2 THEN
+            SET due_date = IFNULL(CURRENT_TIMESTAMP(), due_date);
+         END IF;
          INSERT INTO `events`(`header`, `owner_id`, `place_id`, `event_type`, `description`, `due_date`, `creation_date`) VALUES
             (header, uuser_id, place_id, event_type, description, due_date, CURRENT_TIMESTAMP);
          SELECT LAST_INSERT_ID() FROM `events` LIMIT 1 into result;
