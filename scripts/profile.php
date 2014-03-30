@@ -1,5 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.User.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Event.php';
 
 $page     = 1;
 $userId   = isset($_GET['user'])     ? $_GET['user']    : null;
@@ -25,7 +26,9 @@ $_user->SetSamplingScheme(User::PROFILE_INFO_SCHEME);
 $displayedUser = $accSelf ? $_user->GetBySID($sid) : $_user->GetById($userId);
 if (empty($displayedUser)) Redirect('/');
 
+$userId = $accSelf ? $displayedUser[$_user->ToPrfxNm(User::ID_FLD)] : $userId;
 $smarty->assign('acc_self', $accSelf)
        ->assign('user_id', $userId)
        ->assign('user_info', $displayedUser)
+       ->assign('events_list', $_event->GetList($userId))
        ->display('profile.tpl');
