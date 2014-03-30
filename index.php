@@ -45,12 +45,16 @@ switch ($request[0]) {
 
    case 'profile':
       SetActiveItem('profile');
-      // require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/profile.php';
+      require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/profile.php';
       break;
 
    case 'map':
       SetActiveItem('map');
       require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/map.php';
+      break;
+
+   case 'change_data':
+      require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/change_data.php';
       break;
 
    default:

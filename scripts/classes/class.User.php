@@ -1,5 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Image.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Session.php';
 
 class User extends Entity
 {
@@ -26,7 +27,7 @@ class User extends Entity
    const TABLE = 'users';
 
    private
-      $acc_self = false,
+      $accSelf = false,
       $profileFields;
 
    public function __construct()
@@ -118,11 +119,6 @@ class User extends Entity
       );
    }
 
-   public function SetAccSelf($acc_self)
-   {
-      $this->acc_self = $acc_self;
-   }
-
    public function ModifySample(&$sample)
    {
       if (empty($sample)) return;
@@ -141,8 +137,7 @@ class User extends Entity
       $fields = Array();
       switch ($this->samplingScheme) {
          case static::REGISTRATION_CHECK_SCHEME:
-            $fields =
-               SQL::PrepareFieldsForSelect(static::TABLE, [$this->idField]);
+            $fields = SQL::PrepareFieldsForSelect(static::TABLE, [$this->idField, $this->GetFieldByName(static::LOGIN_FLD)]);
             break;
 
          case static::LOGIN_SCHEME:
@@ -161,17 +156,30 @@ class User extends Entity
             $fields =
                SQL::PrepareFieldsForSelect(
                   static::TABLE,
-                  $this->profileFields
+                  [
+                     $this->idField,
+                     $this->GetFieldByName(static::NAME_FLD),
+                     $this->GetFieldByName(static::SURNAME_FLD),
+                     $this->GetFieldByName(static::PHONE_FLD),
+                     $this->GetFieldByName(static::ROOM_FLD),
+                     $this->GetFieldByName(static::DESCRIPTION_FLD),
+                     $this->GetFieldByName(static::REGISTER_DATE_FLD),
+                     $this->GetFieldByName(static::LAST_UPDATE_FLD),
+                     $this->GetFieldByName(static::PROFILE_VIEWS_FLD)
+                  ]
                );
             $fields[] = ImageWithFlagSelectSQL(static::TABLE, $this->GetFieldByName(static::PHOTO_FLD));
-            $fields[] = '(SELECT get_user_photo_amount_by_' . ($this->acc_self ? 'email' : 'id' ) . '(?)) as work_amount';
+            $fields[] = sprintf(
+               "(SELECT get_user_ad_amount_by_id(%s)) as ad_amount",
+               $this->accSelf ? SQL::ToTblNm(Session::TABLE, Session::USER_FLD) : SQL::ToTblNm(static::TABLE, static::ID_FLD)
+            );
             break;
 
          case static::EXTRA_DATA_SCHEME:
             $fields =
                SQL::PrepareFieldsForSelect(
                   static::TABLE,
-                  Array($this->GetFieldByName(static::DESCRIPTION_FLD))
+                  [$this->GetFieldByName(static::DESCRIPTION_FLD)]
                );
             break;
 
@@ -179,11 +187,7 @@ class User extends Entity
             $fields =
                SQL::PrepareFieldsForSelect(
                   static::TABLE,
-                  Array(
-                     $this->GetFieldByName(static::SITE_FLD),
-                     $this->GetFieldByName(static::SKYPE_FLD),
-                     $this->GetFieldByName(static::PHONE_FLD)
-                  )
+                  [$this->GetFieldByName(static::ROOM_FLD), $this->GetFieldByName(static::PHONE_FLD)]
                );
             break;
 
@@ -191,31 +195,47 @@ class User extends Entity
             $fields =
                SQL::PrepareFieldsForSelect(
                   static::TABLE,
-                  Array(
-                     $this->GetFieldByName(static::NAME_FLD),
-                     $this->GetFieldByName(static::SURNAME_FLD)
-                  )
+                  [$this->GetFieldByName(static::NAME_FLD), $this->GetFieldByName(static::SURNAME_FLD)]
                );
             break;
       }
       $this->selectFields = SQL::GetListFieldsForSelect($fields);
    }
 
-   // public function UpdateByEmail($email)
-   // {
-   //    global $db;
-   //    list($names, $params) = $this->SetChangeParams();
-   //    $query    = SQL::GetUpdateQuery(static::TABLE, $names, static::EMAIL_FLD);
-   //    $params[] = $email;
-   //    return $db->Query($query, $params);
-   // }
+   public function SetAccSelf($accSelf)
+   {
+      $this->accSelf = $accSelf;
+   }
+
+   public function UpdateByLogin($login)
+   {
+      global $db;
+      list($names, $params) = $this->SetChangeParams();
+      $query    = SQL::GetUpdateQuery(static::TABLE, $names, static::LOGIN_FLD);
+      $params[] = $login;
+      return $db->Query($query, $params);
+   }
+
+   public function GetBySID($sid)
+   {
+      global $_session;
+      $this->search->AddClause(
+         CCond(
+            CF(Session::TABLE, $_session->GetFieldByName(Session::SID_FLD)),
+            CVP($sid)
+         )
+      )->SetJoins([Session::TABLE => [null, [static::ID_FLD, Session::USER_FLD]]]);
+      $result = $this->GetPart();
+      $this->search->RemoveClause()->SetJoins();
+      return $result;
+   }
 
    // public function GetById($id)
    // {
    //    $scheme = $this->samplingScheme;
-   //    if ($scheme == static::PROFILE_INFO_SCHEME) {
-   //       $this->search->SetJoins([], [$id]);
-   //    }
+   //    // if ($scheme == static::PROFILE_INFO_SCHEME) {
+   //    //    $this->search->SetJoins([], [$id]);
+   //    // }
    //    return parent::GetById($id);
    // }
 

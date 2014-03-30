@@ -2,6 +2,7 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/lib/cookie.inc';
 // require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.UserForgottenPass.php';
 
+
 //------------class Authentification------------
 
 class Authentification
@@ -11,7 +12,7 @@ class Authentification
       $isAuth = true;
       if (empty($_SESSION['sid'])) {
          try {
-            AuthorizedUser::Authorize((new AuthCookie())->Validate()->GetSID());
+            AuthorizedUser::Authorize((new AuthCookie())->Validate());
          } catch (CookieException $e) {
             $isAuth = false;
          } catch (Exception $e) {
@@ -29,10 +30,10 @@ class Registration
 {
    public static function Register($fields, $pass)
    {
-      global $_user;
+      global $_user, $db;
       $userInfo = $_user->SetSamplingScheme(User::REGISTRATION_CHECK_SCHEME)->GetByLogin($fields[User::LOGIN_FLD]);
       $_user->SetFields($fields);
-      if (empty($userInfo)) {
+      if (empty($userInfo) && $db->isConnected) {
          AuthorizedUser::Authorize(
             $_user->SetFields(
                array_merge(
@@ -43,8 +44,7 @@ class Registration
                      User::REGISTER_DATE_FLD => date(GENERAL_DATE_FORMAT)
                   ]
                )
-            )->Insert(true),
-            true
+            )->Insert(true)
          );
       } else {
          throw new Exception(ERROR_LOGIN_ALREADY_REGISTERED);
@@ -73,20 +73,18 @@ class AuthorizedUser
       }
       $encryptpass = $db->Query('SELECT create_encrypted_pass(?, ?) as db_pass', [$pass, $user[$_user->ToPrfxNm(User::SALT_FLD)]])[0]['db_pass'];
       if ($encryptpass == $user[$_user->ToPrfxNm(User::PASS_FLD)]) {
-         self::Authorize($user[$_user->ToPrfxNm(User::ID_FLD)], true);
+         self::Authorize($user[$_user->ToPrfxNm(User::ID_FLD)]);
       } else {
          throw new Exception(ERROR_LOGIN);
       }
    }
 
-   public static function Authorize($user_id, $isCookie = false)
+   public static function Authorize($user_id)
    {
       global $_session;
       $_session->SetFieldByName(Session::USER_FLD, $user_id);
       $_SESSION['sid'] = $_session->Authorize($user_id);
-      if ($isCookie) {
-         (new AuthCookie($_SESSION['sid']))->Set();
-      }
+      (new AuthCookie($_SESSION['sid']))->Set();
    }
 
    public static function Unauthorized()
@@ -101,17 +99,16 @@ class AuthorizedUser
       //session_destroy();
    }
 
-   // public static function ChangePassword($login, $oldPass, $newPass)
-   // {
-   //    try {
-   //       self::Login($email, $oldPass);
-   //    } catch (Exception $e) {
-   //       throw new Exception(ERROR_PASS);
-   //    }
-   //    global $_user;
-   //    $_user->SetFieldByName(User::PASS_FLD, $newPass)->UpdateByEmail($email);
-   //    self::Authorize($email, $newPass, true);
-   // }
+   public static function ChangePassword($login, $oldPass, $newPass)
+   {
+      try {
+         static::Login($login, $oldPass);
+      } catch (Exception $e) {
+         throw new Exception(ERROR_PASS);
+      }
+      global $_user;
+      $_user->SetFieldByName(User::PASS_FLD, $newPass)->UpdateByLogin($login);
+   }
 
    public static function DeleteAccount($login)
    {
