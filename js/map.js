@@ -21,7 +21,7 @@ function Map() {
     this.scale = 0.7;
     this.places = {};
     this.events = {};
-    this.activePlace = {};
+//    this.activePlace = {};
     this.cachedEvents = {};
     this.stage = new Kinetic.Stage({
         container: 'container',
@@ -62,7 +62,7 @@ Map.prototype.init = function () {
         layer.draw();
 
         map.initPlaces();
-        map.renderEvents(eventsTypesConsts['service']);
+        handleLayers();
     };
 
     imageObj.src = '/img/map.jpg';
@@ -136,12 +136,17 @@ Map.prototype.drawEventsNumbers = function () {
     this.eventsLayer.draw();
 };
 
-Map.prototype.renderEvents = function (eventsType, dontRender) {
-    dontRender = dontRender || false;
-    if (!dontRender) {
-        this.eventsLayer.removeChildren();
-        this.zerosEventsCirclesForPlaces();
-    }
+Map.prototype.clearEvents = function() {
+    this.eventsLayer.removeChildren();
+    this.zerosEventsCirclesForPlaces();
+};
+
+Map.prototype.renderEvents = function() {
+    this.eventsLayer.draw();
+    this.drawEventsNumbers();
+};
+
+Map.prototype.addEvents = function (eventsType) {
     var events = this.events[eventsType];
     var e;
     for (e in events) {
@@ -172,10 +177,6 @@ Map.prototype.renderEvents = function (eventsType, dontRender) {
         });
 
         this.eventsLayer.add(circle);
-    }
-    if (!dontRender) {
-        this.eventsLayer.draw();
-        this.drawEventsNumbers();
     }
 };
 
@@ -267,57 +268,38 @@ Map.prototype.changeScale = function (new_scale) {
     }
 };
 
+function handleLayers() {
+    map.clearEvents();
+    $('#layers input[name="events_layer"]:checked').each(function(){
+        var arr = $(this).attr('id').split('_');
+        map.addEvents(eventsTypesConsts[arr[2]]);
+    });
+    map.renderEvents();
+}
+
 $(function () {
     $('container').on("contextmenu", function (evt) {
         evt.preventDefault();
     });
 
-    $('#view_parties').click(function () {
-        map.renderEvents(eventsTypesConsts['party']);
-    });
+    $('#layers input[name="events_layer"]').change(handleLayers);
 
-    $('#view_services').click(function () {
-        map.renderEvents(eventsTypesConsts['service']);
-    });
-
-    $('#view_leisure').click(function () {
-        map.renderEvents(eventsTypesConsts['leisure']);
-    });
 
     $('#event_form_close').click(function () {
         $('#event_form').hide();
-    });
-
-    $('#show_events_all').click(function () {
-        map.renderEvents(eventsTypesConsts['party'], true);
-        map.renderEvents(eventsTypesConsts['leisure'], true);
-        map.renderEvents(eventsTypesConsts['service']);
-    });
-
-    $('#show_events_party').click(function () {
-        map.renderEvents(eventsTypesConsts['party']);
-    });
-
-    $('#show_events_leisure').click(function () {
-        map.renderEvents(eventsTypesConsts['leisure']);
-    });
-
-    $('#show_events_service').click(function () {
-        map.renderEvents(eventsTypesConsts['service']);
     });
 
    $('#event_form form').submit(function () {
         var event_type = $('#event_type').find('option:selected').val();
         var place_id = $('#event_place_id').val();
         var event_id = addEvent(place_id, $('#event_header').val(), $('#event_description').val(), event_type);
-        console.log(event_id);
-        console.log(map.events[event_type]);
         map.events[event_type].push({
             events_id: event_id,
             events_place_id: parseInt(place_id)
         });
-        console.log(map.events[event_type]);
-        map.renderEvents(event_type);
+       //TODO render events of this type if not
+       handleLayers();
+//        map.renderEvents(event_type);
         return false;
     });
 
