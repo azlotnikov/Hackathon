@@ -188,7 +188,7 @@ class Event extends Entity
                );
                break;
 
-         case static::DELETTION_SCHEME:
+         case static::NEW_DELETTION_SCHEME:
             $fields = SQL::PrepareFieldsForSelect(static::TABLE, [$this->idField]);
             $this->search = new Search(
                static::TABLE,
