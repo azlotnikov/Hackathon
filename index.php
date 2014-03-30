@@ -33,6 +33,11 @@ switch ($request[0]) {
       $smarty->display('index.tpl');
       break;
 
+   case 'events';
+      SetActiveItem('events');
+      require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/events.php';
+      break;
+
    case 'login':
       SetActiveItem('login');
       require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/login.php';
