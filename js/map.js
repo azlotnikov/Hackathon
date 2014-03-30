@@ -10,46 +10,40 @@ Array.prototype.unique = function() {
     return a;
 };
 
-var eventsTypesConsts = {
-    'party': 2,
-    'service': 1,
-    'leisure': 3
-};
 
-var eventsCircleOffset = {
-    1: {
-        x: -23,
-        y: 21
+var eventsObjects = {
+    'service': {
+        id: 1,
+        offsetX: -23,
+        offsetY: 21,
+        color: 'blue'
     },
-    2: {
-        x: 0,
-        y: -20
+    'party': {
+        id: 2,
+        offsetX: 0,
+        offsetY: -20,
+        color: 'red'
     },
-    3: {
-        x: 23,
-        y: 21
+    'leisure': {
+        id: 3,
+        offsetX: 23,
+        offsetY: 21,
+        color: 'yellow'
     }
-}
-
-var eventsColorsConsts = {
-    1: 'blue',
-    2: 'red',
-    3: 'yellow'
 };
 
-var min_scale = 0.3;
-var max_scale = 1;
+var min_scale          = 0.3,  //минимальный масштаб карты
+    max_scale          = 1,    //максимальный мастштаб карты
+    bigCircleRadius    = 20,   //радиус большого кружка события
+    littleCircleRadius = 10;   //радиус маленького кружка события
 
-var bigCircleRadius = 20;
-var littleCircleRadius = 10;
-
-function Map() {
-    this.scale = 0.7;
-    this.places = {};
-    this.events = {};
-//    this.activePlace = {};
+function Map() {               //самый главный объект карта
+    this.scale        = 0.7;         //начальный масштаб
+    this.places       = {};          //массив всех мест: ключ - id места
+    this.events       = {};          //массив всех событий
+//  this.activePlace  = {};
     this.cachedEvents = {};
-    this.stage = new Kinetic.Stage({
+    this.stage        = new Kinetic.Stage({        //канвас
         container: 'container',
         width: $(document).width() - 100,
         height: $(document).height() - 100,
@@ -58,12 +52,10 @@ function Map() {
 }
 
 Map.prototype.init = function () {
-    this.getInitInfo();
-    var layer = new Kinetic.Layer();
+    this.getInitInfo();                             //получение информации обо всем на карте ajax
 
-    var imageObj = new Image();
-
-//    var map = this;
+    var layer    = new Kinetic.Layer(),
+        imageObj = new Image();
 
     imageObj.onload = function () {
 
@@ -73,7 +65,7 @@ Map.prototype.init = function () {
             image: imageObj
         });
 
-        map.imageLayer = new Kinetic.Layer();
+        map.imageLayer  = new Kinetic.Layer();
         map.placesLayer = new Kinetic.Layer();
         map.eventsLayer = new Kinetic.Layer();
 
@@ -81,18 +73,16 @@ Map.prototype.init = function () {
         map.stage.add(map.placesLayer);
         map.stage.add(map.eventsLayer);
 
-        imageMap.on("click", function(){
-            $("#event_form").hide();
-        });
-
         map.imageLayer.add(imageMap);
-
         map.imageLayer.draw();
 
         layer.draw();
+        map.initPlaces();       //нарисовать скрытый слой с местами
+        handleEventsLayers();   //определяет какие события из чекбоксов нарисовать
 
-        map.initPlaces();
-        handleLayers();
+        imageMap.on("click", function() {  //скрыть формочку при клике на пустое место
+            $("#event_form").hide();
+        });
     };
 
     imageObj.src = '/img/map.jpg';
@@ -124,35 +114,53 @@ Map.prototype.getInitInfo = function () {
     });
 };
 
-Map.prototype.zerosEventsCirclesForPlaces = function () {
+Map.prototype.initPlaces = function () {
+    this.placesLayer.removeChildren();
     var p;
-    var e;
     for (p in this.places) {
-        this.places[p].circles = [];
-        for (e in eventsTypesConsts) {
-            this.places[p].circles[eventsTypesConsts[e]] = 0;
-        }
-    }
+        var poly = new Kinetic.Line({
+            points: this.places[p].places_polygon.split(','),
+            strokeWidth: 6,
+            opacity: 0.8,
+            closed: true
+        });
+        poly.placeId = this.places[p].places_id;
+        poly.on('mouseover', function () {
+            this.setStroke('red');
+            map.placesLayer.draw();
+        });
+        poly.on('mouseout', function () {
+            this.setStroke('');
+            map.placesLayer.draw();
+        });
+        poly.on('click', function (e) {
+            var mousePos = map.stage.getPointerPosition();
+            $('#event_place_id').val(this.placeId);
+            $('#event_form').show('fast').css({left: mousePos.x + $("#container").position().left, top: mousePos.y + $("#container").position().top});
+            //map.activePlace = this;
+        });
 
+        this.placesLayer.add(poly);
+    }
+    this.placesLayer.draw();
 };
 
 Map.prototype.drawEventsNumbers = function () {
     var p;
     var e;
-
     for (p in this.places) {
-        for (e in eventsTypesConsts) {
+        for (e in eventsObjects) {
             if (this.places[p].circles.length == 0) {
                 continue;
             }
             // alert(this.places[p])
-            if (this.places[p].circles[eventsTypesConsts[e]] < 2) {
+            if (this.places[p].circles[eventsObjects[e].id] < 2) {
                 continue;
             }
             var center = getCenter(polygonFromString(this.places[p].places_polygon));
 
-            center.x += eventsCircleOffset[eventsTypesConsts[e]].x;
-            center.y += eventsCircleOffset[eventsTypesConsts[e]].y;
+            center.x += eventsObjects[e].offsetX;
+            center.y += eventsObjects[e].offsetY;
 
             var x = center.x + parseInt(bigCircleRadius / 2) + 3;
             var y = center.y - parseInt(bigCircleRadius / 2) - 3;
@@ -171,7 +179,7 @@ Map.prototype.drawEventsNumbers = function () {
             var circleText = new Kinetic.Text({
                 x: x - 4,
                 y: y - 7,
-                text: this.places[p].circles[eventsTypesConsts[e]],
+                text: this.places[p].circles[eventsObjects[e].id],
                 fontSize: 17,
                 fontFamily: 'Calibri',
                 fill: 'black'
@@ -183,9 +191,29 @@ Map.prototype.drawEventsNumbers = function () {
     this.eventsLayer.draw();
 };
 
+
+function handleEventsLayers() {
+    map.clearEvents(); //удаление всего связанного с событиями
+    $('#layers input[name="events_layer"]:checked').each(function () {
+        map.addEvents($(this).attr('id').split('_')[2]); //например event_view_service --  
+    });
+    map.renderEvents();
+}
+
 Map.prototype.clearEvents = function () {
     this.eventsLayer.removeChildren();
-    this.zerosEventsCirclesForPlaces();
+    this.zerosEventsCirclesForPlaces();  //создает и обнуляет счетчики кружочков событий
+};
+
+Map.prototype.zerosEventsCirclesForPlaces = function () {
+    var p;
+    var e;
+    for (p in this.places) {
+        this.places[p].circles = [];
+        for (e in eventsObjects) {
+            this.places[p].circles[eventsObjects[e].id] = 0;
+        }
+    }
 };
 
 Map.prototype.renderEvents = function () {
@@ -193,37 +221,31 @@ Map.prototype.renderEvents = function () {
     this.eventsLayer.draw();
 };
 
-Map.prototype.addEvents = function (eventType) {
-    var events = this.events[eventType];
+Map.prototype.addEvents = function (eventType) {   //строка типа party
+    eventTypeId = eventsObjects[eventType].id;
+    var events = this.events[eventTypeId];
     var e;
-    for (e = 0; e < events.length; e++) {
-        //e = events[]
+    for (e in events) {
         var placeId = events[e].events_place_id;
-        
-        if (this.places[placeId].circles[eventType] > 0) {
-            
-            // alert(this.places[placeId].circles)
-            this.places[placeId].circles[eventType]++;
+        if (this.places[placeId].circles[eventTypeId] > 0) {
+            this.places[placeId].circles[eventTypeId]++;
             continue;
         }
-//        console.log(this.places[place_id].places_polygon);
-//        console.log(polygonFromString(this.places[place_id].places_polygon));
-this.places[placeId].circles[eventType]++;
+        this.places[placeId].circles[eventTypeId]++;
         var center = getCenter(polygonFromString(this.places[placeId].places_polygon));
-        center.x += eventsCircleOffset[eventType].x;
-        center.y += eventsCircleOffset[eventType].y;
-        console.log(center);
+        center.x += eventsObjects[eventType].offsetX;
+        center.y += eventsObjects[eventType].offsetY;
         var circle = new Kinetic.Circle({
             x: center.x, //!
             y: center.y,
             radius: bigCircleRadius,
-            fill: eventsColorsConsts[eventType],
-            opacity: 0.5,
+            fill: eventsObjects[eventType].color,
+            opacity: 0.6,
             strokeEnabled: false
         });
 
-        circle.eventId = events[e].events_id;
-        circle.eventType = eventType;
+        circle.eventId = e;
+        circle.eventType = eventTypeId;
         circle.placeId = placeId;
 
         circle.on('mousedown', function () {
@@ -267,46 +289,7 @@ this.places[placeId].circles[eventType]++;
     }
 };
 
-Map.prototype.initPlaces = function () {
-    this.placesLayer.removeChildren();
-    var p;
-    for (p in this.places) {
-//        console.log(this.places[p]);
-        var poly = new Kinetic.Line({
-            points: this.places[p].places_polygon.split(','),
-//            fill: 'red',
-            strokeWidth: 6,
-            opacity: 0.8,
-            closed: true
-        });
-
-        poly.placeId = this.places[p].places_id;
-
-//        var map = this;
-
-        poly.on('mouseover', function () {
-            this.setStroke('red');
-            map.placesLayer.draw();
-        });
-        poly.on('mouseout', function () {
-            this.setStroke('');
-            map.placesLayer.draw();
-        });
-        poly.on('click', function (e) {
-            var mousePos = map.stage.getPointerPosition();
-
-            $('#event_place_id').val(this.placeId);
-            $('#event_form').show('fast').css({left: mousePos.x + $("#container").position().left, top: mousePos.y + $("#container").position().top});
-            map.activePlace = this;
-        });
-
-        this.placesLayer.add(poly);
-    }
-
-    this.placesLayer.draw();
-
-};
-
+/*
 function getPos(el) {
     for (var lx = 0, ly = 0;
          el != null;
@@ -354,24 +337,13 @@ Map.prototype.changeScale = function (new_scale) {
         this.scale = new_scale;
     }
 };
+*/
 
-function handleLayers() {
-    map.clearEvents();
-    $('#layers input[name="events_layer"]:checked').each(function () {
-        var arr = $(this).attr('id').split('_');
-        map.addEvents(eventsTypesConsts[arr[2]]);
-    });
-    map.renderEvents();
-}
 
 $(function () {
     map.init();
 
-    $('container').on("contextmenu", function (evt) {
-        evt.preventDefault();
-    });
-
-    $('#layers input[name="events_layer"]').change(handleLayers);
+    $('#layers input[name="events_layer"]').change(handleEventsLayers);
 
 
     $('#event_form_close').click(function () {
@@ -379,16 +351,15 @@ $(function () {
     });
 
     $('#event_form form').submit(function () {
-        var event_type = $('#event_type').find('option:selected').val();
-        var place_id = $('#event_place_id').val();
-        var event_id = addEvent(place_id, $('#event_header').val(), $('#event_description').val(), event_type);
-        map.events[event_type].push({
+        var event_type = $('#event_type').find('option:selected').val(),
+            place_id   = $('#event_place_id').val(),
+            event_id   = addEvent(place_id, $('#event_header').val(), $('#event_description').val(), event_type);
+        map.events[event_type][event_id] = {
             events_id: event_id,
             events_place_id: parseInt(place_id)
-        });
+        };
         //TODO render events of this type if not
-       handleLayers();
-//        map.renderEvents(event_type);
+       handleEventsLayers();
         return false;
     });
 
