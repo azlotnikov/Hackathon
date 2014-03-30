@@ -107,7 +107,6 @@ if ($type == CHANGE_EXTRA_DATA) {
 }
 
 if ($type != CHANGE_PASS) {
-   print_r($_user->GetBySID($_SESSION['sid']));
    $smarty->assign('udata', $_user->GetBySID($_SESSION['sid']));
 }
 
