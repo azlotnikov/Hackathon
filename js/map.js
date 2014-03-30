@@ -203,17 +203,17 @@ Map.prototype.initPlaces = function () {
     this.placesLayer.removeChildren();
     var p;
     for (p in this.places) {
-      // map.places[p].poss = [];
-      // map.places[p].poss.push(null);
-      // for (var k = 1; k <= 3; k++){
-         // map.places[p].poss.push(getCenters(
-            // k, 
-            // [bigCircleRadius, littleCircleRadius],
-            // [8, 7],
-            // polygonFromString(map.places[p].places_polygon)
-         // ));         
-      // }
-      // console.log(JSON.stringify(map.places[p].poss));
+        // map.places[p].poss = [];
+        // map.places[p].poss.push(null);
+        // for (var k = 1; k <= 3; k++){
+        // map.places[p].poss.push(getCenters(
+        // k,
+        // [bigCircleRadius, littleCircleRadius],
+        // [8, 7],
+        // polygonFromString(map.places[p].places_polygon)
+        // ));
+        // }
+        // console.log(JSON.stringify(map.places[p].poss));
         var poly = new Kinetic.Line({
             points: this.places[p].places_polygon.split(','),
             strokeWidth: 4,
@@ -453,13 +453,14 @@ Map.prototype.changeScale = function (new_scale) {
 //        var d = document.getElementById('field');
 //        var canvasPos = getPos(d);
 //        var absPos = this.stage.getAbsolutePosition();
-////        var mousePos = map.stage.getPosition();
+////        var mousePos = {x: this.stage.width / 2, y: this.stage.height / 2};
+////
+////        alert(this.stage.getWidth);
+//        var smallCalc = (this.stage.getWidth / 2 - absPos.x - canvasPos.x) / this.scale;
+//        var smallCalcY = (this.stage.getHeight / 2 - absPos.y) / this.scale;
 //
-//        var smallCalc = (this.stage.width / 2 - absPos.x - canvasPos.x) / this.scale;
-//        var smallCalcY = (this.stage.height / 2 - absPos.y - canvasPos.y) / this.scale;
-//
-//        var endCalc = (this.stage.width / 2 - canvasPos.x) - new_scale * smallCalc;
-//        var endCalcY = (this.stage.height / 2 - canvasPos.y) - new_scale * smallCalcY;
+//        var endCalc = (this.stage.getWidth / 2 - canvasPos.x) - new_scale * smallCalc;
+//        var endCalcY = (this.stage.getHeight / 2 - - canvasPos.y) - new_scale * smallCalcY;
 
 //        this.stage.setPosition(endCalc, endCalcY);
 //        alert(JSON.stringify(this.eventsLayer.scale));
