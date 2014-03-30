@@ -91,12 +91,20 @@ class Event extends Entity
             Array(Validate::IS_NOT_EMPTY)
          )
       );
+      $this->dueDateKey    = $this->ToPrfxNm(static::DUE_DATE_FLD);
       $this->createDateKey = $this->ToPrfxNm(static::CREATION_DATE_FLD);
    }
 
    private function ModifyCreateDate(&$set)
    {
       $set[$this->createDateKey] = (new DateTime($set[$this->createDateKey]))->format('d.m.Y');
+   }
+
+   private function ModifyDueDate(&$set)
+   {
+      if ($set[$this->dueDateKey]) {
+         $set[$this->dueDateKey] = (new DateTime($set[$this->dueDateKey]))->format('d.m.Y H:i');
+      }
    }
 
    public function ModifySample(&$sample)
@@ -125,13 +133,9 @@ class Event extends Entity
             break;
 
          case static::INFO_SCHEME:
-            $part_format = 'd.m.Y';
-            $dueDateKey    =  $this->ToPrfxNm(static::DUE_DATE_FLD);
             $result = [];
             foreach ($sample as &$set) {
-               if ($set[$dueDateKey]) {
-                  $set[$dueDateKey] = (new DateTime($set[$dueDateKey]))->format($part_format);
-               }
+               $this->ModifyDueDate($set);
                $this->ModifyCreateDate($set);
                $result[$set[$idKey]] = $set;
             }
