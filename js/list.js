@@ -15,7 +15,7 @@ $(function(){
                for (var e = 0; e < data.data.length; e++) {
                   var eventData = data.data[e];
                   text += '<article>';
-                  text += '<img src="/scripts/uploads/' + eventData.users_photo_id + '_s.jpg" class="avatar" /><div class="right_info">';
+                  text += '<img src="' + (eventData.users_photo_id ? '/scripts/uploads/' + eventData.users_photo_id + '_s.jpg' : '/img/avatar_small.jpg') + '" class="avatar" /><div class="right_info">';
                   text += '<div class="header"><h1><a href="/profile/?user_id=' + eventData.users_id + '">' + eventData.users_name + ' ' + eventData.users_surname + ' (' + 
                           eventData.places_number + '):</a></h1>';
                   text += '<date>' + eventData.events_creation_date + '</date></div>';
