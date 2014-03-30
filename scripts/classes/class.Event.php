@@ -17,16 +17,20 @@ class Event extends Entity
    const OWNER_FLD         = 'owner_id';
    const DUE_DATE_FLD      = 'due_date';
    const DESCRIPTION_FLD   = 'description';
+   const UPDATED_DATE_FLD  = 'updated_date'
    const CREATION_DATE_FLD = 'creation_date';
+   const DELETION_DATE_FLD = 'deletion_date'
 
-   const INIT_SCHEME = 2;
-   const INFO_SCHEME = 3;
-   const LIST_SCHEME = 4;
+   const INIT_SCHEME          = 2;
+   const INFO_SCHEME          = 3;
+   const LIST_SCHEME          = 4;
+   const NEW_DELETTION_SCHEME = 5;
 
    const LIST_LIMIT = 2;
 
    private
-      $createDateKey = null;
+      $createDateKey   = null,
+      $lastUpdatedDate = null;
 
    public function __construct()
    {
@@ -65,6 +69,14 @@ class Event extends Entity
             true,
             'Время создания',
             Array(Validate::IS_NOT_EMPTY)
+         ),
+         new Field(
+            static::DELETION_DATE_FLD,
+            TimestampType()
+         ),
+         new Field(
+            static::UPDATED_DATE_FLD,
+            TimestampType()
          ),
          new Field(
             static::DUE_DATE_FLD,
@@ -126,6 +138,14 @@ class Event extends Entity
             $sample = $result;
             break;
 
+         case static::NEW_DELETTION_SCHEME:
+            $result = [];
+            foreach ($sample as &$set) {
+               $result[] = $set[$idKey];
+            }
+            $sample = $result;
+            break;
+
       }
    }
 
@@ -167,6 +187,21 @@ class Event extends Entity
                   )
                );
                break;
+
+         case static::DELETTION_SCHEME:
+            $fields = SQL::PrepareFieldsForSelect(static::TABLE, [$this->idField]);
+            $this->search = new Search(
+               static::TABLE,
+               new Clause(
+                  CCond(
+                     CF(static::DELETION_DATE_FLD),
+                     CVP($this->lastUpdatedDate),
+                     null,
+                     opGE
+                  )
+               )
+            );
+            break;
 
       }
       // SQL::PrepareFieldsForSelect(EventType::TABLE, [$_eventType->GetFieldByName(PlaceType::TYPENAME_FLD)])
@@ -310,6 +345,24 @@ class Event extends Entity
          );
       }
       return $this->SetSamplingScheme(static::INFO_SCHEME)->GetAll();
+   }
+
+   public function GetNewInfo($lastUpdatedDate)
+   {
+      $this->lastUpdatedDate = $lastUpdatedDate;
+      $result['deleted'] = $this->SetSamplingScheme(static::NEW_DELETTION_SCHEME)->GetAll();
+      $this->search = new Search(
+         static::TABLE,
+         new Clause(
+            CCond(
+               CF(static::TABLE, $this->GetFieldByName(static::UPDATED_DATE_FLD)),
+               CVP($lastUpdatedDate),
+               null,
+               opGE
+            )
+         )
+      );
+      $result['created'] = $this->SetSamplingScheme(static::INIT_SCHEME)->GetAll();
    }
 }
 

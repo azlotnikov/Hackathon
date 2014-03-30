@@ -36,7 +36,13 @@ try {
          break;
 
       case 'getEventInfo':
-         $ajaxResult['data'] = $_event->GetEventInfo($post['data']);
+         $ajaxResult['data'] = $_event->GetEventInfo($post['data']); //ids event
+         break;
+
+      case 'getNewInfo':
+         //deleted events - id only
+         //new events + edited - info like in getInitInfo
+         $ajaxResult['data'] = $_event->GetNewInfo($post['last_updated_date']);
          break;
 
       default:
