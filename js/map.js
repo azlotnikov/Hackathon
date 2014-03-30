@@ -1,3 +1,15 @@
+Array.prototype.unique = function() {
+    var a = this.concat();
+    for(var i=0; i<a.length; ++i) {
+        for(var j=i+1; j<a.length; ++j) {
+            if(a[i] === a[j])
+                a.splice(j--, 1);
+        }
+    }
+
+    return a;
+};
+
 var eventsTypesConsts = {
     'party': 2,
     'service': 1,
@@ -28,8 +40,8 @@ var eventsColorsConsts = {
 var min_scale = 0.3;
 var max_scale = 1;
 
-var bigCircleRadius = 20;
-var littleCircleRadius = 10;
+var bigCircleRadius = 40;
+var littleCircleRadius = 20;
 
 function Map() {
     this.scale = 0.7;
@@ -113,10 +125,10 @@ Map.prototype.zerosEventsCirclesForPlaces = function () {
     var e;
     for (p in this.places) {
 //        for (e in eventsTypesConsts) { TODO whats the fuck?
-            this.places[p].circles = [];
-            this.places[p]['circles'][1] = 0;
-            this.places[p]['circles'][2] = 0;
-            this.places[p]['circles'][3] = 0;
+        this.places[p].circles = [];
+        this.places[p].circles[1] = 0;
+        this.places[p].circles[2] = 0;
+        this.places[p].circles[3] = 0;
 //        }
     }
 };
@@ -177,14 +189,14 @@ Map.prototype.addEvents = function (eventType) {
     var events = this.events[eventType];
     var e;
     for (e in events) {
-        var place_id = events[e].events_place_id;
-        if (this.places[place_id]['circles'][eventType] > 0) {
-            this.places[place_id]['circles'][eventType]++;
+        var placeId = events[e].events_place_id;
+        if (this.places[placeId].circles[eventType] > 0) {
+            this.places[placeId].circles[eventType]++;
             continue;
         }
 //        console.log(this.places[place_id].places_polygon);
 //        console.log(polygonFromString(this.places[place_id].places_polygon));
-        var center = getCenter(polygonFromString(this.places[place_id].places_polygon));
+        var center = getCenter(polygonFromString(this.places[placeId].places_polygon));
         center.x += eventsCircleOffset[eventType].x;
         center.y += eventsCircleOffset[eventType].y;
         console.log(center);
@@ -197,12 +209,47 @@ Map.prototype.addEvents = function (eventType) {
             strokeEnabled: false
         });
 
-        this.places[place_id]['circles'][e]++;
+        this.places[placeId]['circles'][e]++;
 
         circle.eventId = events[e].events_id;
+        circle.eventType = eventType;
+        circle.placeId = placeId;
 
         circle.on('mousedown', function () {
-            alert(this.eventId);
+            if (this.eventId in map.cachedEvents) {
+                alert(JSON.stringify(map.cachedEvents[this.eventId]));
+            } else {
+                var p;
+                var events = [];
+                for (p in map.events[this.eventType]) {
+                    if (map.events[this.eventType][p].events_place_id == this.placeId) {
+                        events.push(map.events[this.eventType][p].events_id);
+                    }
+                }
+//                var $this = this;
+                $.ajax({
+                    type: 'POST',
+                    url: '/scripts/handlers/handler.Map.php',
+                    data: {
+                        action: "getEventInfo",
+                        data: JSON.stringify(events)
+                    },
+                    success: function (data) {
+                        if (data.hasOwnProperty('result')) {
+                            if (data.result) {
+                                //$this
+                                map.cachedEvents = map.cachedEvents.concat(data.data).unique();
+                            } else {
+                                alert(data.message);
+                            }
+                        } else {
+                            alert('Unknown error!');
+                        }
+                    },
+                    dataType: 'json',
+                    async: false
+                });
+            }
         });
 
         this.eventsLayer.add(circle);
