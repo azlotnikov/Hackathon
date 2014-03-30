@@ -34,9 +34,9 @@ var eventsObjects = {
 };
 
 
-var min_scale          = 0.3,  //минимальный масштаб карты
-    max_scale          = 1,    //максимальный мастштаб карты
-    bigCircleRadius    = 40,   //радиус большого кружка события
+var min_scale = 0.3,  //минимальный масштаб карты
+    max_scale = 1,    //максимальный мастштаб карты
+    bigCircleRadius = 40,   //радиус большого кружка события
     littleCircleRadius = 10;   //радиус маленького кружка события
 
 function Map() {               //самый главный объект карта
@@ -55,15 +55,18 @@ function Map() {               //самый главный объект карт
 
 function loadIcons() {
     eventsObjects["service"].imageIcon = new Image();
-    eventsObjects["service"].imageIcon.onload = function () {};
+    eventsObjects["service"].imageIcon.onload = function () {
+    };
     eventsObjects["service"].imageIcon.src = '/img/icon_service.png';
 //
     eventsObjects["party"].imageIcon = new Image();
-    eventsObjects["party"].imageIcon.onload = function () {};
+    eventsObjects["party"].imageIcon.onload = function () {
+    };
     eventsObjects["party"].imageIcon.src = '/img/icon_party.png';
 //
     eventsObjects["leisure"].imageIcon = new Image();
-    eventsObjects["leisure"].imageIcon.onload = function () {};
+    eventsObjects["leisure"].imageIcon.onload = function () {
+    };
     eventsObjects["leisure"].imageIcon.src = '/img/icon_leisure.png';
 }
 
@@ -74,7 +77,7 @@ Map.prototype.init = function () {
     // console.log("OOO " + this.lastUpdatedDate);
     setInterval(this.getNewInfo, UPDATE_INTERVAL);
 
-    var layer    = new Kinetic.Layer(),
+    var layer = new Kinetic.Layer(),
         imageObj = new Image();
 
     imageObj.onload = function () {
@@ -108,7 +111,6 @@ Map.prototype.init = function () {
     };
 
     imageObj.src = '/img/map.jpg';
-
 
 
 };
@@ -223,6 +225,9 @@ Map.prototype.initPlaces = function () {
         poly.on('click', function (e) {
             var mousePos = map.stage.getPointerPosition();
             $('#event_place_id').val(this.placeId);
+            if ($('#events_info:visible')) {
+                $('#events_info').hide();
+            }
             $('#event_form').show('fast').css({left: mousePos.x + $("#container").position().left, top: mousePos.y + $("#container").position().top});
             //map.activePlace = this;
         });
@@ -309,6 +314,66 @@ Map.prototype.renderEvents = function () {
     this.eventsLayer.draw();
 };
 
+function eventOnClick() {
+    var p;
+    var events = [];
+    var cachedEvents = [];
+    for (p in map.events[this.eventTypeId]) {
+        if (map.events[this.eventTypeId][p].events_place_id == this.placeId) {
+            if (map.events[this.eventTypeId][p].events_id in map.cachedEvents) {
+                cachedEvents.push(map.events[this.eventTypeId][p].events_id);
+            } else {
+                events.push(map.events[this.eventTypeId][p].events_id);
+            }
+        }
+    }
+    if (events.length > 0) {
+        $.ajax({
+            type: 'POST',
+            url: '/scripts/handlers/handler.Map.php',
+            data: {
+                action: "getEventInfo",
+                data: events
+            },
+            success: function (data) {
+//                        alert(JSON.stringify(data));
+                if (data.hasOwnProperty('result')) {
+                    if (data.result) {
+                        map.cachedEvents = $.extend(map.cachedEvents, data.data);
+                    } else {
+                        alert(data.message);
+                    }
+                } else {
+                    alert('Unknown error!');
+                }
+            },
+            dataType: 'json',
+            async: false
+        });
+    }
+
+    events = events.concat(cachedEvents);
+    var e;
+    var text = '';
+    var eventData;
+    for (e = 0; e < events.length; e++) {
+        eventData = map.cachedEvents[events[e]];
+        text += '<a href="#">' + eventData.events_header + '</a><br>';
+        text += eventData.events_description + '<br>';
+        text += eventData.events_creation_date + '<br>';
+        text += '<a href="#">' + eventData.users_name + ' ' + eventData.users_surname + '</a><br>';
+    }
+    var mousePos = map.stage.getPointerPosition();
+//            var mousePos = {x: 10, y: 10};
+    $('#events_info_data').html(text);
+    if ($('#event_form:visible')) {
+        $('#event_form').hide();
+    }
+    $('#events_info').show('fast').css({left: mousePos.x + $("#container").position().left, top: mousePos.y + $("#container").position().top});
+
+}
+
+
 Map.prototype.addEvents = function (eventType) {   //строка типа party
     eventTypeId = eventsObjects[eventType].id;
     var events = this.events[eventTypeId];
@@ -342,62 +407,7 @@ Map.prototype.addEvents = function (eventType) {   //строка типа party
         circle.eventTypeId = eventTypeId;
         circle.placeId = placeId;
 
-        circle.on('mousedown', function () {
-//            alert(JSON.stringify(map.cachedEvents));
-            var p;
-            var events = [];
-            var cachedEvents = [];
-            for (p in map.events[this.eventTypeId]) {
-                if (map.events[this.eventTypeId][p].events_place_id == this.placeId) {
-                    if (map.events[this.eventTypeId][p].events_id in map.cachedEvents) {
-                        cachedEvents.push(map.events[this.eventTypeId][p].events_id);
-                    } else {
-                        events.push(map.events[this.eventTypeId][p].events_id);
-                    }
-                }
-            }
-            if (events.length > 0) {
-                $.ajax({
-                    type: 'POST',
-                    url: '/scripts/handlers/handler.Map.php',
-                    data: {
-                        action: "getEventInfo",
-                        data: events
-                    },
-                    success: function (data) {
-//                        alert(JSON.stringify(data));
-                        if (data.hasOwnProperty('result')) {
-                            if (data.result) {
-                                map.cachedEvents = $.extend(map.cachedEvents, data.data);
-                            } else {
-                                alert(data.message);
-                            }
-                        } else {
-                            alert('Unknown error!');
-                        }
-                    },
-                    dataType: 'json',
-                    async: false
-                });
-            }
-
-            events = events.concat(cachedEvents);
-            var e;
-            var text = '';
-            var eventData;
-            for (e = 0; e < events.length; e++) {
-                eventData = map.cachedEvents[events[e]];
-                text += '<a href="#">'+ eventData.events_header + '</a><br>';
-                text += eventData.events_description + '<br>';
-                text += eventData.events_creation_date + '<br>';
-                text += '<a href="#">'+ eventData.users_name + ' ' + eventData.users_surname + '</a><br>';
-            }
-            var mousePos = map.stage.getPointerPosition();
-//            var mousePos = {x: 10, y: 10};
-            $('#events_info_data').html(text);
-            $('#events_info').show('fast').css({left: mousePos.x + $("#container").position().left, top: mousePos.y + $("#container").position().top});
-
-        });
+        circle.on('mousedown', eventOnClick);
 
         this.eventsLayer.add(circle);
         var icon = new Kinetic.Image({
@@ -406,8 +416,12 @@ Map.prototype.addEvents = function (eventType) {   //строка типа party
             image: eventsObjects[eventType].imageIcon
         });
 
-        this.eventsLayer.add(icon);
+        icon.eventId = e;
+        icon.eventTypeId = eventTypeId;
+        icon.placeId = placeId;
+        icon.on('mousedown', eventOnClick);
 
+        this.eventsLayer.add(icon);
     }
 };
 
