@@ -42,7 +42,7 @@
          $("#next").click(function() {
             ctx.lineTo(startP.x, startP.y);
             ctx.stroke();
-            coords = [];
+//            coords = [];
             startP.x = null;
             startP.y = null;
             isDraw = false;
@@ -58,6 +58,7 @@
                   hostel: '1'
                }
             });
+            coords = [];
          });
       });
    </script>

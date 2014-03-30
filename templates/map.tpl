@@ -28,13 +28,13 @@
       {*TODO generate floors ids*}
       <select id="floor_select">
          <option value="1">Этаж 1</option>
-         <option value="1">Этаж 2</option>
-         <option value="1">Этаж 3</option>
-         <option value="1">Этаж 4</option>
-         <option value="1" selected>Этаж 5</option>
-         <option value="1">Этаж 6</option>
-         <option value="1">Этаж 7</option>
-         <option value="1">Этаж 8</option>
+         <option value="2">Этаж 2</option>
+         <option value="3">Этаж 3</option>
+         <option value="4">Этаж 4</option>
+         <option value="5" selected>Этаж 5</option>
+         <option value="6">Этаж 6</option>
+         <option value="7">Этаж 7</option>
+         <option value="8">Этаж 8</option>
       </select>
    </div>
    <section id="field">

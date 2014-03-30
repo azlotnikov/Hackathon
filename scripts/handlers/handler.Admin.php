@@ -1,5 +1,6 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Post.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/handlers/handler.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Place.php';
 $post = GetPOST();
 
 $_place->SetFieldByName(Place::NUMBER_FLD, $post['number'])
