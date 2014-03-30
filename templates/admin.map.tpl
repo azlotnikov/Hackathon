@@ -58,6 +58,8 @@
                   hostel: '1'
                }
             });
+            ctx.clearRect(0, 0, canv.width, canv.height);
+            ctx.drawImage(pic, 0, 0);
             coords = [];
          });
       });
