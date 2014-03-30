@@ -1,8 +1,8 @@
-Array.prototype.unique = function() {
+Array.prototype.unique = function () {
     var a = this.concat();
-    for(var i=0; i<a.length; ++i) {
-        for(var j=i+1; j<a.length; ++j) {
-            if(a[i] === a[j])
+    for (var i = 0; i < a.length; ++i) {
+        for (var j = i + 1; j < a.length; ++j) {
+            if (a[i] === a[j])
                 a.splice(j--, 1);
         }
     }
@@ -32,18 +32,18 @@ var eventsObjects = {
     }
 };
 
-var min_scale          = 0.3,  //минимальный масштаб карты
-    max_scale          = 1,    //максимальный мастштаб карты
-    bigCircleRadius    = 20,   //радиус большого кружка события
+var min_scale = 0.3,  //минимальный масштаб карты
+    max_scale = 1,    //максимальный мастштаб карты
+    bigCircleRadius = 20,   //радиус большого кружка события
     littleCircleRadius = 10;   //радиус маленького кружка события
 
 function Map() {               //самый главный объект карта
-    this.scale        = 0.7;         //начальный масштаб
-    this.places       = {};          //массив всех мест: ключ - id места
-    this.events       = {};          //массив всех событий
+    this.scale = 0.7;         //начальный масштаб
+    this.places = {};          //массив всех мест: ключ - id места
+    this.events = {};          //массив всех событий
 //  this.activePlace  = {};
     this.cachedEvents = {};
-    this.stage        = new Kinetic.Stage({        //канвас
+    this.stage = new Kinetic.Stage({        //канвас
         container: 'container',
         width: $(document).width() - 100,
         height: $(document).height() - 100,
@@ -54,7 +54,7 @@ function Map() {               //самый главный объект карт
 Map.prototype.init = function () {
     this.getInitInfo();                             //получение информации обо всем на карте ajax
 
-    var layer    = new Kinetic.Layer(),
+    var layer = new Kinetic.Layer(),
         imageObj = new Image();
 
     imageObj.onload = function () {
@@ -65,7 +65,7 @@ Map.prototype.init = function () {
             image: imageObj
         });
 
-        map.imageLayer  = new Kinetic.Layer();
+        map.imageLayer = new Kinetic.Layer();
         map.placesLayer = new Kinetic.Layer();
         map.eventsLayer = new Kinetic.Layer();
 
@@ -80,7 +80,7 @@ Map.prototype.init = function () {
         map.initPlaces();       //нарисовать скрытый слой с местами
         handleEventsLayers();   //определяет какие события из чекбоксов нарисовать
 
-        imageMap.on("click", function() {  //скрыть формочку при клике на пустое место
+        imageMap.on("click", function () {  //скрыть формочку при клике на пустое место
             $("#event_form").hide();
         });
     };
@@ -249,9 +249,9 @@ Map.prototype.addEvents = function (eventType) {   //строка типа party
         circle.placeId = placeId;
 
         circle.on('mousedown', function () {
-                if (this.eventId in map.cachedEvents) {
-                    alert(JSON.stringify(map.cachedEvents[this.eventId]));
-                } else {
+            if (this.eventId in map.cachedEvents) {
+                alert(JSON.stringify(map.cachedEvents[this.eventId]));
+            } else {
                 var p;
                 var events = [];
                 for (p in map.events[this.eventTypeId]) {
@@ -294,54 +294,54 @@ Map.prototype.addEvents = function (eventType) {   //строка типа party
 };
 
 /*
-function getPos(el) {
-    for (var lx = 0, ly = 0;
-         el != null;
-         lx += el.offsetLeft, ly += el.offsetTop, el = el.offsetParent);
-    return {x: lx, y: ly};
-}
+ function getPos(el) {
+ for (var lx = 0, ly = 0;
+ el != null;
+ lx += el.offsetLeft, ly += el.offsetTop, el = el.offsetParent);
+ return {x: lx, y: ly};
+ }
 
 
-Map.prototype.changeScale = function (new_scale) {
-    if (new_scale > min_scale && new_scale < max_scale) {
-        var d = document.getElementById('field');
-        var canvasPos = getPos(d);
-        var absPos = this.stage.getAbsolutePosition();
-//        var mousePos = map.stage.getPosition();
+ Map.prototype.changeScale = function (new_scale) {
+ if (new_scale > min_scale && new_scale < max_scale) {
+ var d = document.getElementById('field');
+ var canvasPos = getPos(d);
+ var absPos = this.stage.getAbsolutePosition();
+ //        var mousePos = map.stage.getPosition();
 
-        var smallCalc = (this.stage.width / 2 - absPos.x - canvasPos.x) / this.scale;
-        var smallCalcY = (this.stage.height / 2 - absPos.y - canvasPos.y) / this.scale;
+ var smallCalc = (this.stage.width / 2 - absPos.x - canvasPos.x) / this.scale;
+ var smallCalcY = (this.stage.height / 2 - absPos.y - canvasPos.y) / this.scale;
 
-        var endCalc = (this.stage.width / 2 - canvasPos.x) - new_scale * smallCalc;
-        var endCalcY = (this.stage.height / 2 - canvasPos.y) - new_scale * smallCalcY;
+ var endCalc = (this.stage.width / 2 - canvasPos.x) - new_scale * smallCalc;
+ var endCalcY = (this.stage.height / 2 - canvasPos.y) - new_scale * smallCalcY;
 
-        this.stage.setPosition(endCalc, endCalcY);
-        this.imageLayer.scaleX(new_scale);
-        this.imageLayer.scaleY(new_scale);
+ this.stage.setPosition(endCalc, endCalcY);
+ this.imageLayer.scaleX(new_scale);
+ this.imageLayer.scaleY(new_scale);
 
-        this.placesLayer.scaleX(new_scale);
-        this.placesLayer.scaleY(new_scale);
+ this.placesLayer.scaleX(new_scale);
+ this.placesLayer.scaleY(new_scale);
 
-        this.eventsLayer.scaleX(new_scale);
-        this.eventsLayer.scaleY(new_scale);
+ this.eventsLayer.scaleX(new_scale);
+ this.eventsLayer.scaleY(new_scale);
 
-        this.imageLayer.draw();
-        this.placesLayer.draw();
-        this.eventsLayer.draw();
+ this.imageLayer.draw();
+ this.placesLayer.draw();
+ this.eventsLayer.draw();
 
-        var eventForm = $('#event_form');
-        if (eventForm.css('display') != 'none') {
-//            var x = map.activePlace.x;
-//            var y = map.activePlace.y;
-//            console.log('x: ' + x);
-//            console.log('y: ' + y);
-//            eventForm.css({left: x, top: y});
-        }
+ var eventForm = $('#event_form');
+ if (eventForm.css('display') != 'none') {
+ //            var x = map.activePlace.x;
+ //            var y = map.activePlace.y;
+ //            console.log('x: ' + x);
+ //            console.log('y: ' + y);
+ //            eventForm.css({left: x, top: y});
+ }
 
-        this.scale = new_scale;
-    }
-};
-*/
+ this.scale = new_scale;
+ }
+ };
+ */
 
 
 $(function () {
@@ -354,16 +354,29 @@ $(function () {
         $('#event_form').hide();
     });
 
+    $('#event_datetime').datetimepicker({
+        lang: 'ru',
+        format: 'd.m.Y H:i'
+    });
+
+    $('#event_type').change(function () {
+        if ($(this).val() == '2') {
+            $('#event_datetime').show();
+        } else {
+            $('#event_datetime').hide();
+        }
+    });
+
     $('#event_form form').submit(function () {
         var event_type = $('#event_type').find('option:selected').val(),
-            place_id   = $('#event_place_id').val(),
-            event_id   = addEvent(place_id, $('#event_header').val(), $('#event_description').val(), event_type);
+            place_id = $('#event_place_id').val(),
+            event_id = addEvent(place_id, $('#event_header').val(), $('#event_description').val(), event_type);
         map.events[event_type][event_id] = {
             events_id: event_id,
             events_place_id: parseInt(place_id)
         };
         //TODO render events of this type if not
-       handleEventsLayers();
+        handleEventsLayers();
         return false;
     });
 

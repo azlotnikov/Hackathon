@@ -3,9 +3,12 @@
    <link href="/css/header.css" rel="stylesheet"/>
    <link href="/css/footer.css" rel="stylesheet"/>
    <link href="/css/forms.css" rel="stylesheet"/>
+   <link rel="stylesheet" type="text/css" href="/css/jquery.datetimepicker.css"/ >
    <script src="/js/kinectjs.js"></script>
    <script src="/js/geometry.js"></script>
    <script src="/js/event.js"></script>
+   <script src="/js/jquery.datetimepicker.js"></script>
+
    <link href="/css/map.css" rel="stylesheet"/>
 {/block}
 {block name='div.main'}
@@ -33,6 +36,9 @@
                <option value="2">Вечеринки</option>
                <option value="3">Досуг</option>
             </select>
+            <label>
+               <input type="text" id="event_datetime" style="display:none"/>
+            </label>
          </div>
          <div class="form_block">
             <label for="event_description">Описание</label>
