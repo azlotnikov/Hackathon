@@ -2,9 +2,11 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.User.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/scripts/classes/class.Place.php';
 
-define('etPARTY', 2);
 define('etSERVICE', 1);
+define('etPARTY', 2);
 define('etLEISURE', 3);
+
+$event_names = [etPARTY => 'Мероприятия', etSERVICE => 'Услуги', etLEISURE => 'Досуг'];
 
 class Event extends Entity
 {
@@ -19,6 +21,12 @@ class Event extends Entity
 
    const INIT_SCHEME = 2;
    const INFO_SCHEME = 3;
+   const LIST_SCHEME = 4;
+
+   const LIST_LIMIT = 2;
+
+   private
+      $createDateKey = null;
 
    public function __construct()
    {
@@ -71,15 +79,21 @@ class Event extends Entity
             Array(Validate::IS_NOT_EMPTY)
          )
       );
+      $this->createDateKey = $this->ToPrfxNm(static::CREATION_DATE_FLD);
+   }
+
+   private function ModifyCreateDate(&$set)
+   {
+      $set[$this->createDateKey] = (new DateTime($set[$this->createDateKey]))->format('d.m.Y');
    }
 
    public function ModifySample(&$sample)
    {
       if (empty($sample)) return;
+      $idKey = $this->ToPrfxNm(static::ID_FLD);
       switch ($this->samplingScheme) {
          case static::INIT_SCHEME:
             $parties = $services = $leisuries = [];
-            $idKey = $this->ToPrfxNm(static::ID_FLD);
             $typeKey = $this->ToPrfxNm(static::TYPE_FLD);
             $placeKey = $this->ToPrfxNm(static::PLACE_FLD);
             foreach ($sample as $event) {
@@ -100,31 +114,19 @@ class Event extends Entity
 
          case static::INFO_SCHEME:
             $part_format = 'd.m.Y';
-            $general_format = 'd.m.Y H:i';
-            $idKey         = $this->ToPrfxNm(static::ID_FLD);
             $dueDateKey    =  $this->ToPrfxNm(static::DUE_DATE_FLD);
-            $createDateKey =  $this->ToPrfxNm(static::CREATION_DATE_FLD);
             $result = [];
             foreach ($sample as &$set) {
                if ($set[$dueDateKey]) {
                   $set[$dueDateKey] = (new DateTime($set[$dueDateKey]))->format($part_format);
                }
-               $set[$createDateKey] = (new DateTime($set[$createDateKey]))->format($general_format);
+               $this->ModifyCreateDate($set);
                $result[$set[$idKey]] = $set;
             }
             $sample = $result;
             break;
 
-         // case static:::
-         //    break;
-
       }
-      // if ($this->samplingScheme == static::PROFILE_INFO_SCHEME) {
-      //    $registerKey   = $this->ToPrfxNm(static::REGISTER_DATE_FLD);
-      //    $lastUpdateKey = $this->ToPrfxNm(static::LAST_UPDATE_FLD);
-      //    $sample[0][$registerKey]   = (new DateTime($sample[0][$registerKey]))->format('d.m.Y');
-      //    $sample[0][$lastUpdateKey] = (new DateTime($sample[0][$lastUpdateKey]))->format('d.m.Y H:i');
-      // }
    }
 
    public function SetSelectValues()
@@ -172,6 +174,105 @@ class Event extends Entity
       $this->selectFields = SQL::GetListFieldsForSelect($fields);
    }
 
+   private function GenQueryForList($user_id, $limit, $start = 0)
+   {
+      global $_user, $_place;
+      $fields = SQL::GetListFieldsForSelect(
+         array_merge(
+            SQL::PrepareFieldsForSelect(
+               static::TABLE,
+               [
+                  $this->idField,
+                  $this->GetFieldByName(static::HEAD_FLD),
+                  $this->GetFieldByName(static::CREATION_DATE_FLD),
+                  $this->GetFieldByName(static::TYPE_FLD)
+               ]
+            ),
+            SQL::PrepareFieldsForSelect(
+               User::TABLE,
+               [
+                  $_user->GetFieldByName(User::ID_FLD),
+                  $_user->GetFieldByName(User::NAME_FLD),
+                  $_user->GetFieldByName(User::SURNAME_FLD)
+               ]
+            ),
+            SQL::PrepareFieldsForSelect(
+               Place::TABLE,
+               [
+                  $_place->GetFieldByName(Place::TYPE_FLD),
+                  $_place->GetFieldByName(Place::NUMBER_FLD)
+               ]
+            )
+         )
+      );
+      return sprintf(
+         'SELECT %s FROM %s %s WHERE %s = %s %s ORDER BY %s DESC LIMIT %d, %d',
+         $fields,
+         static::TABLE,
+         SQL::MakeJoin(
+            static::TABLE,
+            [
+               User::TABLE  => [null, [static::OWNER_FLD, User::ID_FLD]],
+               Place::TABLE => [null, [static::PLACE_FLD, Place::ID_FLD]]
+            ]
+         ),
+         $this->ToTblNm(static::TYPE_FLD),
+         '%d',
+         (!empty($user_id) ? sprintf('AND %s = ?', $_user->ToTblNm(User::ID_FLD)) : ''),
+         $this->ToTblNm(static::CREATION_DATE_FLD),
+         $start,
+         $limit
+      );
+   }
+
+   public function GetList($user_id = null)
+   {
+      $qryBase = sprintf('(%s)', $this->GenQueryForList($user_id, static::LIST_LIMIT));
+      foreach (range(1, 3) as $i) {
+         $qries[] = sprintf($qryBase, $i);
+      }
+      global $db;
+      try {
+         $result = $db->Query(implode(' UNION ', $qries), !empty($user_id) ? array_fill(0, 3, $user_id) : []);
+         $typeKey = $this->ToPrfxNm(static::TYPE_FLD);
+         global $event_names;
+         $services = ['type_alias' => $event_names[etSERVICE], 'type_name' => 'services', 'type_key' => etSERVICE, 'events' => []];
+         $leisure  = ['type_alias' => $event_names[etLEISURE], 'type_name' => 'leisure',  'type_key' => etLEISURE, 'events' => []];
+         $parties  = ['type_alias' => $event_names[etPARTY],   'type_name' => 'parties',  'type_key' => etPARTY,   'events' => []];
+         $support  = [etPARTY => &$parties, etSERVICE => &$services, etLEISURE => &$leisure];
+         foreach ($result as &$event) {
+            $this->ModifyCreateDate($event);
+            $type = $event[$typeKey];
+            unset($event[$typeKey]);
+            $support[$type]['events'][] = $event;
+         }
+         $result = [$services, $leisure, $parties];
+      } catch (Exception $e) {
+         $result = [];
+      }
+      return $result;
+   }
+
+   public function GetMoreListByType($user_id = null, $amount, $type)
+   {
+      global $db;
+      try {
+         $result = $db->Query(
+            sprintf(
+               sprintf('(%s)', $this->GenQueryForList($user_id, static::LIST_LIMIT, $amount + 1)),
+               $type
+            ),
+            (!empty($user_id) ? [$user_id] : [])
+         );
+         foreach ($result as &$event) {
+            $this->ModifyCreateDate($event);
+         }
+      } catch (Exception $e) {
+         $result = [];
+      }
+      return $result;
+   }
+
    public function ProcessEvent($type, $data)
    {
       //Не забыть разобраться с форматом даты а то будет пиздец
@@ -210,7 +311,6 @@ class Event extends Entity
       }
       return $this->SetSamplingScheme(static::INFO_SCHEME)->GetAll();
    }
-
 }
 
 $_event = new Event();
