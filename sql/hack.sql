@@ -156,13 +156,13 @@ END//
 
 DROP FUNCTION IF EXISTS `process_event` //
 CREATE FUNCTION `process_event`(
-   sid VARCHAR(40), act_type INT(2), eid INT, header VARCHAR(100), place_id INT, event_type INT, description TEXT, due_date DATETIME
+   ssid VARCHAR(40), act_type INT(2), eid INT, header VARCHAR(100), place_id INT, event_type INT, description TEXT, due_date DATETIME
 )
 RETURNS TINYINT(1)
 BEGIN
    DECLARE uuser_id INT;
    DECLARE result INT;
-   SELECT `user_id` INTO uuser_id FROM `sessions` WHERE `sid` = sid;
+   SELECT `user_id` INTO uuser_id FROM `sessions` WHERE `sid` = ssid;
    SET uuser_id = IFNULL(uuser_id, 0);
    IF uuser_id > 0  THEN
       SET result = 1;
@@ -180,7 +180,7 @@ BEGIN
       ELSEIF act_type = 2 THEN
          INSERT INTO `events`(`header`, `owner_id`, `place_id`, `event_type`, `description`, `due_date`, `creation_date`) VALUES
             (header, uuser_id, place_id, event_type, description, due_date, CURRENT_TIMESTAMP);
-         SELECT LAST_INSERT_ID() into result;
+         SELECT LAST_INSERT_ID() FROM `events` LIMIT 1 into result;
       ELSE
          SET result = 0;
       END IF;

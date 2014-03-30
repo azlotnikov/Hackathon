@@ -22,6 +22,7 @@ try {
       case 'processEvent':
          //в зависимости от типа операции необходимо по разному обработать результат ProcessEvent
          //для всех операций, кроме вставки хорошим результатом считается число 1 (для вставки айди последней вставленной записи)
+         // print_r($post);
          if (Authentification::CheckCredentials()) {
             $md = $post['md'];
             if (!isset($modeTypes[$md]) || !($last_id = $_event->ProcessEvent($modeTypes[$md], $post['data']))) {
