@@ -315,12 +315,17 @@ Map.prototype.addEvents = function (eventType) {   //строка типа party
             events = events.concat(cachedEvents);
             var e;
             var text = '';
+            var eventData;
             for (e = 0; e < events.length; e++) {
-                text += JSON.stringify(map.cachedEvents[events[e]]) + "\n";
+                eventData = map.cachedEvents[events[e]];
+                text += '<a href="#">'+ eventData.events_header + '</a><br>';
+                text += eventData.events_description + '<br>';
+                text += eventData.events_creation_date + '<br>';
+                text += '<a href="#">'+ eventData.users_name + ' ' + eventData.users_surname + '</a><br>';
             }
             var mousePos = map.stage.getPointerPosition();
 //            var mousePos = {x: 10, y: 10};
-            $('#events_info_text').val(text);
+            $('#events_info').html(text);
             $('#events_info').show('fast').css({left: mousePos.x + $("#container").position().left, top: mousePos.y + $("#container").position().top});
 
         });
