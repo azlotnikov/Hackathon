@@ -21,6 +21,7 @@
    <script src="/js/map.js"></script>
    <div id="event_form">
       <form action="/">
+         <button id="event_form_close" type="button">x</button>
          <div class="form_block">
             <label for="event_header">Заголовок</label>
             <input id="event_header" name="event_header" value="Событие"/>

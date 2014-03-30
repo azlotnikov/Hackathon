@@ -238,7 +238,7 @@ Map.prototype.initPlaces = function () {
             console.log('BTN: ' + JSON.stringify(e));
             var mousePos = map.stage.getPointerPosition();
             $('#event_place_id').val(this.placeId);
-            $('#event_form').show('slow').css({left: mousePos.x, top: mousePos.y});
+            $('#event_form').show('fast').css({left: mousePos.x, top: mousePos.y});
             map.activePlace = this;
         });
 

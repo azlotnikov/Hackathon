@@ -32,3 +32,18 @@
     height: 1024px;
     position: relative;
 }
+
+#event_form_close {
+  width: 25px;
+  height: 25px;
+  background: darkred;
+  border-radius: 0;
+  padding: 0;
+  border: 0;
+  color: white;
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  cursor: pointer;
+}
