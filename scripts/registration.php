@@ -19,7 +19,7 @@ if (isset($_POST['submit'])) {
                           ->ValidatePassword($post['pass'])
                           ->ValidateRepeatPasswords($post['pass'], $post['repass']);
       Registration::Register($fields, $post['pass']);
-      // Redirect('/success_register');
+      DisplaySuccess('isRegister', true);
    } catch (Exception $e) {
       $smarty->assign('db_error', $e->getMessage());
    }
