@@ -81,6 +81,10 @@ Map.prototype.init = function () {
         map.stage.add(map.placesLayer);
         map.stage.add(map.eventsLayer);
 
+        imageMap.on("click", function(){
+            $("#event_form").hide();
+        });
+
         map.imageLayer.add(imageMap);
 
         map.imageLayer.draw();
@@ -289,10 +293,10 @@ Map.prototype.initPlaces = function () {
             map.placesLayer.draw();
         });
         poly.on('click', function (e) {
-            console.log('BTN: ' + JSON.stringify(e));
             var mousePos = map.stage.getPointerPosition();
+
             $('#event_place_id').val(this.placeId);
-            $('#event_form').show('fast').css({left: mousePos.x, top: mousePos.y});
+            $('#event_form').show('fast').css({left: mousePos.x + $("#container").position().left, top: mousePos.y + $("#container").position().top});
             map.activePlace = this;
         });
 
@@ -382,7 +386,6 @@ $(function () {
             events_id: event_id,
             events_place_id: parseInt(place_id)
         });
-        alert('!');
         //TODO render events of this type if not
        handleLayers();
 //        map.renderEvents(event_type);

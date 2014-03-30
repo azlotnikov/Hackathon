@@ -47,3 +47,7 @@
   margin: 0;
   cursor: pointer;
 }
+
+#layers label {
+   display: inline-block;
+}
