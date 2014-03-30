@@ -15,7 +15,7 @@ try {
          $ajaxResult['data'] = [
             'events'          => $_event->SetSamplingScheme(Event::INIT_SCHEME)->GetAll(),
             'places'          => $_place->SetSamplingScheme(Place::INIT_SCHEME)->GetAll(),
-            'availabe_places' => $_place->SetSamplingScheme(Place::AVAILABLE_SCHEME)->GetAll()
+            'available_places' => $_place->SetSamplingScheme(Place::AVAILABLE_SCHEME)->GetAll()
          ];
          break;
 
