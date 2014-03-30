@@ -31,6 +31,31 @@
 {/block}
 {block name='div.main'}
   {include file="header.tpl"}
+  <div id="center_block">
+    <div id="main_block">
+      {if !empty($user_info.users_photo_id)}
+        <img src="/scripts/uploads/{$user_info.users_photo_id}_s.jpg" />
+      {else}
+        <img src="/img/avatar.jpg" />
+      {/if}
+      <h1>{$user_info.users_name|default:''} {$user_info.users_surname|default:''}</h1>
+      <h2>{$user_info.users_phone|default:'+79147016320'}</h2>
+      <h2 class="room">{$user_info.users_room|default:''} комната</h2>
+      {if $acc_self}
+         <button class="upload" type="submit">{if !empty($user_info.users_photo_id)}Поменять аватар{else}Загрузить аватар{/if}</button>
+      {/if}
+    </div>
+    {if $acc_self}
+        <div class="control">
+          <ul>
+            <li><div class="change edit"><a href="/change_data/?type=change_name">Изменить имя</a></div></li>
+            <li><div class="change edit"><a href="/change_data/?type=change_password">Изменить пароль</a></div></li>
+            <li><div class="change edit"><a href="/change_data/?type=change_contact_information">Изменить информацию</a></div></li>
+            <li><div class="change delete"><a href="/change_data/?type=delete_acc" class="delete" data-id="{$user_info.users_id|default:''}">Удалить аккаунт</a></div></li>
+          </ul>
+        </div>
+    {/if}
+  </div><!--
   <section id="my_account" class="block_with_menu">
     <aside>
       <div class="avatar">
@@ -48,10 +73,8 @@
       {if $acc_self}
         <div class="control">
           <ul>
-            {if $acc_self}
-               <li><div class="change edit"><a href="/change_data/?type=change_name">Изменить имя</a></div></li>
-               <li><div class="change edit"><a href="/change_data/?type=change_password">Изменить пароль</a></div></li>
-            {/if}
+            <li><div class="change edit"><a href="/change_data/?type=change_name">Изменить имя</a></div></li>
+            <li><div class="change edit"><a href="/change_data/?type=change_password">Изменить пароль</a></div></li>
             <li><div class="change delete"><a href="/change_data/?type=delete_acc" class="delete" data-id="{$user_info.users_id|default:''}">Удалить аккаунт</a></div></li>
           </ul>
         </div>
@@ -95,5 +118,5 @@
         $('#my_account .style_menu a[data="{$selected_a|default:''}"]').addClass('active');
       </script>
     </div>
-  </section>
+  </section>-->
 {/block}
