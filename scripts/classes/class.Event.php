@@ -138,13 +138,13 @@ class Event extends Entity
             $sample = $result;
             break;
 
-         case static::NEW_DELETTION_SCHEME:
-            $result = [];
-            foreach ($sample as &$set) {
-               $result[] = $set[$idKey];
-            }
-            $sample = $result;
-            break;
+         // case static::NEW_DELETTION_SCHEME:
+         //    $result = [];
+         //    foreach ($sample as &$set) {
+         //       $result[] = $set[$idKey];
+         //    }
+         //    $sample = $result;
+         //    break;
 
       }
    }
@@ -189,7 +189,13 @@ class Event extends Entity
                break;
 
          case static::NEW_DELETTION_SCHEME:
-            $fields = SQL::PrepareFieldsForSelect(static::TABLE, [$this->idField]);
+            $fields = SQL::PrepareFieldsForSelect(
+               static::TABLE,
+               [
+                  $this->idField,
+                  $this->GetFieldByName(static::TYPE_FLD)
+               ]
+            );
             $this->search = new Search(
                static::TABLE,
                new Clause(
@@ -363,6 +369,7 @@ class Event extends Entity
          )
       );
       $result['created'] = $this->SetSamplingScheme(static::INIT_SCHEME)->GetAll();
+      return $result;
    }
 }
 

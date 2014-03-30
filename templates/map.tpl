@@ -4,6 +4,7 @@
    <link href="/css/footer.css" rel="stylesheet"/>
    <link href="/css/forms.css" rel="stylesheet"/>
    <link rel="stylesheet" type="text/css" href="/css/jquery.datetimepicker.css"/ >
+   <script src="/js/map_utils.js"></script>
    <script src="/js/kinectjs.js"></script>
    <script src="/js/geometry.js"></script>
    <script src="/js/event.js"></script>

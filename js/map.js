@@ -10,6 +10,7 @@
 //    return a;
 //};
 
+var UPDATE_INTERVAL = 5000;
 
 var eventsObjects = {
     'service': {
@@ -68,6 +69,10 @@ function loadIcons() {
 
 Map.prototype.init = function () {
     this.getInitInfo();                             //получение информации обо всем на карте ajax
+    // console.log("OO " + Date());
+    // this.lastUpdatedDate = Date();
+    // console.log("OOO " + this.lastUpdatedDate);
+    setInterval(this.getNewInfo, UPDATE_INTERVAL);
 
     var layer    = new Kinetic.Layer(),
         imageObj = new Image();
@@ -133,6 +138,63 @@ Map.prototype.getInitInfo = function () {
         async: false
     });
 };
+
+Map.prototype.getNewInfo = function () {
+   var $this = this;
+   console.log("getNewInfo called " + map.lastUpdatedDate);
+   $.ajax({
+      type: 'POST',
+      url: '/scripts/handlers/handler.Map.php',
+      data: {
+         action: "getNewInfo",
+         last_updated_date: map.lastUpdatedDate
+      },
+      success: function (data) {
+         console.log(data);
+         if (data.hasOwnProperty('result')) {
+            if (data.result) {
+               if (data.data.deleted.length > 0 || data.data.created.length > 0){
+                  map.lastUpdatedDate = getCurrentDate();
+                  map.CacheUpdate(data.data.deleted, data.data.created);
+               }               
+            } else {
+               alert(data.message);
+            }
+         } else {
+            throw 'Unknown ajax result!';
+         }
+      },
+      dataType: 'json',
+      async: false
+   });
+};
+
+Map.prototype.CacheUpdate = function(_deleted, _created) {
+   var eIdx;
+   map.lastUpdatedDate = getCurrentDate();
+   for (eIdx in _deleted){    
+      var eType = parseInt(_deleted[eIdx].events_event_type);
+      var eId = parseInt(_deleted[eIdx].events_id);   
+      if (!map.events[eType])
+         continue;
+      if (map.events[eType][eId]){
+         delete map.events[eType][eId];
+      }
+      var e;
+      for (e in map.cachedEvents[eType]){
+         if (map.cachedEvents[eType][e] == eId){
+            delete map.cachedEvents[eType][e];
+            break;
+         }
+      }
+   }
+   for (eIdx in _created){
+
+   }
+   handleEventsLayers();
+};
+
+
 
 Map.prototype.initPlaces = function () {
     this.placesLayer.removeChildren();
@@ -402,6 +464,7 @@ Map.prototype.addEvents = function (eventType) {   //строка типа party
 
 $(function () {
     map.init();
+    map.lastUpdatedDate = getCurrentDate();
 
     $('#layers input[name="events_layer"]').change(handleEventsLayers);
 
