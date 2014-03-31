@@ -8,7 +8,7 @@
             <img src="{if !empty($event.users_photo_id)}/scripts/uploads/{$event.users_photo_id}_s.jpg{else}/img/avatar_small.jpg{/if}" class="avatar" />
             <div class="right_info">
               <div class="header">
-                <h1><a href="/profile/?user_id={$event.users_id}">{$event.users_name} {$event.users_surname} ({$event.places_number}):</a></h1>
+                <h1><a href="/profile/?user={$event.users_id}">{$event.users_name} {$event.users_surname} ({$event.places_number}):</a></h1>
                 <date>{$event.events_creation_date}</date>
               </div>
               <h2>{$event.events_header}</h2>
