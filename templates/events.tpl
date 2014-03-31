@@ -2,7 +2,6 @@
 {block name='links' append}
   <link href="/css/header.css" rel="stylesheet" />
   <link href="/css/footer.css" rel="stylesheet" />
-  <link href="/css/index.css" rel="stylesheet" />
   <link href="/css/forms.css" rel="stylesheet" />
   <link href="/css/events.css" rel="stylesheet" />
   <script src="/js/list.js"></script>

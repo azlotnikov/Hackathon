@@ -24,7 +24,7 @@
          <input type="checkbox" name="events_layer" id="show_events_leisure" checked/><label for="show_events_leisure">Досуг</label>
       </div>
       <div id="slider" style="width: 300px;"></div>
-      <div id="floor_select_section">
+      <div id="floor_select_section" style="display: none">
          <label for="floor_select">Этаж: </label>
          {*TODO generate floors ids*}
          <select id="floor_select">
@@ -57,9 +57,9 @@
                <option value="2">Вечеринки</option>
                <option value="3">Досуг</option>
             </select>
-            <label>
-               <input type="text" id="event_datetime" style="display:none"/>
-            </label>
+         <div class="form_block event_datetime"style="display:none">
+            <label for="event_datetime">Дата начала</label>
+            <input type="text" id="event_datetime" name="event_datetime"/>
          </div>
          <div class="form_block">
             <label for="event_description">Описание</label>

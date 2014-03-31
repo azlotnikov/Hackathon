@@ -532,9 +532,9 @@ $(function () {
 
    $('#event_type').change(function () {
       if ($(this).val() == '2') {
-         $('#event_datetime').show();
+         $('.event_datetime').show();
       } else {
-         $('#event_datetime').hide();
+         $('.event_datetime').hide();
       }
    });
 
