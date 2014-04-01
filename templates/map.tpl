@@ -57,6 +57,7 @@
                <option value="2">Вечеринки</option>
                <option value="3">Досуг</option>
             </select>
+		</div>
          <div class="form_block event_datetime"style="display:none">
             <label for="event_datetime">Дата начала</label>
             <input type="text" id="event_datetime" name="event_datetime"/>
